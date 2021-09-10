@@ -1,0 +1,35 @@
+name: Laravel
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  laravel:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+        with:
+          php-version: '8.0'
+          extensions: mbstring, dom, fileinfo
+          coverage: xdebug #optional
+      - name: Redis Server in GitHub Actions
+        uses: supercharge/redis-github-action@1.1.0
+        with:
+          # Redis version to use
+          redis-version: 6 # optional, default is latest, was 5
+      - name: Install Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+#      - name: Test & publish code coverage
+#        uses: paambaati/codeclimate-action@v2.6.0
+#        env:
+#          CC_TEST_REPORTER_ID: fe3081a529c6c268974ebebb2f0137c3b3f6351cdc8a2712d8eb86ec78f7bf22
+#        with:
+#          coverageCommand: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+#          debug: false
