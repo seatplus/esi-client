@@ -7,8 +7,7 @@ use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 
 class CheckAccess
 {
-
-    protected array $scope_map = array(
+    protected array $scope_map = [
         'get' => [
             // 'meta' URI's. see: https://esi.evetech.net/ui/?version=meta
             '/ping' => 'public',
@@ -227,7 +226,7 @@ class CheckAccess
         ],
         'patch' => [
         ],
-    );
+    ];
 
     public function __construct(private ?EsiAuthentication $authentication = null)
     {
@@ -236,7 +235,6 @@ class CheckAccess
     public function can(string $method, string $uri)
     {
         if (! array_key_exists($uri, $this->scope_map[$method])) {
-
             Configuration::getInstance()->getLogger()
                 ->warning('An unknown URI was called. Allowing ' . $uri);
 
@@ -246,13 +244,14 @@ class CheckAccess
         $required_scope = $this->scope_map[$method][$uri];
 
         // Public scopes require no authentication!
-        if ($required_scope == 'public')
+        if ($required_scope == 'public') {
             return true;
+        }
 
-        if (! in_array($required_scope, $this->authentication->scopes))
+        if (! in_array($required_scope, $this->authentication->scopes)) {
             return false;
+        }
 
         return true;
     }
-
 }

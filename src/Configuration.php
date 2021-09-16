@@ -20,25 +20,27 @@ class Configuration
 
     public static function getInstance(): self
     {
-
-        if (is_null(self::$instance))
+        if (is_null(self::$instance)) {
             self::$instance = new self();
+        }
 
         return self::$instance;
     }
 
     public function getLogger(): LogInterface
     {
-        if (! $this->logger_implementation)
+        if (! $this->logger_implementation) {
             $this->logger_implementation = new $this->configuration->logger;
+        }
 
         return $this->logger_implementation;
     }
 
     public function getCacheMiddleware(): CacheMiddleware
     {
-        if (!$this->cache_middleware)
+        if (! $this->cache_middleware) {
             $this->cache_middleware = (new $this->configuration->cache_middleware)->getCacheMiddleware();
+        }
 
         return $this->cache_middleware;
     }
@@ -53,7 +55,6 @@ class Configuration
      */
     public function __get(string $name)
     {
-
         return $this->configuration->$name;
     }
 
@@ -65,7 +66,6 @@ class Configuration
      */
     public function __set(string $name, string $value)
     {
-
         return $this->configuration->$name = $value;
     }
 }

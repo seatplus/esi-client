@@ -27,7 +27,7 @@ class GuzzleFetcher
      */
     public function getClient(): Client
     {
-        if(! isset($this->client)) {
+        if (! isset($this->client)) {
             $stack = HandlerStack::create();
             $stack->push(Configuration::getInstance()->getCacheMiddleware(), 'cache');
 
@@ -50,10 +50,8 @@ class GuzzleFetcher
 
     public function __construct(
         protected ?EsiAuthentication $authentication = null
-    )
-    {
+    ) {
         $this->logger = Configuration::getInstance()->getLogger();
-
     }
 
     public function setAuthentication(EsiAuthentication $authentication): GuzzleFetcher
@@ -65,11 +63,11 @@ class GuzzleFetcher
 
     public function call(string $method, string $uri, array $body = [], array $headers = [])
     {
-
-        if($this->authentication)
+        if ($this->authentication) {
             $headers = array_merge($headers, [
                 'Authorization' => 'Bearer ' . $this->getToken(),
             ]);
+        }
 
         return $this->httpRequest($method, $uri, $headers, $body);
     }
@@ -78,15 +76,17 @@ class GuzzleFetcher
     {
         // Ensure that we have authentication data before we try
         // and get a token.
-        if (! $this->getAuthentication())
+        if (! $this->getAuthentication()) {
             throw new InvalidAuthenticationException('Trying to get a token without authentication data.');
+        }
 
         // Check the expiry date.
         $expires = $this->carbon($this->getAuthentication()->token_expires);
 
         // If the token expires in the next minute, refresh it.
-        if ($expires->lte($this->carbon('now')->addMinute(1)))
+        if ($expires->lte($this->carbon('now')->addMinute(1))) {
             $this->refreshToken();
+        }
 
         return $this->getAuthentication()->access_token;
     }
@@ -110,31 +110,31 @@ class GuzzleFetcher
         try {
             $response = $this->getClient()->request($method, $uri, [
                 RequestOptions::HEADERS => array_merge($headers, [
-                    'Accept'       => 'application/json',
+                    'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                    'User-Agent'   => 'Seatplus Esi Client /' . InstalledVersions::getPrettyVersion('seatplus/esi-client') . '/' . Configuration::getInstance()->http_user_agent,
+                    'User-Agent' => 'Seatplus Esi Client /' . InstalledVersions::getPrettyVersion('seatplus/esi-client') . '/' . Configuration::getInstance()->http_user_agent,
                 ]),
-                RequestOptions::BODY => $body
+                RequestOptions::BODY => $body,
             ]);
-
         } catch (ClientException | ServerException $e) {
-
             $this->logFetcherActivity('error', $e->getResponse(), $method, $uri, $start);
 
-            $this->logger->debug(sprintf('Request for %s -> %s -> failed body was: %s',
+            $this->logger->debug(sprintf(
+                'Request for %s -> %s -> failed body was: %s',
                 $method,
                 $uri,
                 $e->getResponse()->getBody()->getContents()
             ));
 
             // Raise the exception that should be handled by the caller
-            throw new RequestFailedException($e, New EsiResponse(
+            throw new RequestFailedException(
+                $e,
+                new EsiResponse(
                 $e->getResponse()->getBody()->getContents(),
                 $e->getResponse()->getHeaders(),
                 'now',
                 $e->getResponse()->getStatusCode()
             )
-
             );
         }
 
@@ -146,13 +146,13 @@ class GuzzleFetcher
             $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : 'now',
             $response->getStatusCode()
         );
-
     }
 
     private function carbon(?string $data = null)
     {
-        if (! is_null($data))
+        if (! is_null($data)) {
             return new \Carbon\Carbon($data);
+        }
 
         return new \Carbon\Carbon;
     }
@@ -175,7 +175,6 @@ class GuzzleFetcher
 
     private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, $start)
     {
-
         $is_cache_loaded = implode(';', $response->getHeader('X-Kevinrob-Cache')) === 'HIT';
 
         $message = $is_cache_loaded
@@ -194,9 +193,5 @@ class GuzzleFetcher
             'error' => $this->logger->error($message),
             'log' => $this->logger->log($message)
         };
-
-
     }
-
-
 }

@@ -10,7 +10,6 @@ use GuzzleHttp\RequestOptions;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use UnexpectedValueException;
 
-
 class RefreshToken
 {
 
@@ -33,17 +32,16 @@ class RefreshToken
             ],
             RequestOptions::FORM_PARAMS => [
                 'grant_type' => 'refresh_token',
-                'refresh_token'       => $this->authentication->refresh_token,
+                'refresh_token' => $this->authentication->refresh_token,
             ],
         ]);
 
         // Values are access_token // expires_in // token_type // refresh_token
-        $payload =  json_decode((string) $response->getBody(), true);
+        $payload = json_decode((string) $response->getBody(), true);
 
         $this->verify($payload['access_token']);
 
         return $payload;
-
     }
 
     protected function getTokenUrl()
@@ -67,7 +65,4 @@ class RefreshToken
 
         return $decodedArray;
     }
-
-
-
 }

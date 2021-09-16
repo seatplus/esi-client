@@ -1,22 +1,20 @@
 <?php
 
 use Seatplus\EsiClient\Configuration;
-use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\Log\NullLogger;
 use Seatplus\EsiClient\Services\CheckAccess;
 
-beforeEach(fn() => $this->check_access = new CheckAccess);
+beforeEach(fn () => $this->check_access = new CheckAccess);
 
 test('CheckAccess object initiation', function () {
     expect($this->check_access)->toBeInstanceOf(CheckAccess::class);
 });
 
-it('grants access if scope is present', function (){
-
+it('grants access if scope is present', function () {
     $authentication = buildEsiAuthentication([
         'scopes' => [
             'esi-assets.read_assets.v1',
-        ]
+        ],
     ]);
 
     $check_access = new CheckAccess($authentication);
@@ -27,11 +25,10 @@ it('grants access if scope is present', function (){
 });
 
 it('denies access if scope is missing', function () {
-
     $authentication = buildEsiAuthentication([
         'scopes' => [
             'esi-assets.read_assets.v1',
-        ]
+        ],
     ]);
 
     $check_access = new CheckAccess($authentication);
@@ -42,7 +39,6 @@ it('denies access if scope is missing', function () {
 });
 
 it('allows public only call', function () {
-
     $result = $this->check_access->can('get', '/alliances/');
 
     expect($result)->toBeTrue();

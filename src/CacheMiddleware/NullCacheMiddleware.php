@@ -7,7 +7,6 @@ use Kevinrob\GuzzleCache\Strategy\NullCacheStrategy;
 
 class NullCacheMiddleware implements CacheMiddlewareInterface
 {
-
     public function getCacheMiddleware(): CacheMiddleware
     {
         return  new CacheMiddleware(

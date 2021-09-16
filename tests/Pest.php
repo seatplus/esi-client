@@ -50,7 +50,6 @@ expect()->extend('toBeOne', function () {
 
 function getFaker()
 {
-
     return \Faker\Factory::create();
 }
 
@@ -62,7 +61,7 @@ function buildEsiAuthentication(array $params)
         'client_id' => $faker->randomNumber,
         'secret' => $faker->md5,
         'refresh_token' => $faker->sha1,
-        'scopes' => []
+        'scopes' => [],
     ];
 
     foreach ($params as $key => $value) {
@@ -70,5 +69,4 @@ function buildEsiAuthentication(array $params)
     }
 
     return new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication($factory_array);
-
 }

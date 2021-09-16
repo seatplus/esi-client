@@ -4,7 +4,6 @@ namespace Seatplus\EsiClient\Log;
 
 interface LogInterface
 {
-
     public function log(string $message): void;
 
     public function debug(string $message): void;

@@ -2,11 +2,10 @@
 
 namespace Seatplus\EsiClient\DataTransferObjects;
 
-use http\Encoding\Stream\Inflate;
 use Monolog\Logger;
+use Seatplus\EsiClient\CacheMiddleware\NullCacheMiddleware;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\RotatingFileLogger;
-use Seatplus\EsiClient\CacheMiddleware\NullCacheMiddleware;
 use Spatie\DataTransferObject\DataTransferObject;
 
 class EsiConfiguration extends DataTransferObject
@@ -37,5 +36,4 @@ class EsiConfiguration extends DataTransferObject
 
     // Fetching
     public string $fetcher = GuzzleFetcher::class;
-
 }
