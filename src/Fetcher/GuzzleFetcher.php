@@ -49,9 +49,20 @@ class GuzzleFetcher
     }
 
     public function __construct(
-        protected ?EsiAuthentication $authentication = null
+        protected ?EsiAuthentication $authentication = null,
+        protected ?RefreshToken $refreshTokenService = null
     ) {
         $this->logger = Configuration::getInstance()->getLogger();
+    }
+
+    public function getRefreshTokenService(): RefreshToken
+    {
+
+        if(! $this->refreshTokenService) {
+            return (new RefreshToken($this->getAuthentication(), $this->getClient()));
+        }
+
+        return $this->refreshTokenService;
     }
 
     public function setAuthentication(EsiAuthentication $authentication): GuzzleFetcher
@@ -159,7 +170,7 @@ class GuzzleFetcher
 
     private function refreshToken()
     {
-        $response = (new RefreshToken($this->getAuthentication(), $this->getClient()))->getRefreshTokenResponse();
+        $response = $this->getRefreshTokenService()->getRefreshTokenResponse();
 
         // Get the current EsiAuth container
         $authentication = $this->getAuthentication();

@@ -51,7 +51,7 @@ class RefreshToken
 
     private function verify($jwt)
     {
-        $responseJwks = $this->getHttpClient()->get('https://login.eveonline.com/oauth/jwks');
+        $responseJwks = $this->client->get('https://login.eveonline.com/oauth/jwks');
         $responseJwksInfo = json_decode((string) $responseJwks->getBody(), true);
         $decodedArray = (array) JWT::decode($jwt, JWK::parseKeySet($responseJwksInfo), ['RS256']);
 

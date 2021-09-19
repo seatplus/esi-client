@@ -248,7 +248,7 @@ class CheckAccess
             return true;
         }
 
-        if (! in_array($required_scope, $this->authentication->scopes)) {
+        if (! in_array($required_scope, $this->authentication->getScopes())) {
             return false;
         }
 

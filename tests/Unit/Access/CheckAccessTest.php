@@ -12,9 +12,9 @@ test('CheckAccess object initiation', function () {
 
 it('grants access if scope is present', function () {
     $authentication = buildEsiAuthentication([
-        'scopes' => [
-            'esi-assets.read_assets.v1',
-        ],
+        'access_token' => json_encode([
+            'scp' => ['esi-assets.read_assets.v1'],
+        ])
     ]);
 
     $check_access = new CheckAccess($authentication);
@@ -26,9 +26,9 @@ it('grants access if scope is present', function () {
 
 it('denies access if scope is missing', function () {
     $authentication = buildEsiAuthentication([
-        'scopes' => [
-            'esi-assets.read_assets.v1',
-        ],
+        'access_token' => json_encode([
+            'scp' => ['esi-assets.read_assets.v1'],
+        ])
     ]);
 
     $check_access = new CheckAccess($authentication);

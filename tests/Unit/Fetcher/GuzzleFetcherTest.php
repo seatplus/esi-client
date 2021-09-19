@@ -30,7 +30,7 @@ test('guzzle calling with authorization', function () {
     ]);
 
     // Mock RefreshToken
-    $refresh_token_service = Mockery::mock('overload:' . \Seatplus\EsiClient\Services\RefreshToken::class);
+    $refresh_token_service = Mockery::mock(\Seatplus\EsiClient\Services\RefreshToken::class);
     $refresh_token_service->shouldReceive('getRefreshTokenResponse')->once()->andReturn([
         'access_token' => 'foo', 'expires_in' => 1200, 'refresh_token' => 'bar',
     ]);
@@ -46,7 +46,9 @@ test('guzzle calling with authorization', function () {
         'scopes' => ['public'],
     ]);
 
-    $response = $this->fetcher
+    $fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher(null, $refresh_token_service);
+
+    $response =  $fetcher
         ->setClient($client)
         ->setAuthentication($authentication)->call('get', '/foo');
 
@@ -63,4 +65,4 @@ it('trows RequestFailedException', function () {
             'handler' => HandlerStack::create($mock),
             ]))
         ->call('get', '/foo');
-})->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class)->only();
+})->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);

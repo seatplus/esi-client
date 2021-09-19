@@ -2,13 +2,15 @@
 
 namespace Seatplus\EsiClient\DataTransferObjects;
 
-use Spatie\DataTransferObject\DataTransferObject;
+use ArrayObject;
 
-class EsiResponse extends DataTransferObject
+class EsiResponse extends ArrayObject
 {
     public string $raw;
     public array $headers;
     public array $raw_headers;
+
+    public object $data;
 
     public ?int $error_limit_remain;
     public ?int $pages;
@@ -16,33 +18,27 @@ class EsiResponse extends DataTransferObject
     protected string $expires_at;
     protected string $response_code;
 
-    /**
-     * @var mixed
-     */
     protected ?string $error_message;
 
-    /**
-     * @var bool
-     */
-    protected bool $cached_load = false;
+    protected bool $cache_loaded = false;
 
     public function __construct(string $data, array $headers, string $expires, int $response_code)
     {
+
+        $this->raw = $data;
+        $this->raw_headers = $headers;
+        $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
+        $this->response_code = $response_code;
+
         $parsed_headers = $this->parseHeaders($headers);
+        $this->headers = $parsed_headers;
+        $this->error_limit_remain = $this->getErrorLimitRemain($parsed_headers);
+        $this->pages = $this->getPages($parsed_headers);
 
-        $construct_array = [
-            'raw' => $data,
-            'raw_headers' => $headers,
-            'data' => (object) json_decode($data),
-            'headers' => $parsed_headers,
-            'error_limit_remain' => $this->getErrorLimitRemain($parsed_headers),
-            'pages' => $this->getPages($parsed_headers),
-            'expires_at' => strlen($expires) > 2 ? $expires : 'now',
-            'response_code' => $response_code,
-            'error_message' => $this->parseErrorMessage($data),
-        ];
+        $this->error_message = $this->parseErrorMessage($data);
+        $this->cache_loaded = $this->isCachedLoad();
 
-        parent::__construct($construct_array);
+        parent::__construct( (object) json_decode($data), ArrayObject::ARRAY_AS_PROPS);
     }
 
     public function isCachedLoad(): bool

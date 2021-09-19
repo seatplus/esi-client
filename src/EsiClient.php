@@ -13,6 +13,15 @@ use Seatplus\EsiClient\Services\CheckAccess;
 class EsiClient
 {
     protected string $version = 'latest';
+    private GuzzleFetcher $fetcher;
+
+    /**
+     * @param GuzzleFetcher $fetcher
+     */
+    public function setFetcher(GuzzleFetcher $fetcher): void
+    {
+        $this->fetcher = $fetcher;
+    }
 
     /**
      * @return string

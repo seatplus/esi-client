@@ -27,6 +27,14 @@ class Configuration
         return self::$instance;
     }
 
+    public function setConfiguration(EsiConfiguration $configuration)
+    {
+        $this->configuration = $configuration;
+        $this->logger_implementation = null;
+        $this->cache_middleware = null;
+
+    }
+
     public function getLogger(): LogInterface
     {
         if (! $this->logger_implementation) {

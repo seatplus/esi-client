@@ -53,15 +53,17 @@ function getFaker()
     return \Faker\Factory::create();
 }
 
-function buildEsiAuthentication(array $params)
+function buildEsiAuthentication(array $params = [])
 {
     $faker = getFaker();
 
     $factory_array = [
         'client_id' => $faker->randomNumber,
         'secret' => $faker->md5,
+        'access_token' => json_encode([
+            'scp' => []
+        ]),
         'refresh_token' => $faker->sha1,
-        'scopes' => [],
     ];
 
     foreach ($params as $key => $value) {
