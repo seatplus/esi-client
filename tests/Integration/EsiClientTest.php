@@ -6,7 +6,6 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 
 it('calls public endlpoint', function () {
-
     $mock = new \GuzzleHttp\Handler\MockHandler([
         new Response(200, [], json_encode(['foo' => 'bar'])),
     ]);
@@ -30,11 +29,9 @@ it('calls public endlpoint', function () {
 
     expect($character_info->foo)->toBe('bar');
     expect($character_info)->toBeInstanceOf(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
-
 });
 
 it('calls endlpoint with authorization', function () {
-
     $mock = new \GuzzleHttp\Handler\MockHandler([
         new Response(200, [], json_encode(['foo' => 'bar'])),
     ]);
@@ -62,7 +59,4 @@ it('calls endlpoint with authorization', function () {
 
     expect($character_info->foo)->toBe('bar');
     expect($character_info)->toBeInstanceOf(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
-
 });
-
-

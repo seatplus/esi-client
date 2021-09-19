@@ -57,8 +57,7 @@ class GuzzleFetcher
 
     public function getRefreshTokenService(): RefreshToken
     {
-
-        if(! $this->refreshTokenService) {
+        if (! $this->refreshTokenService) {
             return (new RefreshToken($this->getAuthentication(), $this->getClient()));
         }
 
@@ -141,11 +140,11 @@ class GuzzleFetcher
             throw new RequestFailedException(
                 $e,
                 new EsiResponse(
-                $e->getResponse()->getBody()->getContents(),
-                $e->getResponse()->getHeaders(),
-                'now',
-                $e->getResponse()->getStatusCode()
-            )
+                    $e->getResponse()->getBody()->getContents(),
+                    $e->getResponse()->getHeaders(),
+                    'now',
+                    $e->getResponse()->getStatusCode()
+                )
             );
         }
 

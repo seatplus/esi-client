@@ -61,7 +61,7 @@ function buildEsiAuthentication(array $params = [])
         'client_id' => $faker->randomNumber,
         'secret' => $faker->md5,
         'access_token' => json_encode([
-            'scp' => []
+            'scp' => [],
         ]),
         'refresh_token' => $faker->sha1,
     ];

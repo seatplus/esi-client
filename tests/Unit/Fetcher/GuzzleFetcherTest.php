@@ -48,7 +48,7 @@ test('guzzle calling with authorization', function () {
 
     $fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher(null, $refresh_token_service);
 
-    $response =  $fetcher
+    $response = $fetcher
         ->setClient($client)
         ->setAuthentication($authentication)->call('get', '/foo');
 

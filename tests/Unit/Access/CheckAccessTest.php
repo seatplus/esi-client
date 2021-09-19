@@ -14,7 +14,7 @@ it('grants access if scope is present', function () {
     $authentication = buildEsiAuthentication([
         'access_token' => json_encode([
             'scp' => ['esi-assets.read_assets.v1'],
-        ])
+        ]),
     ]);
 
     $check_access = new CheckAccess($authentication);
@@ -28,7 +28,7 @@ it('denies access if scope is missing', function () {
     $authentication = buildEsiAuthentication([
         'access_token' => json_encode([
             'scp' => ['esi-assets.read_assets.v1'],
-        ])
+        ]),
     ]);
 
     $check_access = new CheckAccess($authentication);

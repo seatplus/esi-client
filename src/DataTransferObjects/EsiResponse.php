@@ -24,7 +24,6 @@ class EsiResponse extends ArrayObject
 
     public function __construct(string $data, array $headers, string $expires, int $response_code)
     {
-
         $this->raw = $data;
         $this->raw_headers = $headers;
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
@@ -38,7 +37,7 @@ class EsiResponse extends ArrayObject
         $this->error_message = $this->parseErrorMessage($data);
         $this->cache_loaded = $this->isCachedLoad();
 
-        parent::__construct( (object) json_decode($data), ArrayObject::ARRAY_AS_PROPS);
+        parent::__construct((object) json_decode($data), ArrayObject::ARRAY_AS_PROPS);
     }
 
     public function isCachedLoad(): bool

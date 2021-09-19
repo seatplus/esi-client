@@ -32,7 +32,6 @@ class Configuration
         $this->configuration = $configuration;
         $this->logger_implementation = null;
         $this->cache_middleware = null;
-
     }
 
     public function getLogger(): LogInterface
