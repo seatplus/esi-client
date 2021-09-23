@@ -35,7 +35,8 @@
         "illuminate/cache": "^8.60",
         "mockery/mockery": "^1.4",
         "nunomaduro/collision": "^5.3",
-        "pestphp/pest-plugin-laravel": "^1.1"
+        "pestphp/pest-plugin-laravel": "^1.1",
+        "mikey179/vfsstream": "^1"
     },
     "autoload": {
         "psr-4": {
