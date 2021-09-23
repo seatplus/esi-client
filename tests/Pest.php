@@ -12,7 +12,7 @@
 */
 
 
-use VendorName\Skeleton\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 uses(TestCase::class)
     ->group('integration')
@@ -48,7 +48,27 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function getFaker()
 {
-    // ..
+    return \Faker\Factory::create();
+}
+
+function buildEsiAuthentication(array $params = [])
+{
+    $faker = getFaker();
+
+    $factory_array = [
+        'client_id' => $faker->randomNumber,
+        'secret' => $faker->md5,
+        'access_token' => json_encode([
+            'scp' => [],
+        ]),
+        'refresh_token' => $faker->sha1,
+    ];
+
+    foreach ($params as $key => $value) {
+        $factory_array[$key] = $value;
+    }
+
+    return new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication($factory_array);
 }

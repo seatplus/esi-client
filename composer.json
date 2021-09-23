@@ -1,40 +1,52 @@
 {
-    "name": "vendor_slug/package_slug",
-    "description": ":package_description",
+    "name": "seatplus/esi-client",
+    "description": "A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-cache-middleware",
     "keywords": [
-        ":vendor_name",
+        "seatplus",
+        "eve-online",
+        "eve online",
         "laravel",
-        "package_slug"
+        "esi",
+        "library",
+        "psr6",
+        "cache-control",
+        "rfc7234",
+        "cache"
     ],
-    "homepage": "https://github.com/vendor_slug/package_slug",
+    "homepage": "https://github.com/seatplus/esi-client",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Felix Huber",
+            "email": "felix.a.huber@gmx.net",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.0",
-        "seatplus/core": "^0.3",
-        "illuminate/contracts": "^8.37",
-      "seatplus/auth": "^0.8"
+        "ext-json": "*",
+        "firebase/php-jwt": "^5.4",
+        "kevinrob/guzzle-cache-middleware": "^3.4",
+        "nesbot/carbon": "^2.53",
+        "spatie/data-transfer-object": "^3.7"
     },
     "require-dev": {
+        "fzaninotto/faker": "^1.5",
+        "illuminate/cache": "^8.60",
+        "mockery/mockery": "^1.4",
         "nunomaduro/collision": "^5.3",
-        "orchestra/testbench": "^6.15",
-        "pestphp/pest-plugin-laravel": "^1.1"
+        "pestphp/pest-plugin-laravel": "^1.1",
+        "mikey179/vfsstream": "^1"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Seatplus\\EsiClient\\": "src",
+            "Seatplus\\EsiClient\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Seatplus\\EsiClient\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -43,13 +55,6 @@
     },
     "config": {
         "sort-packages": true
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
-            ]
-        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

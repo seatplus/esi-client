@@ -2,9 +2,9 @@ name: Laravel
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
 
 jobs:
   laravel:
@@ -26,10 +26,10 @@ jobs:
           redis-version: 6 # optional, default is latest, was 5
       - name: Install Dependencies
         run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-#      - name: Test & publish code coverage
-#        uses: paambaati/codeclimate-action@v2.6.0
-#        env:
-#          CC_TEST_REPORTER_ID: fe3081a529c6c268974ebebb2f0137c3b3f6351cdc8a2712d8eb86ec78f7bf22
-#        with:
-#          coverageCommand: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
-#          debug: false
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: 55a033428e7f980c68f3fe5e8f335098915f318d06843848ad2070fef53e331e
+        with:
+          coverageCommand: vendor/bin/pest --coverage --min=85
+          debug: false
