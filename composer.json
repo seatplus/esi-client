@@ -1,10 +1,17 @@
 {
     "name": "seatplus/esi-client",
-    "description": "A standalone ESI (Eve Swagger Interface) Client Libary using guzzle",
+    "description": "A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-cache-middleware",
     "keywords": [
         "seatplus",
+        "eve-online",
+        "eve online",
         "laravel",
-        "esi-client"
+        "esi",
+        "library",
+        "psr6",
+        "cache-control",
+        "rfc7234",
+        "cache"
     ],
     "homepage": "https://github.com/seatplus/esi-client",
     "license": "MIT",
