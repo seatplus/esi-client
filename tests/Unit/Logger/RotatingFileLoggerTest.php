@@ -18,12 +18,10 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-
     Configuration::getInstance()->logfile_location = 'logs/';
 });
 
 it('writes info log', function () {
-
     $this->logger->log('foo');
     $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
 
@@ -31,7 +29,6 @@ it('writes info log', function () {
 });
 
 it('writes debug log', function () {
-
     Configuration::getInstance()->logger_level = Logger::DEBUG;
     $this->logger = new RotatingFileLogger;
 
@@ -43,7 +40,6 @@ it('writes debug log', function () {
 });
 
 it('writes warning log', function () {
-
     $this->logger->warning('foo');
     $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
 
@@ -51,7 +47,6 @@ it('writes warning log', function () {
 });
 
 it('writes error log', function () {
-
     $this->logger->error('foo');
     $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
 
