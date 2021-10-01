@@ -68,7 +68,6 @@ function buildEsiAuthentication(array $params = [])
     ];
 
     foreach ($params as $key => $value) {
-
         $factory_array[$key] = $key === 'access_token' ? buildJWT($value) : $value;
     }
 

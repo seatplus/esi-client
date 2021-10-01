@@ -10,5 +10,4 @@ it('is possible to create EsiAuthenticationContainer without esi id and secret',
     expect($authenticaton)
         ->toBeInstanceOf(\Seatplus\EsiClient\DataTransferObjects\EsiAuthentication::class)
         ->token_expires->toBe('now');
-
 });

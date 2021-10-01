@@ -9,9 +9,9 @@ use GuzzleHttp\Psr7\Response;
 it('updates access token with refresh token', function () {
 
     // create a private key for signing the JWT Token
-    $privKey = openssl_pkey_new(array('digest_alg' => 'sha256',
+    $privKey = openssl_pkey_new(['digest_alg' => 'sha256',
         'private_key_bits' => 1024,
-        'private_key_type' => OPENSSL_KEYTYPE_RSA));
+        'private_key_type' => OPENSSL_KEYTYPE_RSA, ]);
 
     // define the payload
     $payload = [
@@ -64,6 +64,6 @@ it('updates access token with refresh token', function () {
     // assert the expected result. See the mocked response as reference
     expect($response)
         ->toBeArray()
-        ->toHaveKey('access_token',$jwt_token)
+        ->toHaveKey('access_token', $jwt_token)
         ->toHaveKey('foo', 'bar');
 });
