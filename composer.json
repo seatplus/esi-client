@@ -36,7 +36,8 @@
         "mockery/mockery": "^1.4",
         "nunomaduro/collision": "^5.3",
         "pestphp/pest-plugin-laravel": "^1.1",
-        "mikey179/vfsstream": "^1"
+        "mikey179/vfsstream": "^1",
+        "ext-openssl": "*"
     },
     "autoload": {
         "psr-4": {
