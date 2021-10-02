@@ -7,7 +7,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class EsiAuthentication extends DataTransferObject
 {
-    public ?int $client_id;
+    public ?string $client_id;
     public ?string $secret;
     public string $access_token;
     public string $refresh_token;
