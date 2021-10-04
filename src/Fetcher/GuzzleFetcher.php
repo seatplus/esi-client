@@ -115,7 +115,8 @@ class GuzzleFetcher
         $this->logger->debug('Making ' . $method . ' request to ' . $uri);
         $start = microtime(true);
 
-        $body = count($body) > 5 ? json_encode($body) : null;
+        // json encode the body if present, else null it
+        $body = count($body) > 0 ? json_encode($body) : null;
 
         try {
             $response = $this->getClient()->request($method, $uri, [
