@@ -30,7 +30,7 @@ test('guzzle calling with authorization', function () {
     ]);
 
     // Mock RefreshToken
-    $refresh_token_service = Mockery::mock(\Seatplus\EsiClient\Services\RefreshToken::class);
+    $refresh_token_service = Mockery::mock(\Seatplus\EsiClient\Services\UpdateRefreshTokenService::class);
     $refresh_token_service->shouldReceive('getRefreshTokenResponse')->once()->andReturn([
         'access_token' => 'foo', 'expires_in' => 1200, 'refresh_token' => 'bar',
     ]);
