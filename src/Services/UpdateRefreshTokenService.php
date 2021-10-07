@@ -10,29 +10,26 @@ use GuzzleHttp\RequestOptions;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use UnexpectedValueException;
 
-class RefreshToken
+class UpdateRefreshTokenService
 {
 
     /**
      * Tranquility endpoint for retrieving user info.
      */
     public const TRANQUILITY_ENDPOINT = 'https://login.eveonline.com';
+    private Client $client;
 
-    public function __construct(protected EsiAuthentication $authentication, private Client $client)
+    public function getRefreshTokenResponse(EsiAuthentication $authentication) : array
     {
-    }
+        $authorization = 'Basic '.base64_encode($authentication->client_id.':'.$authentication->secret);
 
-    public function getRefreshTokenResponse() : array
-    {
-        $authorization = 'Basic '.base64_encode($this->authentication->client_id.':'.$this->authentication->secret);
-
-        $response = $this->client->post($this->getTokenUrl(), [
+        $response = $this->getClient()->post($this->getTokenUrl(), [
             RequestOptions::HEADERS => [
                 'Authorization' => $authorization,
             ],
             RequestOptions::FORM_PARAMS => [
                 'grant_type' => 'refresh_token',
-                'refresh_token' => $this->authentication->refresh_token,
+                'refresh_token' => $authentication->refresh_token,
             ],
         ]);
 
@@ -64,5 +61,27 @@ class RefreshToken
         }
 
         return $decodedArray;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
+    {
+        if (! isset($this->client)) {
+            //$this->setClient(new Client());
+        }
+
+        return $this->client;
+    }
+
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client): self
+    {
+        $this->client = $client;
+
+        return $this;
     }
 }
