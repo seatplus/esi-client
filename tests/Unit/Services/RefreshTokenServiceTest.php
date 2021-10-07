@@ -56,10 +56,13 @@ it('updates access token with refresh token', function () {
     $jwk_mock->shouldReceive('parseKeySet')->once()->andReturn($pubKey);
 
     // construct the service
-    $service = new \Seatplus\EsiClient\Services\RefreshToken($authentication, $client);
+    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService();
+
+    // set the client
+    $service->setClient($client);
 
     // use service to get the refresh Token
-    $response = $service->getRefreshTokenResponse();
+    $response = $service->getRefreshTokenResponse($authentication);
 
     // assert the expected result. See the mocked response as reference
     expect($response)

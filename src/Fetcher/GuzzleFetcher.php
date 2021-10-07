@@ -15,7 +15,7 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Log\LogInterface;
-use Seatplus\EsiClient\Services\RefreshToken;
+use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
 
 class GuzzleFetcher
 {
@@ -50,15 +50,16 @@ class GuzzleFetcher
 
     public function __construct(
         protected ?EsiAuthentication $authentication = null,
-        protected ?RefreshToken $refreshTokenService = null
+        protected ?UpdateRefreshTokenService $refreshTokenService = null
     ) {
         $this->logger = Configuration::getInstance()->getLogger();
     }
 
-    public function getRefreshTokenService(): RefreshToken
+    public function getRefreshTokenService(): UpdateRefreshTokenService
     {
         if (! $this->refreshTokenService) {
-            return (new RefreshToken($this->getAuthentication(), $this->getClient()));
+            //return (new RefreshToken($this->getAuthentication(), $this->getClient()));
+            return (new UpdateRefreshTokenService)->setClient($this->getClient());
         }
 
         return $this->refreshTokenService;
@@ -170,7 +171,8 @@ class GuzzleFetcher
 
     private function refreshToken()
     {
-        $response = $this->getRefreshTokenService()->getRefreshTokenResponse();
+        $response = $this->getRefreshTokenService()
+            ->getRefreshTokenResponse($this->getAuthentication(), $this->getClient());
 
         // Get the current EsiAuth container
         $authentication = $this->getAuthentication();
