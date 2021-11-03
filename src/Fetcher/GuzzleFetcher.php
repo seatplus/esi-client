@@ -12,6 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Seatplus\EsiClient\Configuration;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Log\LogInterface;
@@ -55,16 +56,6 @@ class GuzzleFetcher
         $this->logger = Configuration::getInstance()->getLogger();
     }
 
-    public function getRefreshTokenService(): UpdateRefreshTokenService
-    {
-        if (! $this->refreshTokenService) {
-            //return (new RefreshToken($this->getAuthentication(), $this->getClient()));
-            return (new UpdateRefreshTokenService)->setClient($this->getClient());
-        }
-
-        return $this->refreshTokenService;
-    }
-
     public function setAuthentication(EsiAuthentication $authentication): GuzzleFetcher
     {
         $this->authentication = $authentication;
@@ -95,9 +86,7 @@ class GuzzleFetcher
         $expires = $this->carbon($this->getAuthentication()->token_expires);
 
         // If the token expires in the next minute, refresh it.
-        if ($expires->lte($this->carbon('now')->addMinute(1))) {
-            $this->refreshToken();
-        }
+        throw_if($expires->lte($this->carbon('now')->addMinute(1)), new ExpiredRefreshTokenException);
 
         return $this->getAuthentication()->access_token;
     }
@@ -160,30 +149,9 @@ class GuzzleFetcher
         );
     }
 
-    private function carbon(?string $data = null)
+    private function carbon(string $data)
     {
-        if (! is_null($data)) {
-            return new \Carbon\Carbon($data);
-        }
-
-        return new \Carbon\Carbon;
-    }
-
-    private function refreshToken()
-    {
-        $response = $this->getRefreshTokenService()
-            ->getRefreshTokenResponse($this->getAuthentication(), $this->getClient());
-
-        // Get the current EsiAuth container
-        $authentication = $this->getAuthentication();
-
-        // Set the new authentication values from the request
-        $authentication->access_token = $response['access_token'];
-        $authentication->refresh_token = $response['refresh_token'];
-        $authentication->token_expires = $this->carbon('now')->addSeconds($response['expires_in']);
-
-        // ... and update the container
-        $this->setAuthentication($authentication);
+        return new \Carbon\Carbon($data);
     }
 
     private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, $start)
