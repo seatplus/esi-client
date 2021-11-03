@@ -65,7 +65,6 @@ it('throws outdated refresh_token excpetion if expires_in is expired or to close
     $fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher();
 
     $fetcher->setAuthentication($authentication)->call('get', '/foo');
-
 })->with(['1970-01-01 00:00:00', now()->addSeconds(50)->toDateTimeString()])
     ->throws(ExpiredRefreshTokenException::class);
 
