@@ -69,7 +69,7 @@ class UpdateRefreshTokenService
     public function getClient(): Client
     {
         if(!isset($this->client)) {
-            //$this->setClient(new Client());
+            $this->setClient(new Client());
         }
 
         return $this->client;
