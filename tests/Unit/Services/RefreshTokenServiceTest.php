@@ -70,3 +70,23 @@ it('updates access token with refresh token', function () {
         ->toHaveKey('access_token', $jwt_token)
         ->toHaveKey('foo', 'bar');
 });
+
+it('throws RequestFailedException if an exception occurs', function () {
+
+    // create the client mock and responses from said client
+    $mock = new \GuzzleHttp\Handler\MockHandler([
+        new Response(400, [], 'Error'),
+    ]);
+
+    $client = new Client([
+        'handler' => HandlerStack::create($mock),
+    ]);
+
+    // construct the service
+    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService();
+
+    // set the client
+    $service->setClient($client);
+
+    $service->getRefreshTokenResponse(buildEsiAuthentication());
+})->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
