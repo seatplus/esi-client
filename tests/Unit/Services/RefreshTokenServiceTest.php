@@ -89,5 +89,4 @@ it('throws RequestFailedException if an exception occurs', function () {
     $service->setClient($client);
 
     $service->getRefreshTokenResponse(buildEsiAuthentication());
-
 })->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
