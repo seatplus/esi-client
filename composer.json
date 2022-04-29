@@ -26,7 +26,7 @@
         "php": "^8.0",
         "ext-json": "*",
         "firebase/php-jwt": "^5.4",
-        "kevinrob/guzzle-cache-middleware": "^3.4",
+        "kevinrob/guzzle-cache-middleware": "^4.0",
         "nesbot/carbon": "^2.53",
         "spatie/data-transfer-object": "^3.7"
     },
@@ -55,7 +55,10 @@
       "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true
