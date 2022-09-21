@@ -40,7 +40,6 @@ class RotatingFileLogger implements LogInterface
      */
     public function __construct()
     {
-
         // Get the configuration values
         $configuration = Configuration::getInstance();
 
