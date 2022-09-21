@@ -19,6 +19,8 @@ class EsiAuthentication extends DataTransferObject
 
         $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
 
-        return data_get(json_decode($jwt_payload), 'scp', []);
+        $scopes = data_get(json_decode($jwt_payload), 'scp', []);
+
+        return is_array($scopes) ? $scopes : [$scopes];
     }
 }
