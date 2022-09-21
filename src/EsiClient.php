@@ -115,13 +115,11 @@ class EsiClient
      */
     public function invoke(string $method, string $uri_original, array $uri_data = [])
     {
-
         // Enrich the uri
         $uri = $this->buildDataUri($uri_original, $uri_data);
 
         // First check if access requirements are met
         if (! $this->getAccessChecker()->can($method, $uri_original)) {
-
             // Log the deny.
             $this->logger->warning('Access denied to ' . $uri . ' due to ' .
                 'missing scopes.');
@@ -153,7 +151,6 @@ class EsiClient
 
     private function buildDataUri(string $uri, array $data): Uri
     {
-
         // Create a query string for the URI. We automatically
         // include the datasource value from the configuration.
         $query_params = array_merge([
@@ -177,7 +174,6 @@ class EsiClient
 
     private function mapDataToUri(string $uri, array $data): string
     {
-
         // Extract fields in curly braces. If there are fields,
         // replace the data with those in the URI
         if (preg_match_all('/{+(.*?)}/', $uri, $matches)) {

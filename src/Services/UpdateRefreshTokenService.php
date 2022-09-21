@@ -16,7 +16,6 @@ use UnexpectedValueException;
 
 class UpdateRefreshTokenService
 {
-
     /**
      * Tranquility endpoint for retrieving user info.
      */
