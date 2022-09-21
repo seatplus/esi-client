@@ -7,7 +7,6 @@ use GuzzleHttp\Psr7\Response;
 
 /** @runInSeparateProcess  */
 it('updates access token with refresh token', function () {
-
     // create a private key for signing the JWT Token
     $privKey = openssl_pkey_new(['digest_alg' => 'sha256',
         'private_key_bits' => 1024,
@@ -72,7 +71,6 @@ it('updates access token with refresh token', function () {
 });
 
 it('throws RequestFailedException if an exception occurs', function () {
-
     // create the client mock and responses from said client
     $mock = new \GuzzleHttp\Handler\MockHandler([
         new Response(400, [], 'Error'),
