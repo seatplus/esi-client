@@ -30,16 +30,15 @@ test('guzzle calling with authorization', function () {
         'handler' => HandlerStack::create($mock),
     ]);
 
-    $authentication = new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication([
+    $authentication = new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication(
         // ESI client_id and secret specific
-        'client_id' => 1234,
-        'secret' => 'bar',
+        access_token: '_',
+        refresh_token: 'baz',
         // refresh_token specific
-        'access_token' => '_',
-        'refresh_token' => 'baz',
-        'token_expires' => now()->addHour(),
-        'scopes' => ['public'],
-    ]);
+        client_id: 1234,
+        secret: 'bar',
+        token_expires: now()->addHour(),
+    );
 
     $fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher();
 
@@ -51,16 +50,15 @@ test('guzzle calling with authorization', function () {
 });
 
 it('throws outdated refresh_token excpetion if expires_in is expired or to close in the future', function ($token_expires) {
-    $authentication = new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication([
+    $authentication = new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication(
         // ESI client_id and secret specific
-        'client_id' => 1234,
-        'secret' => 'bar',
+        access_token: '_',
+        refresh_token: 'baz',
         // refresh_token specific
-        'access_token' => '_',
-        'refresh_token' => 'baz',
-        'token_expires' => $token_expires,
-        'scopes' => ['public'],
-    ]);
+        client_id: 1234,
+        secret: 'bar',
+        token_expires: $token_expires,
+    );
 
     $fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher();
 

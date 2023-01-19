@@ -71,7 +71,12 @@ function buildEsiAuthentication(array $params = [])
         $factory_array[$key] = $key === 'access_token' ? buildJWT($value) : $value;
     }
 
-    return new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication($factory_array);
+    return new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication(
+        access_token: $factory_array['access_token'],
+        refresh_token: $factory_array['refresh_token'],
+        client_id: $factory_array['client_id'],
+        secret: $factory_array['secret'],
+    );
 }
 
 function buildJWT(string $payload): string
