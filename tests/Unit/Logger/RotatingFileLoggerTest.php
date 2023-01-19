@@ -13,7 +13,7 @@ beforeEach(function () {
 
     $this->logger = new RotatingFileLogger;
 
-    # Shitty hack to get the filename to expect. Format: eseye-2018-05-06.log
+    # Shitty hack to get the filename to expect. Format: esi-client-2018-05-06.log
     $this->logfile_name = 'esi-client-' . date('Y-m-d') . '.log';
 });
 

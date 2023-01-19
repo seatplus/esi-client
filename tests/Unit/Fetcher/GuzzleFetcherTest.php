@@ -7,6 +7,10 @@ use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
 
 beforeEach(fn () => $this->fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher);
 
+it('get client', function () {
+    expect($this->fetcher->getClient())->toBeInstanceOf(Client::class);
+});
+
 test('guzzle calling without authorization', function () {
     $mock = new \GuzzleHttp\Handler\MockHandler([
         new Response(200, [], json_encode(['foo' => 'bar'])),

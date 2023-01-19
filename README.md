@@ -1,8 +1,8 @@
 # Esi-Client
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/seatplus/esi-client.svg?style=flat-square)](https://packagist.org/packages/seatplus/esi-client)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/seatplus/esi-client/run-tests?label=tests)](https://github.com/seatplus/esi-client/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/seatplus/esi-client/Check%20&%20fix%20styling?label=code%20style)](https://github.com/seatplus/esi-client/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
+[![run-tests](https://github.com/seatplus/esi-client/actions/workflows/run-tests.yml/badge.svg?branch=2.x)](https://github.com/seatplus/esi-client/actions/workflows/run-tests.yml)
+[![Check & fix styling](https://github.com/seatplus/esi-client/actions/workflows/php-cs-fixer.yml/badge.svg?branch=2.x)](https://github.com/seatplus/esi-client/actions/workflows/php-cs-fixer.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/seatplus/esi-client.svg?style=flat-square)](https://packagist.org/packages/seatplus/esi-client)
 
 A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-cache-middleware.
