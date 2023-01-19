@@ -12,8 +12,7 @@ class EsiAuthentication
         public ?string $client_id = null,
         public ?string $secret = null,
         public string $token_expires = '1970-01-01 00:00:00',
-    )
-    {
+    ) {
     }
 
     public function getScopes() : array

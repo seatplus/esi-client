@@ -36,9 +36,6 @@ class EsiConfiguration
 
         // Fetching
         public string $fetcher = GuzzleFetcher::class,
-    )
-    {
+    ) {
     }
-
-
 }
