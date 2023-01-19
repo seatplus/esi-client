@@ -27,15 +27,15 @@
         "ext-json": "*",
         "firebase/php-jwt": "^5.4",
         "kevinrob/guzzle-cache-middleware": "^4.0",
-        "nesbot/carbon": "^2.53",
-        "spatie/data-transfer-object": "^3.7"
+        "nesbot/carbon": "^2.53"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.5",
         "illuminate/cache": "^8.60",
         "mockery/mockery": "^1.4",
         "nunomaduro/collision": "^5.3",
-        "pestphp/pest-plugin-laravel": "^1.1",
+        "pestphp/pest": "^1.21",
+        "pestphp/pest-plugin-laravel": "^1.2",
         "mikey179/vfsstream": "^1",
         "ext-openssl": "*"
     },

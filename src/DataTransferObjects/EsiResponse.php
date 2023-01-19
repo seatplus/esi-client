@@ -6,9 +6,9 @@ use ArrayObject;
 
 class EsiResponse extends ArrayObject
 {
-    public string $raw;
-    public array $headers;
-    public array $raw_headers;
+    //public string $raw;
+    public array $parsed_headers;
+    //public array $raw_headers;
 
     public object $data;
 
@@ -16,33 +16,37 @@ class EsiResponse extends ArrayObject
     public ?int $pages;
 
     protected string $expires_at;
-    protected string $response_code;
+    //protected string $response_code;
 
     protected ?string $error_message;
 
     protected bool $cache_loaded = false;
 
-    public function __construct(string $data, array $headers, string $expires, int $response_code)
+    public function __construct(
+        public string $raw, // data previously
+        public array $raw_headers,  // headers previously
+        string $expires,
+        protected int $response_code
+    )
     {
-        $this->raw = $data;
-        $this->raw_headers = $headers;
+
+        //$this->raw_headers = $headers;
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
-        $this->response_code = $response_code;
 
-        $parsed_headers = $this->parseHeaders($headers);
-        $this->headers = $parsed_headers;
-        $this->error_limit_remain = $this->getErrorLimitRemain($parsed_headers);
-        $this->pages = $this->getPages($parsed_headers);
+        $parsed_headers = $this->parseHeaders($raw_headers);
+        $this->parsed_headers = $parsed_headers;
+        $this->error_limit_remain = $this->getErrorLimitRemain($this->parsed_headers);
+        $this->pages = $this->getPages($this->parsed_headers);
 
-        $this->error_message = $this->parseErrorMessage($data);
+        $this->error_message = $this->parseErrorMessage($raw);
         $this->cache_loaded = $this->isCachedLoad();
 
-        parent::__construct((object) json_decode($data), ArrayObject::ARRAY_AS_PROPS);
+        parent::__construct((object) json_decode($raw), ArrayObject::ARRAY_AS_PROPS);
     }
 
     public function isCachedLoad(): bool
     {
-        return $this->get_data($this->headers, 'X-Kevinrob-Cache', false) === 'HIT';
+        return $this->get_data($this->parsed_headers, 'X-Kevinrob-Cache', false) === 'HIT';
     }
 
     private function parseHeaders(array $headers): array
@@ -60,7 +64,7 @@ class EsiResponse extends ArrayObject
 
     private function hasHeader(array $headers, string $name): bool
     {
-        // turn headers into case insensitive array
+        // turn headers into case-insensitive array
         $key_map = array_change_key_case($headers, CASE_LOWER);
 
         // track for the requested header name
@@ -69,10 +73,10 @@ class EsiResponse extends ArrayObject
 
     private function getHeader(array $headers, string $name): ?string
     {
-        // turn header name into case insensitive
+        // turn header name into case-insensitive
         $insensitive_key = strtolower($name);
 
-        // turn headers into case insensitive array
+        // turn headers into case-insensitive array
         $key_map = array_change_key_case($headers, CASE_LOWER);
 
         // track for the requested header name and return its value if exists
