@@ -27,9 +27,7 @@ class EsiResponse extends ArrayObject
         public array $raw_headers,  // headers previously
         string $expires,
         protected int $response_code
-    )
-    {
-
+    ) {
         //$this->raw_headers = $headers;
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
 
