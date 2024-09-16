@@ -95,5 +95,5 @@ function buildJWT(string $payload): string
         'test'
     );
 
-    return "${data}.${signature}";
+    return "{$data}.{$signature}";
 }

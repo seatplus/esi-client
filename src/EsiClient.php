@@ -14,6 +14,7 @@ class EsiClient
 {
     protected string $version = 'latest';
     private GuzzleFetcher $fetcher;
+    private ?EsiAuthentication $authentication;
 
     /**
      * @param GuzzleFetcher $fetcher
@@ -103,7 +104,7 @@ class EsiClient
     }
 
     /**
-     * @param EsiAuthentication|null $authentication
+     * @param EsiAuthentication $authentication
      */
     public function setAuthentication(EsiAuthentication $authentication): void
     {

@@ -23,21 +23,22 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.3",
         "ext-json": "*",
         "firebase/php-jwt": "^5.4",
         "kevinrob/guzzle-cache-middleware": "^4.0",
         "nesbot/carbon": "^2.53"
     },
     "require-dev": {
+        "ext-openssl": "*",
         "fzaninotto/faker": "^1.5",
         "illuminate/cache": "^8.60",
+        "mikey179/vfsstream": "^1",
         "mockery/mockery": "^1.4",
         "nunomaduro/collision": "^5.3",
         "pestphp/pest": "^1.21",
         "pestphp/pest-plugin-laravel": "^1.2",
-        "mikey179/vfsstream": "^1",
-        "ext-openssl": "*"
+        "rector/rector": "^1.2"
     },
     "autoload": {
         "psr-4": {
