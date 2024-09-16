@@ -41,7 +41,7 @@ test('guzzle calling with authorization', function () {
         // refresh_token specific
         client_id: 1234,
         secret: 'bar',
-        token_expires: now()->addHour(),
+        token_expires: \Carbon\Carbon::now()->addHour(),
     );
 
     $fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher();
@@ -53,9 +53,9 @@ test('guzzle calling with authorization', function () {
     expect($response)->toBeInstanceOf(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
 });
 
-it('throws outdated refresh_token excpetion if expires_in is expired or to close in the future', function ($token_expires) {
+it('throws outdated refresh_token exception if expires_in is expired or to close in the future', function (string $token_expires) {
     $authentication = new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication(
-        // ESI client_id and secret specific
+    // ESI client_id and secret specific
         access_token: '_',
         refresh_token: 'baz',
         // refresh_token specific
@@ -67,7 +67,7 @@ it('throws outdated refresh_token excpetion if expires_in is expired or to close
     $fetcher = new \Seatplus\EsiClient\Fetcher\GuzzleFetcher();
 
     $fetcher->setAuthentication($authentication)->call('get', '/foo');
-})->with(['1970-01-01 00:00:00', now()->addSeconds(50)->toDateTimeString()])
+})->with(['1970-01-01 00:00:00', \Carbon\Carbon::now()->addSeconds(50)->toDateTimeString()])
     ->throws(ExpiredRefreshTokenException::class);
 
 it('trows RequestFailedException', function () {

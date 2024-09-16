@@ -49,12 +49,12 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function getFaker()
+function getFaker(): \Faker\Generator
 {
     return \Faker\Factory::create();
 }
 
-function buildEsiAuthentication(array $params = [])
+function buildEsiAuthentication(array $params = []): \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication
 {
     $faker = getFaker();
 
