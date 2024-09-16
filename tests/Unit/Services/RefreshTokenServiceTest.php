@@ -24,7 +24,7 @@ it('updates access token with refresh token', function () {
         "azp" => "my3rdpartyclientid",
         "name" => "Some Bloke",
         "owner" => "8PmzCeTKb4VFUDrHLc/AeZXDSWM=",
-        "exp" => now()->addHour()->timestamp,
+        "exp" => \Carbon\Carbon::now()->addHour()->timestamp,
         "iss" => "login.eveonline.com",
     ];
 
