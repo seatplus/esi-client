@@ -4,6 +4,7 @@ use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Seatplus\EsiClient\Services\VerifyAccessToken;
 
 /** @runInSeparateProcess  */
 it('updates access token with refresh token', function () {
@@ -46,19 +47,13 @@ it('updates access token with refresh token', function () {
         'handler' => HandlerStack::create($mock),
     ]);
 
-    // get the public key which we need to decode the jwt token
-    $pubKey = openssl_pkey_get_details($privKey);
-    $pubKey = $pubKey['key'];
-
-    // mock the JWK static method and return the pub key
-    $jwk_mock = Mockery::mock('overload:' . \Firebase\JWT\JWK::class);
-    $jwk_mock->shouldReceive('parseKeySet')->once()->andReturn($pubKey);
+    // mock the verifyAccessToken service
+    $verifyAccessToken = mock(VerifyAccessToken::class, function ($mock) use ($jwt_token) {
+        $mock->shouldReceive('verify')->once()->with($jwt_token);
+    });
 
     // construct the service
-    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService();
-
-    // set the client
-    $service->setClient($client);
+    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService($client, $verifyAccessToken);
 
     // use service to get the refresh Token
     $response = $service->getRefreshTokenResponse($authentication);
@@ -81,10 +76,7 @@ it('throws RequestFailedException if an exception occurs', function () {
     ]);
 
     // construct the service
-    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService();
-
-    // set the client
-    $service->setClient($client);
+    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService($client);
 
     $service->getRefreshTokenResponse(buildEsiAuthentication());
 })->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
