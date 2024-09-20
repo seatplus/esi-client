@@ -32,7 +32,6 @@ class RequestFailedException extends \Exception
         return $this->original_exception;
     }
 
-    #[Pure]
     public function getErrorMessage(): string
     {
         return $this->getEsiResponse()->getErrorMessage();
