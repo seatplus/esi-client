@@ -69,10 +69,10 @@ class Configuration
      * @param string $name
      * @param string $value
      *
-     * @return string
+     * @return void
      */
-    public function __set(string $name, string $value)
+    public function __set(string $name, string $value): void
     {
-        return $this->configuration->$name = $value;
+        $this->configuration->$name = $value;
     }
 }
