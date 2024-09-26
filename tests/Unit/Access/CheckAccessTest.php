@@ -1,6 +1,6 @@
 <?php
 
-use Seatplus\EsiClient\Configuration;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Log\NullLogger;
 use Seatplus\EsiClient\Services\CheckAccess;
 
@@ -46,7 +46,7 @@ it('allows public only call', function () {
 
 it('allows unknown url calls', function () {
     // Disable logging.
-    Configuration::getInstance()->logger = NullLogger::class;
+    EsiConfiguration::getInstance(logger: NullLogger::class);
 
     $result = $this->check_access->can('get', '/invalid/uri');
 
