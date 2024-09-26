@@ -25,7 +25,7 @@ namespace Seatplus\EsiClient\Log;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
-use Seatplus\EsiClient\Configuration;
+use Seatplus\EsiClient\EsiConfiguration;
 
 class RotatingFileLogger implements LogInterface
 {
@@ -41,7 +41,7 @@ class RotatingFileLogger implements LogInterface
     public function __construct()
     {
         // Get the configuration values
-        $configuration = Configuration::getInstance();
+        $configuration = EsiConfiguration::getInstance();
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
         $stream = new RotatingFileHandler(
@@ -58,7 +58,7 @@ class RotatingFileLogger implements LogInterface
     /**
      * @param string $message
      *
-     * @return mixed|void
+     * @return void
      */
     public function log(string $message) : void
     {
@@ -68,7 +68,7 @@ class RotatingFileLogger implements LogInterface
     /**
      * @param string $message
      *
-     * @return mixed|void
+     * @return void
      */
     public function debug(string $message) : void
     {
@@ -78,7 +78,7 @@ class RotatingFileLogger implements LogInterface
     /**
      * @param string $message
      *
-     * @return mixed|void
+     * @return void
      */
     public function warning(string $message): void
     {
@@ -88,7 +88,7 @@ class RotatingFileLogger implements LogInterface
     /**
      * @param string $message
      *
-     * @return mixed|void
+     * @return void
      */
     public function error(string $message): void
     {
