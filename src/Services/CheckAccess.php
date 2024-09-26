@@ -2,8 +2,8 @@
 
 namespace Seatplus\EsiClient\Services;
 
-use Seatplus\EsiClient\Configuration;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
+use Seatplus\EsiClient\EsiConfiguration;
 
 class CheckAccess
 {
@@ -146,7 +146,6 @@ class CheckAccess
             '/opportunities/tasks/' => 'public',
             '/opportunities/tasks/{task_id}/' => 'public',
             '/route/{origin}/{destination}/' => 'public',
-            '/search/' => 'public',
             '/sovereignty/campaigns/' => 'public',
             '/sovereignty/map/' => 'public',
             '/sovereignty/structures/' => 'public',
@@ -232,10 +231,10 @@ class CheckAccess
     {
     }
 
-    public function can(string $method, string $uri)
+    public function can(string $method, string $uri): bool
     {
         if (! array_key_exists($uri, $this->scope_map[$method])) {
-            Configuration::getInstance()->getLogger()
+            EsiConfiguration::getInstance()->getLogger()
                 ->warning('An unknown URI was called. Allowing ' . $uri);
 
             return true;
