@@ -46,7 +46,7 @@ class EsiResponse extends ArrayObject
 
     private function parseHeaders(array $headers): array
     {
-        return array_map(fn ($value) => is_array($value) ? implode(';', $value) : $value, $headers);
+        return array_map(fn (mixed $value) => is_array($value) ? implode(';', $value) : $value, $headers);
     }
 
     private function hasHeader(array $headers, string $name): bool
@@ -71,7 +71,7 @@ class EsiResponse extends ArrayObject
         return $this->get_data($parsed_headers, 'X-Esi-Error-Limit-Remain');
     }
 
-    private function getPages(array $parsed_headers)
+    private function getPages(array $parsed_headers): ?int
     {
         return $this->get_data($parsed_headers, 'X-Pages');
     }
