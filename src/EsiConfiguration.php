@@ -4,7 +4,6 @@ namespace Seatplus\EsiClient;
 
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Monolog\Level;
-use Seatplus\EsiClient\CacheMiddleware\CacheMiddlewareInterface;
 use Seatplus\EsiClient\CacheMiddleware\NullCacheMiddleware;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\LogInterface;
@@ -49,6 +48,11 @@ class EsiConfiguration
     public static function getInstance(...$args): self
     {
         return self::$instance ??= new self(...$args);
+    }
+
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
     }
 
     public function getLogger(): LogInterface
