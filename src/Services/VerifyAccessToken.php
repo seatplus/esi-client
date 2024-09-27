@@ -2,22 +2,22 @@
 
 namespace Seatplus\EsiClient\Services;
 
+use Firebase\JWT\ExpiredException;
 use GuzzleHttp\Client;
 use UnexpectedValueException;
-use Firebase\JWT\ExpiredException;
 
 class VerifyAccessToken
 {
-    CONST JWKS_URL = 'https://login.eveonline.com/oauth/jwks';
-    CONST TRANQUILITY_ENDPOINT = 'https://login.eveonline.com';
+    const JWKS_URL = 'https://login.eveonline.com/oauth/jwks';
+
+    const TRANQUILITY_ENDPOINT = 'https://login.eveonline.com';
 
     public function __construct(
         private ?Client $client = null,
         private ?JwtService $jwtService = null
-    )
-    {
-        $this->client = $client ?? new Client();
-        $this->jwtService = $jwtService ?? new JwtService();
+    ) {
+        $this->client = $client ?? new Client;
+        $this->jwtService = $jwtService ?? new JwtService;
     }
 
     public function verify(string $access_token): void
@@ -26,7 +26,6 @@ class VerifyAccessToken
         $decodedJson = json_decode((string) $response->getBody(), true);
         $parsedKeySet = $this->jwtService->parseJWKS($decodedJson);
 
-
         $decodedArray = (array) $this->jwtService->decodeJWT($access_token, $parsedKeySet, ['RS256']);
 
         if ($decodedArray['iss'] !== 'login.eveonline.com' && $decodedArray['iss'] !== self::TRANQUILITY_ENDPOINT) {
@@ -34,7 +33,7 @@ class VerifyAccessToken
         }
 
         if (time() >= $decodedArray['exp']) {
-            throw new ExpiredException();
+            throw new ExpiredException;
         }
     }
 }

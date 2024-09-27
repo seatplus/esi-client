@@ -2,7 +2,6 @@
 
 namespace Seatplus\EsiClient\Exceptions;
 
-use JetBrains\PhpStorm\Pure;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 
 class RequestFailedException extends \Exception
@@ -16,17 +15,11 @@ class RequestFailedException extends \Exception
         );
     }
 
-    /**
-     * @return EsiResponse
-     */
     public function getEsiResponse(): EsiResponse
     {
         return $this->esiResponse;
     }
 
-    /**
-     * @return \Exception
-     */
     public function getOriginalException(): \Exception
     {
         return $this->original_exception;

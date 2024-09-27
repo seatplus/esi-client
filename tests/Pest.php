@@ -11,7 +11,6 @@
 |
 */
 
-
 use Firebase\JWT\JWT;
 use PHPUnit\Framework\TestCase;
 
@@ -82,12 +81,12 @@ function buildEsiAuthentication(array $params = []): \Seatplus\EsiClient\DataTra
 function buildJWT(string $payload): string
 {
     $jwt_header = json_encode([
-        "alg" => "RS256",
-        "kid" => "JWT-Signature-Key",
-        "typ" => "JWT",
+        'alg' => 'RS256',
+        'kid' => 'JWT-Signature-Key',
+        'typ' => 'JWT',
     ]);
 
-    $data = JWT::urlsafeB64Encode($jwt_header) . "." . JWT::urlsafeB64Encode($payload);
+    $data = JWT::urlsafeB64Encode($jwt_header).'.'.JWT::urlsafeB64Encode($payload);
 
     $signature = hash_hmac(
         'sha256',

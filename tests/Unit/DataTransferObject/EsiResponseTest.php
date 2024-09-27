@@ -7,7 +7,7 @@ it('parses headers correctly', function () {
         'X-Esi-Error-Limit-Remain' => ['100'],
         'X-Pages' => ['5'],
         'X-Kevinrob-Cache' => ['HIT'],
-        123
+        123,
     ];
     $response = new EsiResponse('{}', $raw_headers, 'now', 200);
 
@@ -18,7 +18,7 @@ it('parses headers correctly', function () {
 
 it('detects cache load correctly', function () {
     $raw_headers = [
-        'X-Kevinrob-Cache' => ['HIT']
+        'X-Kevinrob-Cache' => ['HIT'],
     ];
     $response = new EsiResponse('{}', $raw_headers, 'now', 200);
 
@@ -48,7 +48,7 @@ it('handles missing error message', function () {
 
 it('parses error limit remain correctly', function () {
     $raw_headers = [
-        'X-Esi-Error-Limit-Remain' => ['100']
+        'X-Esi-Error-Limit-Remain' => ['100'],
     ];
     $response = new EsiResponse('{}', $raw_headers, 'now', 200);
 
@@ -57,7 +57,7 @@ it('parses error limit remain correctly', function () {
 
 it('parses pages correctly', function () {
     $raw_headers = [
-        'X-Pages' => ['5']
+        'X-Pages' => ['5'],
     ];
     $response = new EsiResponse('{}', $raw_headers, 'now', 200);
 
@@ -67,7 +67,7 @@ it('parses pages correctly', function () {
 it('returns null when header is not found', function () {
     $raw_headers = [
         'X-Esi-Error-Limit-Remain' => ['100'],
-        'X-Pages' => ['5']
+        'X-Pages' => ['5'],
     ];
     $response = new EsiResponse('{}', $raw_headers, 'now', 200);
 

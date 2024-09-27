@@ -5,7 +5,6 @@ namespace Seatplus\EsiClient;
 use GuzzleHttp\Psr7\Uri;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
-use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -17,15 +16,16 @@ use Seatplus\EsiClient\Services\CheckAccess;
 class EsiClient
 {
     protected array $query_parameters = [];
+
     protected array $request_body = [];
+
     private LogInterface $logger;
 
     public function __construct(
         private readonly ?EsiAuthentication $authentication = null,
         private ?GuzzleFetcher $fetcher = null,
         private ?CheckAccess $checkAccess = null
-    )
-    {
+    ) {
         $this->fetcher ??= $this->createFetcher();
         $this->logger = $this->createLogger();
         $this->checkAccess ??= new CheckAccess($this->authentication);
@@ -35,9 +35,9 @@ class EsiClient
     {
         /** @var string $fetcher_class */
         $fetcher_class = $this->getConfiguration('fetcher');
+
         return new $fetcher_class($this->authentication);
     }
-
 
     /**
      * @throws RequestFailedException
@@ -53,8 +53,7 @@ class EsiClient
         string $version = 'latest',
         array $query_parameters = [],
         array $request_body = []
-    ): EsiResponse
-    {
+    ): EsiResponse {
         // Enrich the uri
         $uri = $this->buildDataUri($uri_original, $uri_data, $version, $query_parameters);
 
@@ -69,7 +68,7 @@ class EsiClient
         return $this->fetcher->call($method, $uri, $request_body);
     }
 
-    private function createLogger() : LogInterface
+    private function createLogger(): LogInterface
     {
         return $this->getConfiguration()->getLogger();
     }
@@ -130,6 +129,4 @@ class EsiClient
     {
         return $this->checkAccess->can($method, $uri_original);
     }
-
-
 }

@@ -7,7 +7,6 @@ use Firebase\JWT\JWT;
 
 class JwtService
 {
-
     public function decodeJWT(string $jwt, array $keys, array $allowed_algs): object
     {
         return JWT::decode($jwt, $keys, $allowed_algs);
@@ -17,6 +16,4 @@ class JwtService
     {
         return JWK::parseKeySet($decodedJson);
     }
-
-
 }

@@ -7,11 +7,17 @@ use ArrayObject;
 class EsiResponse extends ArrayObject
 {
     public array $parsed_headers;
+
     public object $data;
+
     public ?int $error_limit_remain;
+
     public ?int $pages;
+
     protected string $expires_at;
+
     protected ?string $error_message;
+
     protected bool $cache_loaded = false;
 
     public function __construct(
@@ -40,7 +46,7 @@ class EsiResponse extends ArrayObject
 
     private function parseHeaders(array $headers): array
     {
-        return array_map(fn($value) => is_array($value) ? implode(';', $value) : $value, $headers);
+        return array_map(fn ($value) => is_array($value) ? implode(';', $value) : $value, $headers);
     }
 
     private function hasHeader(array $headers, string $name): bool
@@ -51,12 +57,13 @@ class EsiResponse extends ArrayObject
     private function getHeader(array $headers, string $name): ?string
     {
         $key_map = array_change_key_case($headers, CASE_LOWER);
+
         return $key_map[strtolower($name)] ?? null;
     }
 
     private function get_data(array $stack, string $needle, mixed $default = null): mixed
     {
-        return $this->hasHeader($stack, $needle) ? $this->getHeader($stack, $needle): $default;
+        return $this->hasHeader($stack, $needle) ? $this->getHeader($stack, $needle) : $default;
     }
 
     private function getErrorLimitRemain(array $parsed_headers): ?int
@@ -74,14 +81,12 @@ class EsiResponse extends ArrayObject
         $data = (object) json_decode($data);
         $error_message = $data->error ?? '';
         if (property_exists($data, 'error_description')) {
-            $error_message .= ': ' . $data->error_description;
+            $error_message .= ': '.$data->error_description;
         }
+
         return $error_message;
     }
 
-    /**
-     * @return mixed
-     */
     public function getErrorMessage(): mixed
     {
         return $this->error_message;

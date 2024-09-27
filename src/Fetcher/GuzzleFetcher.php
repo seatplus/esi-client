@@ -11,8 +11,8 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
-use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -21,7 +21,6 @@ use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
 
 class GuzzleFetcher
 {
-
     public function __construct(
         protected ?EsiAuthentication $authentication = null,
         protected ?UpdateRefreshTokenService $refreshTokenService = null,
@@ -41,7 +40,7 @@ class GuzzleFetcher
     {
         if ($this->authentication) {
             $headers = array_merge($headers, [
-                'Authorization' => 'Bearer ' . $this->getToken(),
+                'Authorization' => 'Bearer '.$this->getToken(),
             ]);
         }
 
@@ -69,7 +68,7 @@ class GuzzleFetcher
     public function httpRequest(string $method, string $uri, array $headers = [], array $body = []): EsiResponse
     {
         // Add some debug logging and start measuring how long the request took.
-        $this->logger->debug('Making ' . $method . ' request to ' . $uri);
+        $this->logger->debug('Making '.$method.' request to '.$uri);
         $start = microtime(true);
 
         // json encode the body if present, else null it
@@ -80,11 +79,11 @@ class GuzzleFetcher
                 RequestOptions::HEADERS => array_merge($headers, [
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                    'User-Agent' => 'Seatplus Esi Client /' . InstalledVersions::getPrettyVersion('seatplus/esi-client') . '/' . EsiConfiguration::getInstance()->http_user_agent,
+                    'User-Agent' => 'Seatplus Esi Client /'.InstalledVersions::getPrettyVersion('seatplus/esi-client').'/'.EsiConfiguration::getInstance()->http_user_agent,
                 ]),
                 RequestOptions::BODY => $body,
             ]);
-        } catch (ClientException | ServerException $e) {
+        } catch (ClientException|ServerException $e) {
             $this->logFetcherActivity('error', $e->getResponse(), $method, $uri, $start);
 
             $this->logger->debug(sprintf(

@@ -12,11 +12,13 @@ use Seatplus\EsiClient\Log\RotatingFileLogger;
 class EsiConfiguration
 {
     private static ?EsiConfiguration $instance = null;
+
     private ?LogInterface $logger_implementation = null;
+
     private ?CacheMiddleware $cache_implementation = null;
 
     public function __construct(
-        public string $http_user_agent = "Seatplus Esi Client Default Library",
+        public string $http_user_agent = 'Seatplus Esi Client Default Library',
 
         // Esi
         public string $datasource = 'tranquility',
@@ -42,8 +44,7 @@ class EsiConfiguration
 
         // Fetching
         public string $fetcher = GuzzleFetcher::class,
-    ) {
-    }
+    ) {}
 
     public static function getInstance(...$args): self
     {

@@ -15,18 +15,18 @@ it('updates access token with refresh token', function () {
 
     // define the payload
     $payload = [
-        "scp" => [
-            "esi-skills.read_skills.v1",
-            "esi-skills.read_skillqueue.v1",
+        'scp' => [
+            'esi-skills.read_skills.v1',
+            'esi-skills.read_skillqueue.v1',
         ],
-        "jti" => "998e12c7-3241-43c5-8355-2c48822e0a1b",
-        "kid" => "JWT-Signature-Key",
-        "sub" => "CHARACTER:EVE:123123",
-        "azp" => "my3rdpartyclientid",
-        "name" => "Some Bloke",
-        "owner" => "8PmzCeTKb4VFUDrHLc/AeZXDSWM=",
-        "exp" => \Carbon\Carbon::now()->addHour()->timestamp,
-        "iss" => "login.eveonline.com",
+        'jti' => '998e12c7-3241-43c5-8355-2c48822e0a1b',
+        'kid' => 'JWT-Signature-Key',
+        'sub' => 'CHARACTER:EVE:123123',
+        'azp' => 'my3rdpartyclientid',
+        'name' => 'Some Bloke',
+        'owner' => '8PmzCeTKb4VFUDrHLc/AeZXDSWM=',
+        'exp' => \Carbon\Carbon::now()->addHour()->timestamp,
+        'iss' => 'login.eveonline.com',
     ];
 
     // encode the jwt token

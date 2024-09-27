@@ -22,7 +22,7 @@
 
 include '../vendor/autoload.php';
 
-$client = new \GuzzleHttp\Client();
+$client = new \GuzzleHttp\Client;
 $client->request('get', 'https://esi.evetech.net/latest/swagger.json?datasource=tranquility', [
     'sink' => 'esi.json',
 ]);

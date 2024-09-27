@@ -3,7 +3,6 @@
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -53,7 +52,7 @@ it('throws RequestFailedException on client error', function () {
         ->once()
         ->andThrow($clientException);
 
-    expect(fn() => $this->service->getRefreshTokenResponse($authentication))
+    expect(fn () => $this->service->getRefreshTokenResponse($authentication))
         ->toThrow(RequestFailedException::class);
 });
 
@@ -67,6 +66,6 @@ it('throws RequestFailedException on server error', function () {
         ->once()
         ->andThrow($serverException);
 
-    expect(fn() => $this->service->getRefreshTokenResponse($authentication))
+    expect(fn () => $this->service->getRefreshTokenResponse($authentication))
         ->toThrow(RequestFailedException::class);
 });

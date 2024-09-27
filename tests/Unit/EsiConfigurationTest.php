@@ -1,12 +1,12 @@
 <?php
 
-use Seatplus\EsiClient\EsiConfiguration;
-use Seatplus\EsiClient\Log\LogInterface;
 use Seatplus\EsiClient\CacheMiddleware\NullCacheMiddleware;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
+use Seatplus\EsiClient\Log\LogInterface;
 
 it('initializes with default values', function () {
-    $config = new EsiConfiguration();
+    $config = new EsiConfiguration;
 
     expect($config->http_user_agent)->toBe('Seatplus Esi Client Default Library')
         ->and($config->datasource)->toBe('tranquility')
@@ -30,14 +30,14 @@ it('singleton instance is consistent', function () {
 });
 
 it('getLogger returns logger instance', function () {
-    $config = new EsiConfiguration();
+    $config = new EsiConfiguration;
     $logger = $config->getLogger();
 
     expect($logger)->toBeInstanceOf(LogInterface::class);
 });
 
 it('getCacheMiddleware returns cache middleware instance', function () {
-    $config = new EsiConfiguration();
+    $config = new EsiConfiguration;
     $cacheMiddleware = $config->getCacheMiddleware();
 
     expect($cacheMiddleware)->toBeInstanceOf(\Kevinrob\GuzzleCache\CacheMiddleware::class);

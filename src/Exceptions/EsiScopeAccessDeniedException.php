@@ -2,6 +2,4 @@
 
 namespace Seatplus\EsiClient\Exceptions;
 
-class EsiScopeAccessDeniedException extends \Exception
-{
-}
+class EsiScopeAccessDeniedException extends \Exception {}
