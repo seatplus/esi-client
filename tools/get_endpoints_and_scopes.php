@@ -49,9 +49,12 @@ foreach ($esi['paths'] as $path => $description) {
     }
 }
 
-// Output the scopes in a way that we can
-// copy/pasta in code!
-echo 'Var Export of the scope map:' . PHP_EOL;
-echo PHP_EOL;
-var_export($scope_map);
-echo PHP_EOL;
+// Convert the array to a string with square bracket syntax
+$arrayString = var_export($scope_map, true);
+
+// Replace the array() syntax with []
+$arrayString = str_replace("array (", "[", $arrayString);
+$arrayString = str_replace(")", "]", $arrayString);
+
+// Write the string to a file
+file_put_contents('scopes.php', '<?php' . PHP_EOL . 'return ' . $arrayString . ';');
