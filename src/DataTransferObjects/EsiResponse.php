@@ -6,29 +6,20 @@ use ArrayObject;
 
 class EsiResponse extends ArrayObject
 {
-    //public string $raw;
     public array $parsed_headers;
-    //public array $raw_headers;
-
     public object $data;
-
     public ?int $error_limit_remain;
     public ?int $pages;
-
     protected string $expires_at;
-    //protected string $response_code;
-
     protected ?string $error_message;
-
     protected bool $cache_loaded = false;
 
     public function __construct(
-        public string $raw, // data previously
-        public array $raw_headers,  // headers previously
+        public string $raw,
+        public array $raw_headers,
         string $expires,
         protected int $response_code
     ) {
-        //$this->raw_headers = $headers;
         $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
 
         $parsed_headers = $this->parseHeaders($raw_headers);
@@ -49,40 +40,18 @@ class EsiResponse extends ArrayObject
 
     private function parseHeaders(array $headers): array
     {
-        // flatten the headers array so that values are not arrays themselves
-        // but rather simple key value pairs.
-        return array_map(function ($value) {
-            if (! is_array($value)) {
-                return $value;
-            }
-
-            return implode(';', $value);
-        }, $headers);
+        return array_map(fn($value) => is_array($value) ? implode(';', $value) : $value, $headers);
     }
 
     private function hasHeader(array $headers, string $name): bool
     {
-        // turn headers into case-insensitive array
-        $key_map = array_change_key_case($headers, CASE_LOWER);
-
-        // track for the requested header name
-        return array_key_exists(strtolower($name), $key_map);
+        return array_key_exists(strtolower($name), array_change_key_case($headers, CASE_LOWER));
     }
 
     private function getHeader(array $headers, string $name): ?string
     {
-        // turn header name into case-insensitive
-        $insensitive_key = strtolower($name);
-
-        // turn headers into case-insensitive array
         $key_map = array_change_key_case($headers, CASE_LOWER);
-
-        // track for the requested header name and return its value if exists
-        if (array_key_exists($insensitive_key, $key_map)) {
-            return $key_map[$insensitive_key];
-        }
-
-        return null;
+        return $key_map[strtolower($name)] ?? null;
     }
 
     private function get_data(array $stack, string $needle, mixed $default = null): mixed
@@ -100,21 +69,13 @@ class EsiResponse extends ArrayObject
         return $this->get_data($parsed_headers, 'X-Pages');
     }
 
-    private function parseErrorMessage(string $data): ?string
+    private function parseErrorMessage(string $data): string
     {
-        $error_message = '';
         $data = (object) json_decode($data);
-
-        // If there is an error, set that.
-        if (property_exists($data, 'error')) {
-            $error_message = $data->error;
-        }
-
-        // If there is an error description, set that.
+        $error_message = $data->error ?? '';
         if (property_exists($data, 'error_description')) {
             $error_message .= ': ' . $data->error_description;
         }
-
         return $error_message;
     }
 
@@ -123,10 +84,6 @@ class EsiResponse extends ArrayObject
      */
     public function getErrorMessage(): mixed
     {
-        if (! isset($this->error_message)) {
-            $this->error_message = '';
-        }
-
         return $this->error_message;
     }
 }
