@@ -5,12 +5,13 @@ namespace Seatplus\EsiClient\Fetcher;
 use Composer\InstalledVersions;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
-use Seatplus\EsiClient\Configuration;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
@@ -20,50 +21,23 @@ use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
 
 class GuzzleFetcher
 {
-    private LogInterface $logger;
-    private Client $client;
-
-    /**
-     * @return Client
-     */
-    public function getClient(): Client
-    {
-        if (! isset($this->client)) {
-            $stack = HandlerStack::create();
-            $stack->push(Configuration::getInstance()->getCacheMiddleware(), 'cache');
-
-            $this->client = new Client(['handler' => $stack]);
-        }
-
-        return $this->client;
-    }
-
-    /**
-     * @param Client $client
-     * @return GuzzleFetcher
-     */
-    public function setClient(Client $client): GuzzleFetcher
-    {
-        $this->client = $client;
-
-        return $this;
-    }
 
     public function __construct(
         protected ?EsiAuthentication $authentication = null,
-        protected ?UpdateRefreshTokenService $refreshTokenService = null
+        protected ?UpdateRefreshTokenService $refreshTokenService = null,
+        private ?LogInterface $logger = null,
+        private ?Client $client = null,
     ) {
-        $this->logger = Configuration::getInstance()->getLogger();
+        $this->logger ??= EsiConfiguration::getInstance()->getLogger();
+        $this->client ??= new Client(['handler' => $this->createHandlerStack()]);
     }
 
-    public function setAuthentication(EsiAuthentication $authentication): GuzzleFetcher
-    {
-        $this->authentication = $authentication;
-
-        return $this;
-    }
-
-    public function call(string $method, string $uri, array $body = [], array $headers = [])
+    /**
+     * @throws InvalidAuthenticationException
+     * @throws \Throwable
+     * @throws RequestFailedException
+     */
+    public function call(string $method, string $uri, array $body = [], array $headers = []): EsiResponse
     {
         if ($this->authentication) {
             $headers = array_merge($headers, [
@@ -74,32 +48,25 @@ class GuzzleFetcher
         return $this->httpRequest($method, $uri, $headers, $body);
     }
 
+    /**
+     * @throws \Throwable
+     */
     private function getToken(): string
     {
-        // Ensure that we have authentication data before we try
-        // and get a token.
-        if (! $this->getAuthentication()) {
-            throw new InvalidAuthenticationException('Trying to get a token without authentication data.');
-        }
-
         // Check the expiry date.
-        $expires = $this->carbon($this->getAuthentication()->token_expires);
+        $expires = $this->carbon($this->authentication->token_expires);
 
         // If the token expires in the next minute, refresh it.
         throw_if($expires->lte($this->carbon('now')->addMinute(1)), new ExpiredRefreshTokenException);
 
-        return $this->getAuthentication()->access_token;
+        return $this->authentication->access_token;
     }
 
     /**
-     * @return EsiAuthentication|null
+     * @throws GuzzleException
+     * @throws RequestFailedException
      */
-    public function getAuthentication(): ?EsiAuthentication
-    {
-        return $this->authentication;
-    }
-
-    public function httpRequest(string $method, string $uri, array $headers = [], array $body = [])
+    public function httpRequest(string $method, string $uri, array $headers = [], array $body = []): EsiResponse
     {
         // Add some debug logging and start measuring how long the request took.
         $this->logger->debug('Making ' . $method . ' request to ' . $uri);
@@ -109,11 +76,11 @@ class GuzzleFetcher
         $body = count($body) > 0 ? json_encode($body) : null;
 
         try {
-            $response = $this->getClient()->request($method, $uri, [
+            $response = $this->client->request($method, $uri, [
                 RequestOptions::HEADERS => array_merge($headers, [
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                    'User-Agent' => 'Seatplus Esi Client /' . InstalledVersions::getPrettyVersion('seatplus/esi-client') . '/' . Configuration::getInstance()->http_user_agent,
+                    'User-Agent' => 'Seatplus Esi Client /' . InstalledVersions::getPrettyVersion('seatplus/esi-client') . '/' . EsiConfiguration::getInstance()->http_user_agent,
                 ]),
                 RequestOptions::BODY => $body,
             ]);
@@ -154,7 +121,7 @@ class GuzzleFetcher
         return new \Carbon\Carbon($data);
     }
 
-    private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, $start)
+    private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, $start): void
     {
         $is_cache_loaded = implode(';', $response->getHeader('X-Kevinrob-Cache')) === 'HIT';
 
@@ -172,7 +139,18 @@ class GuzzleFetcher
 
         match ($level) {
             'error' => $this->logger->error($message),
-            'log' => $this->logger->log($message)
+            'warning' => $this->logger->warning($message),
+            'debug' => $this->logger->debug($message),
+            default => $this->logger->log($message)
         };
+    }
+
+    private function createHandlerStack(): HandlerStack
+    {
+        $stack = HandlerStack::create();
+
+        $stack->push(EsiConfiguration::getInstance()->getCacheMiddleware(), 'cache');
+
+        return $stack;
     }
 }
