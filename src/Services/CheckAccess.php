@@ -233,6 +233,9 @@ class CheckAccess
 
     public function can(string $method, string $uri): bool
     {
+        // make $method lowercase
+        $method = strtolower($method);
+
         if (! array_key_exists($uri, $this->scope_map[$method])) {
             EsiConfiguration::getInstance()->getLogger()
                 ->warning('An unknown URI was called. Allowing ' . $uri);
