@@ -4,7 +4,11 @@ namespace Seatplus\EsiClient;
 
 use GuzzleHttp\Psr7\Uri;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
+use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\LogInterface;
@@ -12,205 +16,120 @@ use Seatplus\EsiClient\Services\CheckAccess;
 
 class EsiClient
 {
-    protected string $version = 'latest';
-    private GuzzleFetcher $fetcher;
-    private ?EsiAuthentication $authentication;
-
-    /**
-     * @param GuzzleFetcher $fetcher
-     */
-    public function setFetcher(GuzzleFetcher $fetcher): void
-    {
-        $this->fetcher = $fetcher;
-    }
-
-    /**
-     * @return string
-     */
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    /**
-     * @param string $version
-     */
-    public function setVersion(string $version): void
-    {
-        $this->version = $version;
-    }
-
-    /**
-     * @return array
-     */
-    public function getQueryParameters(): array
-    {
-        return $this->query_parameters;
-    }
-
-    /**
-     * @param array $query_parameters
-     */
-    public function setQueryParameters(array $query_parameters): void
-    {
-        foreach ($query_parameters as $key => $value) {
-            if (is_array($value)) {
-                $query[$key] = implode(',', $value);
-            }
-        }
-
-        $this->query_parameters = array_merge($this->query_parameters, $query_parameters);
-    }
-
-    /**
-     * @return array
-     */
-    public function getRequestBody(): array
-    {
-        return $this->request_body;
-    }
-
-    /**
-     * @param array $request_body
-     */
-    public function setRequestBody(array $request_body): void
-    {
-        $this->request_body = $request_body;
-    }
-
     protected array $query_parameters = [];
     protected array $request_body = [];
-
     private LogInterface $logger;
 
-    public function __construct()
+    public function __construct(
+        private readonly ?EsiAuthentication $authentication = null,
+        private ?GuzzleFetcher $fetcher = null,
+        private ?CheckAccess $checkAccess = null
+    )
     {
-        // Setup the logger
-        $this->logger = $this->getLogger();
-
-        //TODO return $this; // Maybe not needed
+        $this->fetcher ??= $this->createFetcher();
+        $this->logger = $this->createLogger();
+        $this->checkAccess ??= new CheckAccess($this->authentication);
     }
 
-    /**
-     * @return EsiAuthentication|null
-     */
-    public function getAuthentication(): ?EsiAuthentication
+    private function createFetcher(): GuzzleFetcher
     {
-        if (isset($this->authentication)) {
-            return $this->authentication;
-        }
-
-        return null;
+        /** @var string $fetcher_class */
+        $fetcher_class = $this->getConfiguration('fetcher');
+        return new $fetcher_class($this->authentication);
     }
 
-    /**
-     * @param EsiAuthentication $authentication
-     */
-    public function setAuthentication(EsiAuthentication $authentication): void
-    {
-        $this->authentication = $authentication;
-    }
 
     /**
+     * @throws RequestFailedException
+     * @throws \Throwable
+     * @throws UriDataMissingException
+     * @throws InvalidAuthenticationException
      * @throws EsiScopeAccessDeniedException
      */
-    public function invoke(string $method, string $uri_original, array $uri_data = [])
+    public function invoke(
+        string $method,
+        string $uri_original,
+        array $uri_data = [],
+        string $version = 'latest',
+        array $query_parameters = [],
+        array $request_body = []
+    ): EsiResponse
     {
         // Enrich the uri
-        $uri = $this->buildDataUri($uri_original, $uri_data);
+        $uri = $this->buildDataUri($uri_original, $uri_data, $version, $query_parameters);
 
         // First check if access requirements are met
-        if (! $this->getAccessChecker()->can($method, $uri_original)) {
+        if (! $this->hasAccess($method, $uri_original)) {
             // Log the deny.
-            $this->logger->warning('Access denied to ' . $uri . ' due to ' .
-                'missing scopes.');
-
-            throw new EsiScopeAccessDeniedException('Access denied to ' . $uri);
+            $this->logger->warning("Access denied to {$uri} due to missing scopes.");
+            throw new EsiScopeAccessDeniedException("Access denied to {$uri}");
         }
 
         // Fetcher will take care of caching
-        $result = $this->getFetcher()->call($method, $uri, $this->getRequestBody());
-
-        // In preparation for the next request, perform some
-        // self cleanups of this objects request data such as
-        // query string parameters and post bodies.
-        $this->request_body = [];
-        $this->query_parameters = [];
-
-        return $result;
+        return $this->fetcher->call($method, $uri, $request_body);
     }
 
-    private function getLogger() : LogInterface
+    private function createLogger() : LogInterface
     {
         return $this->getConfiguration()->getLogger();
     }
 
-    private function getConfiguration(): Configuration
+    private function getConfiguration(?string $property = null): EsiConfiguration|string
     {
-        return Configuration::getInstance();
+        return $property ? EsiConfiguration::getInstance()->$property : EsiConfiguration::getInstance();
     }
 
-    private function buildDataUri(string $uri, array $data): Uri
+    /**
+     * @throws UriDataMissingException
+     */
+    private function buildDataUri(string $uri, array $data, string $version, array $query_parameters): \Psr\Http\Message\UriInterface
     {
         // Create a query string for the URI. We automatically
         // include the datasource value from the configuration.
-        $query_params = array_merge([
-            'datasource' => $this->getConfiguration()->datasource,
-        ], $this->getQueryParameters());
+        $query_params = array_merge(['datasource' => $this->getConfiguration('datasource')], $query_parameters);
 
         $path = sprintf(
             '/%s/%s/',
-            rtrim($this->getVersion(), '/'), // remove a potential tailing slash,
+            rtrim($version, '/'), // remove a potential tailing slash,
             trim($this->mapDataToUri($uri, $data), '/')
         );
 
         return Uri::fromParts([
-            'scheme' => $this->getConfiguration()->esi_scheme,
-            'host' => $this->getConfiguration()->esi_host,
-            'port' => $this->getConfiguration()->esi_port,
+            'scheme' => $this->getConfiguration('esi_scheme'),
+            'host' => $this->getConfiguration('esi_host'),
+            'port' => $this->getConfiguration('esi_port'),
             'path' => $path,
             'query' => http_build_query($query_params),
         ]);
     }
 
+    /**
+     * @throws UriDataMissingException
+     */
     private function mapDataToUri(string $uri, array $data): string
     {
         // Extract fields in curly braces. If there are fields,
         // replace the data with those in the URI
         if (preg_match_all('/{+(.*?)}/', $uri, $matches)) {
             if (empty($data)) {
-                throw new UriDataMissingException(
-                    'The data array for the uri ' . $uri . ' is empty. Please provide data to use.'
-                );
+                throw new UriDataMissingException("The data array for the uri {$uri} is empty. Please provide data to use.");
             }
 
             foreach ($matches[1] as $match) {
                 if (! array_key_exists($match, $data)) {
-                    throw new UriDataMissingException(
-                        'Data for ' . $match . ' is missing. Please provide this by setting a value ' .
-                        'for ' . $match . '.'
-                    );
+                    throw new UriDataMissingException("Data for {$match} is missing. Please provide this by setting a value for {$match}.");
                 }
-
-                $uri = str_replace('{' . $match . '}', $data[$match], $uri);
+                $uri = str_replace("{{$match}}", $data[$match], $uri);
             }
         }
 
         return $uri;
     }
 
-    private function getAccessChecker()
+    private function hasAccess(string $method, string $uri_original): bool
     {
-        return new CheckAccess($this->getAuthentication());
+        return $this->checkAccess->can($method, $uri_original);
     }
 
-    private function getFetcher(): GuzzleFetcher
-    {
-        if (! isset($this->fetcher)) {
-            $fetcher_class = $this->getConfiguration()->fetcher;
-            $this->fetcher = new $fetcher_class(...[$this->getAuthentication()]);
-        }
 
-        return $this->fetcher;
-    }
 }
