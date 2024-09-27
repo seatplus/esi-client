@@ -115,12 +115,12 @@ class GuzzleFetcher
         );
     }
 
-    private function carbon(string $data)
+    private function carbon(string $data): \Carbon\Carbon
     {
         return new \Carbon\Carbon($data);
     }
 
-    private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, $start): void
+    private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, float|string $start): void
     {
         $is_cache_loaded = implode(';', $response->getHeader('X-Kevinrob-Cache')) === 'HIT';
 

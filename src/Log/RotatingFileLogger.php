@@ -29,10 +29,7 @@ use Seatplus\EsiClient\EsiConfiguration;
 
 class RotatingFileLogger implements LogInterface
 {
-    /**
-     * @var \Monolog\Logger
-     */
-    protected $logger;
+    protected Logger $logger;
 
     /**
      * FileLogger constructor.
