@@ -1,11 +1,10 @@
 <?php
 
-
+use Firebase\JWT\ExpiredException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Firebase\JWT\ExpiredException;
-use Seatplus\EsiClient\Services\VerifyAccessToken;
 use Seatplus\EsiClient\Services\JwtService;
+use Seatplus\EsiClient\Services\VerifyAccessToken;
 
 beforeEach(function () {
     $this->clientMock = mock(Client::class);
@@ -20,7 +19,7 @@ afterEach(function () {
 it('verifies access token successfully', function () {
     $accessToken = 'valid_access_token';
     $jwksResponse = json_encode(['keys' => []]);
-    $decodedToken = (object)['iss' => 'login.eveonline.com', 'exp' => time() + 3600];
+    $decodedToken = (object) ['iss' => 'login.eveonline.com', 'exp' => time() + 3600];
 
     $this->clientMock->shouldReceive('get')
         ->once()
@@ -43,7 +42,7 @@ it('verifies access token successfully', function () {
 it('throws UnexpectedValueException on access token issuer mismatch', function () {
     $accessToken = 'invalid_issuer_token';
     $jwksResponse = json_encode(['keys' => []]);
-    $decodedToken = (object)['iss' => 'invalid_issuer', 'exp' => time() + 3600];
+    $decodedToken = (object) ['iss' => 'invalid_issuer', 'exp' => time() + 3600];
 
     $this->clientMock->shouldReceive('get')
         ->once()
@@ -60,14 +59,14 @@ it('throws UnexpectedValueException on access token issuer mismatch', function (
         ->with($accessToken, [], ['RS256'])
         ->andReturn($decodedToken);
 
-    expect(fn() => $this->service->verify($accessToken))
+    expect(fn () => $this->service->verify($accessToken))
         ->toThrow(UnexpectedValueException::class, 'Access token issuer mismatch');
 });
 
 it('throws ExpiredException on expired access token', function () {
     $accessToken = 'expired_access_token';
     $jwksResponse = json_encode(['keys' => []]);
-    $decodedToken = (object)['iss' => 'login.eveonline.com', 'exp' => time() - 3600];
+    $decodedToken = (object) ['iss' => 'login.eveonline.com', 'exp' => time() - 3600];
 
     $this->clientMock->shouldReceive('get')
         ->once()
@@ -84,6 +83,6 @@ it('throws ExpiredException on expired access token', function () {
         ->with($accessToken, [], ['RS256'])
         ->andReturn($decodedToken);
 
-    expect(fn() => $this->service->verify($accessToken))
+    expect(fn () => $this->service->verify($accessToken))
         ->toThrow(ExpiredException::class);
 });

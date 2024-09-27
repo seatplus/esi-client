@@ -2,6 +2,4 @@
 
 namespace Seatplus\EsiClient\Exceptions;
 
-class UriDataMissingException extends \Exception
-{
-}
+class UriDataMissingException extends \Exception {}

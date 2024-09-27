@@ -1,7 +1,7 @@
 <?php
 
-use Seatplus\EsiClient\Services\JwtService;
 use Firebase\JWT\JWT;
+use Seatplus\EsiClient\Services\JwtService;
 
 afterEach(function () {
     Mockery::close();
@@ -13,7 +13,7 @@ it('decodes JWT successfully', function () {
     $keys = [$keyId => 'secret'];
     $allowedAlgs = ['HS256'];
 
-    $service = new JwtService();
+    $service = new JwtService;
 
     $result = $service->decodeJWT($jwt, $keys, $allowedAlgs);
 
@@ -29,12 +29,12 @@ it('parses JWKS successfully', function () {
                 'use' => 'sig',
                 'n' => 'vrjOfz...',
                 'e' => 'AQAB',
-                'alg' => 'RS256'
-            ]
-        ]
+                'alg' => 'RS256',
+            ],
+        ],
     ];
 
-    $service = new JwtService();
+    $service = new JwtService;
 
     $result = $service->parseJWKS($decodedJson);
 
@@ -47,9 +47,8 @@ it('throws exception on invalid JWT', function () {
     $keys = ['secret' => 'secret'];
     $allowedAlgs = ['HS256'];
 
-    $service = new JwtService();
+    $service = new JwtService;
 
-    expect(fn() => $service->decodeJWT($jwt, $keys, $allowedAlgs))
+    expect(fn () => $service->decodeJWT($jwt, $keys, $allowedAlgs))
         ->toThrow(\UnexpectedValueException::class);
 });
-

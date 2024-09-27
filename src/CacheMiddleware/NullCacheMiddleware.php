@@ -9,8 +9,8 @@ class NullCacheMiddleware implements CacheMiddlewareInterface
 {
     public function getCacheMiddleware(): CacheMiddleware
     {
-        return  new CacheMiddleware(
-            new NullCacheStrategy()
+        return new CacheMiddleware(
+            new NullCacheStrategy
         );
     }
 }

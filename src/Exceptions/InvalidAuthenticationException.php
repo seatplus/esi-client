@@ -2,6 +2,4 @@
 
 namespace Seatplus\EsiClient\Exceptions;
 
-class InvalidAuthenticationException extends \Exception
-{
-}
+class InvalidAuthenticationException extends \Exception {}

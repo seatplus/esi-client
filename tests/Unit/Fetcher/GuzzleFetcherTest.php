@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
-use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 
 test('guzzle calling without authorization', function () {
@@ -55,7 +54,7 @@ test('guzzle calling with authorization', function () {
 
 it('throws outdated refresh_token exception if expires_in is expired or to close in the future', function (string $token_expires) {
     $authentication = new EsiAuthentication(
-    // ESI client_id and secret specific
+        // ESI client_id and secret specific
         access_token: '_',
         refresh_token: 'baz',
         // refresh_token specific

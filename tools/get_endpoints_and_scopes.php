@@ -20,32 +20,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-echo 'Reading esi.json ..' . PHP_EOL;
+echo 'Reading esi.json ..'.PHP_EOL;
 $esi = json_decode(file_get_contents('esi.json'), true);
 
-echo 'ESI Version: ' . $esi['info']['version'] . PHP_EOL;
+echo 'ESI Version: '.$esi['info']['version'].PHP_EOL;
 
 $scope_map = [
-    'get'    => [],
-    'post'   => [],
-    'put'    => [],
+    'get' => [],
+    'post' => [],
+    'put' => [],
     'delete' => [],
-    'patch'  => [],
+    'patch' => [],
 ];
 
-echo 'Mapping Scopes to endpoints and methods ..' . PHP_EOL;
+echo 'Mapping Scopes to endpoints and methods ..'.PHP_EOL;
 foreach ($esi['paths'] as $path => $description) {
 
     foreach ($description as $method => $data) {
 
-        if (isset($data['security']))
+        if (isset($data['security'])) {
             $scope = $data['security'][0]['evesso'][0];
-        else
+        } else {
             $scope = 'public';
+        }
 
         // Update the scope map!
         $scope_map[$method][$path] = $scope;
-        echo $method . ' | ' . $path . ' | ' . $scope . PHP_EOL;
+        echo $method.' | '.$path.' | '.$scope.PHP_EOL;
     }
 }
 
@@ -53,8 +54,8 @@ foreach ($esi['paths'] as $path => $description) {
 $arrayString = var_export($scope_map, true);
 
 // Replace the array() syntax with []
-$arrayString = str_replace("array (", "[", $arrayString);
-$arrayString = str_replace(")", "]", $arrayString);
+$arrayString = str_replace('array (', '[', $arrayString);
+$arrayString = str_replace(')', ']', $arrayString);
 
 // Write the string to a file
-file_put_contents('scopes.php', '<?php' . PHP_EOL . 'return ' . $arrayString . ';');
+file_put_contents('scopes.php', '<?php'.PHP_EOL.'return '.$arrayString.';');

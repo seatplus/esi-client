@@ -32,7 +32,7 @@ it('invokes API call successfully', function () {
 it('throws exception for missing URI data', function () {
     $uri = '/test/uri/{id}';
 
-    expect(fn() => $this->client->invoke('GET', $uri))->toThrow(UriDataMissingException::class);
+    expect(fn () => $this->client->invoke('GET', $uri))->toThrow(UriDataMissingException::class);
 });
 
 it('throws exception for access denied', function () {
@@ -46,7 +46,7 @@ it('throws exception for access denied', function () {
 
     $client = new EsiClient($authentication, $this->fetcherMock, $checkAccess);
 
-    expect(fn() => $client->invoke('GET', '/test/uri'))->toThrow(EsiScopeAccessDeniedException::class);
+    expect(fn () => $client->invoke('GET', '/test/uri'))->toThrow(EsiScopeAccessDeniedException::class);
 });
 
 it('builds correct data URI', function () {
@@ -56,7 +56,7 @@ it('builds correct data URI', function () {
     $uri = $method->invokeArgs($this->client, ['/test/uri/{id}', ['id' => 123], 'v1', ['param' => 'value']]);
 
     expect($uri)->toBeInstanceOf(Uri::class)
-        ->and((string)$uri)->toBe('https://esi.evetech.net/v1/test/uri/123/?datasource=tranquility&param=value');
+        ->and((string) $uri)->toBe('https://esi.evetech.net/v1/test/uri/123/?datasource=tranquility&param=value');
 });
 
 it('throws exception for missing data', function () {
@@ -68,7 +68,7 @@ it('throws exception for missing data', function () {
     $method = $reflection->getMethod('mapDataToUri');
     //$method->setAccessible(true);
 
-    expect(fn() => $method->invokeArgs($this->client, [$uri, $data]))->toThrow(UriDataMissingException::class);
+    expect(fn () => $method->invokeArgs($this->client, [$uri, $data]))->toThrow(UriDataMissingException::class);
 });
 
 it('creates fetcher instance', function () {

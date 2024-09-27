@@ -227,9 +227,7 @@ class CheckAccess
         ],
     ];
 
-    public function __construct(private ?EsiAuthentication $authentication = null)
-    {
-    }
+    public function __construct(private ?EsiAuthentication $authentication = null) {}
 
     public function can(string $method, string $uri): bool
     {
@@ -238,7 +236,7 @@ class CheckAccess
 
         if (! array_key_exists($uri, $this->scope_map[$method])) {
             EsiConfiguration::getInstance()->getLogger()
-                ->warning('An unknown URI was called. Allowing ' . $uri);
+                ->warning('An unknown URI was called. Allowing '.$uri);
 
             return true;
         }

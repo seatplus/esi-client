@@ -36,6 +36,7 @@ class RotatingFileLogger implements LogInterface
 
     /**
      * FileLogger constructor.
+     *
      * @throws \Exception
      */
     public function __construct()
@@ -45,7 +46,7 @@ class RotatingFileLogger implements LogInterface
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
         $stream = new RotatingFileHandler(
-            rtrim($configuration->logfile_location, '/') . '/esi-client.log',
+            rtrim($configuration->logfile_location, '/').'/esi-client.log',
             $configuration->log_max_files,
             (int) $configuration->logger_level
         );
@@ -55,41 +56,21 @@ class RotatingFileLogger implements LogInterface
         $this->logger->pushHandler($stream);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return void
-     */
-    public function log(string $message) : void
+    public function log(string $message): void
     {
         $this->logger->info($message);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return void
-     */
-    public function debug(string $message) : void
+    public function debug(string $message): void
     {
         $this->logger->debug($message);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return void
-     */
     public function warning(string $message): void
     {
         $this->logger->warning($message);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return void
-     */
     public function error(string $message): void
     {
         $this->logger->error($message);
