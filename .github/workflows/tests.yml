@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  push:
+    branches: [ 2.x, 3.x ]
+  pull_request:
+    branches: [ 2.x, 3.x ]
+
+jobs:
+  ci:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+      with:
+        php-version: '8.3'
+        coverage: xdebug #optional
+    - name: Install Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Test & publish code coverage
+      uses: paambaati/codeclimate-action@v2.6.0
+      env:
+        CC_TEST_REPORTER_ID: 55a033428e7f980c68f3fe5e8f335098915f318d06843848ad2070fef53e331e
+      with:
+        coverageCommand: vendor/bin/pest --coverage --ci --min=100
+        debug: false
