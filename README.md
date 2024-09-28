@@ -3,8 +3,8 @@
 [![Latest Stable Version](https://poser.pugx.org/seatplus/esi-client/v/stable)](https://packagist.org/packages/seatplus/esi-client)
 [![Tests](https://github.com/seatplus/esi-client/actions/workflows/tests.yml/badge.svg)](https://github.com/seatplus/esi-client/actions/workflows/tests.yml)
 [![Formats](https://github.com/seatplus/esi-client/actions/workflows/formats.yml/badge.svg)](https://github.com/seatplus/esi-client/actions/workflows/formats.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/9c06342438c0fb4a4cdc/maintainability)](https://codeclimate.com/github/seatplus/esi-client/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/9c06342438c0fb4a4cdc/test_coverage)](https://codeclimate.com/github/seatplus/esi-client/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/642d3b3ca41e7cc3cd4f/maintainability)](https://codeclimate.com/github/seatplus/esi-client/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/642d3b3ca41e7cc3cd4f/test_coverage)](https://codeclimate.com/github/seatplus/esi-client/test_coverage)
 [![Total Downloads](https://poser.pugx.org/seatplus/esi-client/downloads)](https://packagist.org/packages/seatplus/esi-client)
 [![License](https://poser.pugx.org/seatplus/esi-client/license)](https://packagist.org/packages/seatplus/esi-client)
 
