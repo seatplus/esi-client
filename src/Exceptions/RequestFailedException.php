@@ -6,7 +6,7 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 
 class RequestFailedException extends \Exception
 {
-    public function __construct(private \Exception $original_exception, private EsiResponse $esiResponse)
+    public function __construct(private readonly \Exception $original_exception, private readonly EsiResponse $esiResponse)
     {
         parent::__construct(
             $this->getErrorMessage(),

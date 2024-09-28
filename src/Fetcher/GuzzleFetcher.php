@@ -56,7 +56,7 @@ class GuzzleFetcher
         $expires = $this->carbon($this->authentication->token_expires);
 
         // If the token expires in the next minute, refresh it.
-        throw_if($expires->lte($this->carbon('now')->addMinute(1)), new ExpiredRefreshTokenException);
+        throw_if($expires->lte($this->carbon('now')->addMinute()), new ExpiredRefreshTokenException);
 
         return $this->authentication->access_token;
     }
