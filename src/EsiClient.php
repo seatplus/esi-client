@@ -19,7 +19,7 @@ class EsiClient
 
     protected array $request_body = [];
 
-    private LogInterface $logger;
+    private readonly LogInterface $logger;
 
     public function __construct(
         private readonly ?EsiAuthentication $authentication = null,

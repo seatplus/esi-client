@@ -53,21 +53,25 @@ class RotatingFileLogger implements LogInterface
         $this->logger->pushHandler($stream);
     }
 
+    #[\Override]
     public function log(string $message): void
     {
         $this->logger->info($message);
     }
 
+    #[\Override]
     public function debug(string $message): void
     {
         $this->logger->debug($message);
     }
 
+    #[\Override]
     public function warning(string $message): void
     {
         $this->logger->warning($message);
     }
 
+    #[\Override]
     public function error(string $message): void
     {
         $this->logger->error($message);

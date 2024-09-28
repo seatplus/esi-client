@@ -227,7 +227,7 @@ class CheckAccess
         ],
     ];
 
-    public function __construct(private ?EsiAuthentication $authentication = null) {}
+    public function __construct(private readonly ?EsiAuthentication $authentication = null) {}
 
     public function can(string $method, string $uri): bool
     {

@@ -9,6 +9,7 @@ use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 
 class LaravelFileCacheMiddleware implements CacheMiddlewareInterface
 {
+    #[\Override]
     public function getCacheMiddleware(): CacheMiddleware
     {
         return new CacheMiddleware(

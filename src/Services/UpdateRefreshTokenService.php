@@ -14,12 +14,8 @@ class UpdateRefreshTokenService
 {
     const TOKEN_URL = 'https://login.eveonline.com/v2/oauth/token';
 
-    public function __construct(
-        private ?Client $client = null,
-        private ?VerifyAccessToken $verifyAccessToken = null
-    ) {
-        $this->client = $client ?? new Client;
-        $this->verifyAccessToken = $verifyAccessToken ?? new VerifyAccessToken;
+    public function __construct(private readonly Client $client = new Client, private readonly VerifyAccessToken $verifyAccessToken = new VerifyAccessToken)
+    {
     }
 
     /**
