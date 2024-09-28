@@ -1,9 +1,12 @@
 # Esi-Client
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/seatplus/esi-client.svg?style=flat-square)](https://packagist.org/packages/seatplus/esi-client)
-[![run-tests](https://github.com/seatplus/esi-client/actions/workflows/run-tests.yml/badge.svg?branch=2.x)](https://github.com/seatplus/esi-client/actions/workflows/run-tests.yml)
-[![Check & fix styling](https://github.com/seatplus/esi-client/actions/workflows/php-cs-fixer.yml/badge.svg?branch=2.x)](https://github.com/seatplus/esi-client/actions/workflows/php-cs-fixer.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/seatplus/esi-client.svg?style=flat-square)](https://packagist.org/packages/seatplus/esi-client)
+[![Latest Stable Version](https://poser.pugx.org/seatplus/esi-client/v/stable)](https://packagist.org/packages/seatplus/esi-client)
+[![Tests](https://github.com/seatplus/esi-client/actions/workflows/tests.yml/badge.svg)](https://github.com/seatplus/esi-client/actions/workflows/tests.yml)
+[![Formats](https://github.com/seatplus/esi-client/actions/workflows/formats.yml/badge.svg)](https://github.com/seatplus/esi-client/actions/workflows/formats.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9c06342438c0fb4a4cdc/maintainability)](https://codeclimate.com/github/seatplus/esi-client/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/9c06342438c0fb4a4cdc/test_coverage)](https://codeclimate.com/github/seatplus/esi-client/test_coverage)
+[![Total Downloads](https://poser.pugx.org/seatplus/esi-client/downloads)](https://packagist.org/packages/seatplus/esi-client)
+[![License](https://poser.pugx.org/seatplus/esi-client/license)](https://packagist.org/packages/seatplus/esi-client)
 
 A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-cache-middleware.
 

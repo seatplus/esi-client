@@ -1,0 +1,8 @@
+parameters:
+    editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
+    level: 4
+    paths:
+        - src
+    tmpDir: build/phpstan
+
+

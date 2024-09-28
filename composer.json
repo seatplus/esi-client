@@ -33,11 +33,14 @@
     "require-dev": {
         "ext-openssl": "*",
         "fzaninotto/faker": "^1.5",
-        "illuminate/cache": "^8.60",
+        "illuminate/cache": "^11.23",
+        "laravel/pint": "^1.17",
         "mikey179/vfsstream": "^1",
         "mockery/mockery": "^1.4",
-        "nunomaduro/collision": "^7.0",
-        "pestphp/pest": "^2.0",
+        "nunomaduro/collision": "^8.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-type-coverage": "^3.0",
+        "phpstan/phpstan": "^1.12",
         "rector/rector": "^1.2"
     },
     "autoload": {
@@ -52,8 +55,18 @@
         }
     },
     "scripts": {
-      "test": "./vendor/bin/pest",
-      "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage"
+        "lint": "vendor/bin/pint",
+        "test:lint": "vendor/bin/pint --test",
+        "test:types": "vendor/bin/phpstan --ansi",
+        "test:type-coverage": "vendor/bin/pest --type-coverage --min=100",
+        "test:unit": "vendor/bin/pest --colors=always",
+        "test:unit-coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --colors=always",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:type-coverage",
+            "@test:unit"
+        ]
     },
     "config": {
         "sort-packages": true,
