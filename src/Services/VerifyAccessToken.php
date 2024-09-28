@@ -12,9 +12,7 @@ class VerifyAccessToken
 
     const TRANQUILITY_ENDPOINT = 'https://login.eveonline.com';
 
-    public function __construct(private readonly Client $client = new Client, private readonly JwtService $jwtService = new JwtService)
-    {
-    }
+    public function __construct(private readonly Client $client = new Client, private readonly JwtService $jwtService = new JwtService) {}
 
     public function verify(string $access_token): void
     {
