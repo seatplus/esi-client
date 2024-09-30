@@ -4,51 +4,66 @@ use org\bovigo\vfs\vfsStream;
 use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Log\RotatingFileLogger;
 
-describe('log anything above info level', function () {
-    beforeEach(function () {
-        // Set the file cache path in the config singleton
-        $this->root = vfsStream::setup('logs');
-        EsiConfiguration::getInstance(
-            logfile_location: $this->root->url(),
-            logger_level: \Monolog\Level::Info->value
-        );
+beforeEach(function () {
+    EsiConfiguration::resetInstance();
+});
 
-        $this->logger = new RotatingFileLogger;
+afterEach(function () {
+    EsiConfiguration::resetInstance();
+});
 
-        // Shitty hack to get the filename to expect. Format: esi-client-2018-05-06.log
-        $this->logfile_name = 'esi-client-'.date('Y-m-d').'.log';
-    });
+it('writes error log', function () {
+    $root = vfsStream::setup('logs');
 
-    afterEach(function () {
-        EsiConfiguration::resetInstance();
-    });
+    EsiConfiguration::getInstance(
+        logfile_location: $root->url(),
+        logger_level: \Monolog\Level::Debug->value
+    );
+    $logger = new RotatingFileLogger;
 
-    it('writes info log', function () {
-        $this->logger->log('foo');
-        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+    $logger->error('foo');
+    $logfile_name = 'esi-client-'.date('Y-m-d').'.log';
 
-        expect($logfile_content)->toContain('esi-client.INFO: foo');
-    });
+    $logfile_content = $root->getChild($logfile_name)->getContent();
 
-    it('writes warning log', function () {
-        $this->logger->warning('foo');
-        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+    expect($logfile_content)->toContain('esi-client.ERROR: foo');
+});
 
-        expect($logfile_content)->toContain('esi-client.WARNING: foo');
-    });
+it('writes warning log', function () {
+    $root = vfsStream::setup('logs');
 
-    it('writes error log', function () {
-        $this->logger->error('foo');
-        $logfile_content = $this->root->getChild($this->logfile_name)->getContent();
+    EsiConfiguration::getInstance(
+        logfile_location: $root->url(),
+        logger_level: \Monolog\Level::Debug->value
+    );
+    $logger = new RotatingFileLogger;
 
-        expect($logfile_content)->toContain('esi-client.ERROR: foo');
-    });
+    $logger->warning('foo');
+    $logfile_name = 'esi-client-'.date('Y-m-d').'.log';
+
+    $logfile_content = $root->getChild($logfile_name)->getContent();
+
+    expect($logfile_content)->toContain('esi-client.WARNING: foo');
+});
+
+it('writes info log', function () {
+    $root = vfsStream::setup('logs');
+
+    EsiConfiguration::getInstance(
+        logfile_location: $root->url(),
+        logger_level: \Monolog\Level::Debug->value
+    );
+    $logger = new RotatingFileLogger;
+
+    $logger->log('foo');
+    $logfile_name = 'esi-client-'.date('Y-m-d').'.log';
+
+    $logfile_content = $root->getChild($logfile_name)->getContent();
+
+    expect($logfile_content)->toContain('esi-client.INFO: foo');
 });
 
 it('writes debug log', function () {
-    //Configuration::getInstance()->logger_level = Logger::DEBUG;
-    EsiConfiguration::resetInstance();
-
     $root = vfsStream::setup('logs');
 
     EsiConfiguration::getInstance(
@@ -63,6 +78,4 @@ it('writes debug log', function () {
     $logfile_content = $root->getChild($logfile_name)->getContent();
 
     expect($logfile_content)->toContain('esi-client.DEBUG: foo');
-
-    EsiConfiguration::resetInstance();
 });
