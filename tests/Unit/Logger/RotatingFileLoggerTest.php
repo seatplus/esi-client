@@ -4,11 +4,11 @@ use org\bovigo\vfs\vfsStream;
 use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Log\RotatingFileLogger;
 
-beforeEach(function() {
+beforeEach(function () {
     EsiConfiguration::resetInstance();
 });
 
-afterEach(function() {
+afterEach(function () {
     EsiConfiguration::resetInstance();
 });
 
@@ -62,7 +62,6 @@ it('writes info log', function () {
 
     expect($logfile_content)->toContain('esi-client.INFO: foo');
 });
-
 
 it('writes debug log', function () {
     $root = vfsStream::setup('logs');
