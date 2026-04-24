@@ -33,7 +33,7 @@ it('verifies access token successfully', function () {
 
     $this->jwtServiceMock->shouldReceive('decodeJWT')
         ->once()
-        ->with($accessToken, [], ['RS256'])
+        ->with($accessToken, [])
         ->andReturn($decodedToken);
 
     $this->service->verify($accessToken);
@@ -56,7 +56,7 @@ it('throws UnexpectedValueException on access token issuer mismatch', function (
 
     $this->jwtServiceMock->shouldReceive('decodeJWT')
         ->once()
-        ->with($accessToken, [], ['RS256'])
+        ->with($accessToken, [])
         ->andReturn($decodedToken);
 
     expect(fn () => $this->service->verify($accessToken))
@@ -80,7 +80,7 @@ it('throws ExpiredException on expired access token', function () {
 
     $this->jwtServiceMock->shouldReceive('decodeJWT')
         ->once()
-        ->with($accessToken, [], ['RS256'])
+        ->with($accessToken, [])
         ->andReturn($decodedToken);
 
     expect(fn () => $this->service->verify($accessToken))

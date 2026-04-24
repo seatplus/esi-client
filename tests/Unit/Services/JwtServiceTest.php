@@ -1,6 +1,7 @@
 <?php
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Seatplus\EsiClient\Services\JwtService;
 
 afterEach(function () {
@@ -10,12 +11,11 @@ afterEach(function () {
 it('decodes JWT successfully', function () {
     $keyId = 'test_kid';
     $jwt = JWT::encode(['data' => 'decoded_data'], 'secret', 'HS256', $keyId);
-    $keys = [$keyId => 'secret'];
-    $allowedAlgs = ['HS256'];
+    $keys = [$keyId => new Key('secret', 'HS256')];
 
     $service = new JwtService;
 
-    $result = $service->decodeJWT($jwt, $keys, $allowedAlgs);
+    $result = $service->decodeJWT($jwt, $keys);
 
     expect($result->data)->toBe('decoded_data');
 });
@@ -44,11 +44,10 @@ it('parses JWKS successfully', function () {
 
 it('throws exception on invalid JWT', function () {
     $jwt = 'invalid_jwt';
-    $keys = ['secret' => 'secret'];
-    $allowedAlgs = ['HS256'];
+    $keys = ['secret' => new Key('secret', 'HS256')];
 
     $service = new JwtService;
 
-    expect(fn () => $service->decodeJWT($jwt, $keys, $allowedAlgs))
+    expect(fn () => $service->decodeJWT($jwt, $keys))
         ->toThrow(\UnexpectedValueException::class);
 });
