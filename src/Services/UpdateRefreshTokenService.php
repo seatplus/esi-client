@@ -4,6 +4,7 @@ namespace Seatplus\EsiClient\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\RequestOptions;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
@@ -18,7 +19,7 @@ class UpdateRefreshTokenService
 
     /**
      * @throws RequestFailedException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function getRefreshTokenResponse(EsiAuthentication $authentication): array
     {

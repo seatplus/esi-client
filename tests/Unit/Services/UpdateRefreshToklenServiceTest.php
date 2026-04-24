@@ -3,6 +3,7 @@
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -46,7 +47,7 @@ it('throws RequestFailedException on client error', function () {
     $authentication = new EsiAuthentication('client_id', 'secret', 'refresh_token');
 
     // Mock the client to throw a client exception
-    $clientException = new ClientException('Client error', new \GuzzleHttp\Psr7\Request('POST', 'test'), new Response(400));
+    $clientException = new ClientException('Client error', new Request('POST', 'test'), new Response(400));
 
     $this->clientMock->shouldReceive('post')
         ->once()
@@ -60,7 +61,7 @@ it('throws RequestFailedException on server error', function () {
     $authentication = new EsiAuthentication('client_id', 'secret', 'refresh_token');
 
     // Mock the client to throw a server exception
-    $serverException = new ServerException('Server error', new \GuzzleHttp\Psr7\Request('POST', 'test'), new Response(500));
+    $serverException = new ServerException('Server error', new Request('POST', 'test'), new Response(500));
 
     $this->clientMock->shouldReceive('post')
         ->once()

@@ -39,7 +39,7 @@ class EsiConfiguration
         // Rotating Logger Details
         public int $log_max_files = 10,
 
-        //cache stack
+        // cache stack
         public string $cache_middleware = NullCacheMiddleware::class,
 
         // Fetching

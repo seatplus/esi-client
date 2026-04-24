@@ -11,8 +11,11 @@
 |
 */
 
+use Faker\Factory;
+use Faker\Generator;
 use Firebase\JWT\JWT;
 use PHPUnit\Framework\TestCase;
+use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 
 uses(TestCase::class)
     ->group('integration')
@@ -33,12 +36,12 @@ uses(TestCase::class)
 |
 */
 
-function getFaker(): \Faker\Generator
+function getFaker(): Generator
 {
-    return \Faker\Factory::create();
+    return Factory::create();
 }
 
-function buildEsiAuthentication(array $params = []): \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication
+function buildEsiAuthentication(array $params = []): EsiAuthentication
 {
     $faker = getFaker();
 
@@ -55,7 +58,7 @@ function buildEsiAuthentication(array $params = []): \Seatplus\EsiClient\DataTra
         $factory_array[$key] = $key === 'access_token' ? buildJWT($value) : $value;
     }
 
-    return new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication(
+    return new EsiAuthentication(
         access_token: $factory_array['access_token'],
         refresh_token: $factory_array['refresh_token'],
         client_id: $factory_array['client_id'],

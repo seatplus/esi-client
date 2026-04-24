@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Level;
 use org\bovigo\vfs\vfsStream;
 use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Log\RotatingFileLogger;
@@ -17,7 +18,7 @@ it('writes error log', function () {
 
     EsiConfiguration::getInstance(
         logfile_location: $root->url(),
-        logger_level: \Monolog\Level::Debug->value
+        logger_level: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 
@@ -34,7 +35,7 @@ it('writes warning log', function () {
 
     EsiConfiguration::getInstance(
         logfile_location: $root->url(),
-        logger_level: \Monolog\Level::Debug->value
+        logger_level: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 
@@ -51,7 +52,7 @@ it('writes info log', function () {
 
     EsiConfiguration::getInstance(
         logfile_location: $root->url(),
-        logger_level: \Monolog\Level::Debug->value
+        logger_level: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 
@@ -68,7 +69,7 @@ it('writes debug log', function () {
 
     EsiConfiguration::getInstance(
         logfile_location: $root->url(),
-        logger_level: \Monolog\Level::Debug->value
+        logger_level: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 

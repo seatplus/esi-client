@@ -1,6 +1,7 @@
 <?php
 
 use GuzzleHttp\Psr7\Uri;
+use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
@@ -38,7 +39,7 @@ it('throws exception for missing URI data', function () {
 it('throws exception for access denied', function () {
     $authentication = new EsiAuthentication('token', 'refresh_token');
 
-    $checkAccess = mock(CheckAccess::class, function (\Mockery\MockInterface $mock) {
+    $checkAccess = mock(CheckAccess::class, function (MockInterface $mock) {
         $mock->shouldReceive('can')
             ->once()
             ->andReturnFalse();
@@ -50,7 +51,7 @@ it('throws exception for access denied', function () {
 });
 
 it('builds correct data URI', function () {
-    $reflection = new \ReflectionClass($this->client);
+    $reflection = new ReflectionClass($this->client);
     $method = $reflection->getMethod('buildDataUri');
 
     $uri = $method->invokeArgs($this->client, ['/test/uri/{id}', ['id' => 123], 'v1', ['param' => 'value']]);
@@ -64,15 +65,15 @@ it('throws exception for missing data', function () {
     $data = ['foo' => 'one']; // missing bar
 
     // Assuming $client is an instance of EsiClient
-    $reflection = new \ReflectionClass($this->client);
+    $reflection = new ReflectionClass($this->client);
     $method = $reflection->getMethod('mapDataToUri');
-    //$method->setAccessible(true);
+    // $method->setAccessible(true);
 
     expect(fn () => $method->invokeArgs($this->client, [$uri, $data]))->toThrow(UriDataMissingException::class);
 });
 
 it('creates fetcher instance', function () {
-    $reflection = new \ReflectionClass($this->client);
+    $reflection = new ReflectionClass($this->client);
     $method = $reflection->getMethod('createFetcher');
     $method->setAccessible(true);
 
