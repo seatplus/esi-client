@@ -1,16 +1,20 @@
 <?php
 
+use Carbon\Carbon;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
 use Seatplus\EsiClient\Services\VerifyAccessToken;
 
 /** @runInSeparateProcess  */
 it('updates access token with refresh token', function () {
     // create a private key for signing the JWT Token
     $privKey = openssl_pkey_new(['digest_alg' => 'sha256',
-        'private_key_bits' => 1024,
+        'private_key_bits' => 2048,
         'private_key_type' => OPENSSL_KEYTYPE_RSA, ]);
 
     // define the payload
@@ -25,7 +29,7 @@ it('updates access token with refresh token', function () {
         'azp' => 'my3rdpartyclientid',
         'name' => 'Some Bloke',
         'owner' => '8PmzCeTKb4VFUDrHLc/AeZXDSWM=',
-        'exp' => \Carbon\Carbon::now()->addHour()->timestamp,
+        'exp' => Carbon::now()->addHour()->timestamp,
         'iss' => 'login.eveonline.com',
     ];
 
@@ -38,7 +42,7 @@ it('updates access token with refresh token', function () {
     ]);
 
     // create the client mock and responses from said client
-    $mock = new \GuzzleHttp\Handler\MockHandler([
+    $mock = new MockHandler([
         new Response(200, [], json_encode(['access_token' => $jwt_token, 'foo' => 'bar'])),
         new Response(200, [], json_encode(['jwks' => ['one', 'two', 'three']])),
     ]);
@@ -53,7 +57,7 @@ it('updates access token with refresh token', function () {
     });
 
     // construct the service
-    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService($client, $verifyAccessToken);
+    $service = new UpdateRefreshTokenService($client, $verifyAccessToken);
 
     // use service to get the refresh Token
     $response = $service->getRefreshTokenResponse($authentication);
@@ -67,7 +71,7 @@ it('updates access token with refresh token', function () {
 
 it('throws RequestFailedException if an exception occurs', function () {
     // create the client mock and responses from said client
-    $mock = new \GuzzleHttp\Handler\MockHandler([
+    $mock = new MockHandler([
         new Response(400, [], 'Error'),
     ]);
 
@@ -76,7 +80,7 @@ it('throws RequestFailedException if an exception occurs', function () {
     ]);
 
     // construct the service
-    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService($client);
+    $service = new UpdateRefreshTokenService($client);
 
     $service->getRefreshTokenResponse(buildEsiAuthentication());
-})->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
+})->throws(RequestFailedException::class);

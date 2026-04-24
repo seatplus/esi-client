@@ -1,9 +1,11 @@
 <?php
 
+use Kevinrob\GuzzleCache\CacheMiddleware;
 use Seatplus\EsiClient\CacheMiddleware\NullCacheMiddleware;
 use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\LogInterface;
+use Seatplus\EsiClient\Log\NullLogger;
 
 it('initializes with default values', function () {
     $config = new EsiConfiguration;
@@ -40,12 +42,12 @@ it('getCacheMiddleware returns cache middleware instance', function () {
     $config = new EsiConfiguration;
     $cacheMiddleware = $config->getCacheMiddleware();
 
-    expect($cacheMiddleware)->toBeInstanceOf(\Kevinrob\GuzzleCache\CacheMiddleware::class);
+    expect($cacheMiddleware)->toBeInstanceOf(CacheMiddleware::class);
 });
 
 it('get NullLogger through instance', function () {
 
-    EsiConfiguration::getInstance(logger: \Seatplus\EsiClient\Log\NullLogger::class);
+    EsiConfiguration::getInstance(logger: NullLogger::class);
 
     $config = EsiConfiguration::getInstance();
     $logger = $config->getLogger();

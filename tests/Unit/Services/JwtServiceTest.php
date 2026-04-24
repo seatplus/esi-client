@@ -9,9 +9,10 @@ afterEach(function () {
 });
 
 it('decodes JWT successfully', function () {
+    $secret = str_repeat('a', 32); // HS256 requires min 256-bit (32-byte) key
     $keyId = 'test_kid';
-    $jwt = JWT::encode(['data' => 'decoded_data'], 'secret', 'HS256', $keyId);
-    $keys = [$keyId => new Key('secret', 'HS256')];
+    $jwt = JWT::encode(['data' => 'decoded_data'], $secret, 'HS256', $keyId);
+    $keys = [$keyId => new Key($secret, 'HS256')];
 
     $service = new JwtService;
 
@@ -44,10 +45,10 @@ it('parses JWKS successfully', function () {
 
 it('throws exception on invalid JWT', function () {
     $jwt = 'invalid_jwt';
-    $keys = ['secret' => new Key('secret', 'HS256')];
+    $keys = ['secret' => new Key(str_repeat('a', 32), 'HS256')];
 
     $service = new JwtService;
 
     expect(fn () => $service->decodeJWT($jwt, $keys))
-        ->toThrow(\UnexpectedValueException::class);
+        ->toThrow(UnexpectedValueException::class);
 });

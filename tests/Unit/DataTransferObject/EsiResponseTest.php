@@ -71,7 +71,7 @@ it('returns null when header is not found', function () {
     ];
     $response = new EsiResponse('{}', $raw_headers, 'now', 200);
 
-    $reflection = new \ReflectionClass($response);
+    $reflection = new ReflectionClass($response);
     $method = $reflection->getMethod('getHeader');
 
     $result = $method->invokeArgs($response, [$raw_headers, 'Non-Existent-Header']);
