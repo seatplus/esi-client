@@ -1,0 +1,58 @@
+[2024-09-27T06:14:59.867672+00:00] esi-client.WARNING: foo
+[2024-09-27T06:24:22.076439+00:00] esi-client.INFO: foo
+[2024-09-27T18:22:26.840886+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:26:55.198013+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:28:03.637450+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:28:13.117767+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:32:05.365998+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:32:34.598899+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:32:37.700899+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:33:10.561669+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:33:25.468380+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:34:00.546891+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:34:12.882374+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:34:23.465846+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:34:29.161276+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:34:42.284950+00:00] esi-client.WARNING: An unknown URI was called. Allowing /test/uri
+[2024-09-27T18:35:40.582132+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T18:36:06.127609+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T18:36:13.890306+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T18:42:14.415253+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T18:53:40.389972+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T19:09:50.727577+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.070000s/]
+[2024-09-27T19:10:09.459037+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.010000s/]
+[2024-09-27T19:10:13.256867+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:10:19.467105+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:11:40.395078+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.010000s/]
+[2024-09-27T19:13:14.663750+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.040000s/]
+[2024-09-27T19:13:37.093100+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.010000s/]
+[2024-09-27T19:13:37.525831+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:13:58.092002+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.010000s/]
+[2024-09-27T19:13:58.175174+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:13:58.179855+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:15:21.096635+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.020000s/]
+[2024-09-27T19:15:21.207786+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:15:21.223938+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:38:05.126188+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.080000s/]
+[2024-09-27T19:38:05.303187+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:38:05.372897+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.030000s/]
+[2024-09-27T19:52:05.045684+00:00] esi-client.INFO: foo
+[2024-09-27T19:52:12.844689+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.010000s/]
+[2024-09-27T19:52:12.850649+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T19:52:12.875840+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T20:09:05.444693+00:00] esi-client.WARNING: An unknown URI was called. Allowing /invalid/uri
+[2024-09-27T20:09:05.472859+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T20:09:05.498110+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T20:09:05.501585+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T20:09:05.504584+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T21:14:34.082072+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.100000s/]
+[2024-09-27T21:14:34.096566+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T21:14:34.266258+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.030000s/]
+[2024-09-27T21:14:34.469509+00:00] esi-client.WARNING: An unknown URI was called. Allowing /invalid/uri
+[2024-09-27T21:14:34.599133+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T21:14:34.699568+00:00] esi-client.WARNING: foo
+[2024-09-27T21:14:37.839062+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2024-09-27T21:14:37.860780+00:00] esi-client.WARNING: An unknown URI was called. Allowing /invalid/uri
+[2024-09-27T21:14:37.893662+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T21:14:37.896768+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.000000s/]
+[2024-09-27T21:14:37.899476+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]

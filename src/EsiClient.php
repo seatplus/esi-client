@@ -3,6 +3,7 @@
 namespace Seatplus\EsiClient;
 
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
@@ -81,7 +82,7 @@ class EsiClient
     /**
      * @throws UriDataMissingException
      */
-    private function buildDataUri(string $uri, array $data, string $version, array $query_parameters): \Psr\Http\Message\UriInterface
+    private function buildDataUri(string $uri, array $data, string $version, array $query_parameters): UriInterface
     {
         // Create a query string for the URI. We automatically
         // include the datasource value from the configuration.

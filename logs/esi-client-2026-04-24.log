@@ -1,0 +1,15 @@
+[2026-04-24T11:09:10.172795+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.140000s/]
+[2026-04-24T11:09:10.181432+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2026-04-24T11:09:10.239243+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.060000s/]
+[2026-04-24T11:09:10.292273+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2026-04-24T11:09:10.593641+00:00] esi-client.WARNING: An unknown URI was called. Allowing /invalid/uri
+[2026-04-24T11:26:18.835391+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2026-04-24T11:26:18.837044+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.000000s/]
+[2026-04-24T11:26:18.860857+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2026-04-24T11:26:18.872597+00:00] esi-client.WARNING: An unknown URI was called. Allowing /invalid/uri
+[2026-04-24T11:26:18.931038+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2026-04-24T11:26:43.736268+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2026-04-24T11:46:45.812525+00:00] esi-client.WARNING: Access denied to https://esi.evetech.net/latest/test/uri/?datasource=tranquility due to missing scopes.
+[2026-04-24T11:46:45.935687+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2026-04-24T11:46:45.936159+00:00] esi-client.INFO: [http 200, ok] get -> /foo [t/e: 0.000000s/]
+[2026-04-24T11:46:45.936550+00:00] esi-client.ERROR: [http 401, unauthorized] get -> /foo [t/e: 0.000000s/]

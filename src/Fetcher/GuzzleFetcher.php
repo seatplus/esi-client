@@ -2,6 +2,7 @@
 
 namespace Seatplus\EsiClient\Fetcher;
 
+use Carbon\Carbon;
 use Composer\InstalledVersions;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -115,9 +116,9 @@ class GuzzleFetcher
         );
     }
 
-    private function carbon(string $data): \Carbon\Carbon
+    private function carbon(string $data): Carbon
     {
-        return new \Carbon\Carbon($data);
+        return new Carbon($data);
     }
 
     private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, float|string $start): void

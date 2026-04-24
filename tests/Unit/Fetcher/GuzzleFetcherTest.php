@@ -1,14 +1,18 @@
 <?php
 
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
+use Seatplus\EsiClient\Log\LogInterface;
 
 test('guzzle calling without authorization', function () {
     $mock = new MockHandler([
@@ -42,7 +46,7 @@ test('guzzle calling with authorization', function () {
         // refresh_token specific
         client_id: 1234,
         secret: 'bar',
-        token_expires: \Carbon\Carbon::now()->addHour(),
+        token_expires: Carbon::now()->addHour(),
     );
 
     $fetcher = new GuzzleFetcher(authentication: $authentication, client: $client);
@@ -66,7 +70,7 @@ it('throws outdated refresh_token exception if expires_in is expired or to close
     $fetcher = new GuzzleFetcher(authentication: $authentication);
 
     $fetcher->call('get', '/foo');
-})->with(['1970-01-01 00:00:00', \Carbon\Carbon::now()->addSeconds(50)->toDateTimeString()])
+})->with(['1970-01-01 00:00:00', Carbon::now()->addSeconds(50)->toDateTimeString()])
     ->throws(ExpiredRefreshTokenException::class);
 
 it('trows RequestFailedException', function () {
@@ -81,11 +85,11 @@ it('trows RequestFailedException', function () {
     $fetcher = new GuzzleFetcher(client: $client);
 
     $fetcher->call('get', '/foo');
-})->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
+})->throws(RequestFailedException::class);
 
 it('logs fetcher activity with cache hit', function (string $log_level) {
     // Create a mock ResponseInterface
-    $response = mock(ResponseInterface::class, function (\Mockery\MockInterface $mock) {
+    $response = mock(ResponseInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('getHeader')
             ->with('X-Kevinrob-Cache')
             ->andReturn(['HIT']);
@@ -96,7 +100,7 @@ it('logs fetcher activity with cache hit', function (string $log_level) {
     });
 
     // Create a mock LoggerInterface
-    $logger = mock(\Seatplus\EsiClient\Log\LogInterface::class, function (\Mockery\MockInterface $logger) use ($log_level) {
+    $logger = mock(LogInterface::class, function (MockInterface $logger) use ($log_level) {
 
         if ($log_level === 'info') {
             $log_level = 'log';
@@ -111,7 +115,7 @@ it('logs fetcher activity with cache hit', function (string $log_level) {
     $fetcher = new GuzzleFetcher(logger: $logger);
 
     // Use reflection to access the private logFetcherActivity method
-    $reflection = new \ReflectionClass($fetcher);
+    $reflection = new ReflectionClass($fetcher);
     $method = $reflection->getMethod('logFetcherActivity');
 
     // Invoke the method

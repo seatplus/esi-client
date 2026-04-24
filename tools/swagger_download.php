@@ -1,5 +1,7 @@
 <?php
 
+use GuzzleHttp\Client;
+
 /*
  * This file is part of SeAT
  *
@@ -22,7 +24,7 @@
 
 include '../vendor/autoload.php';
 
-$client = new \GuzzleHttp\Client;
+$client = new Client;
 $client->request('get', 'https://esi.evetech.net/latest/swagger.json?datasource=tranquility', [
     'sink' => 'esi.json',
 ]);

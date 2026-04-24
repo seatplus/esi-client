@@ -50,5 +50,5 @@ it('throws exception on invalid JWT', function () {
     $service = new JwtService;
 
     expect(fn () => $service->decodeJWT($jwt, $keys))
-        ->toThrow(\UnexpectedValueException::class);
+        ->toThrow(UnexpectedValueException::class);
 });
