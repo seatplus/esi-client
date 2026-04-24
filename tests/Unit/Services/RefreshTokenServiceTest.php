@@ -10,7 +10,7 @@ use Seatplus\EsiClient\Services\VerifyAccessToken;
 it('updates access token with refresh token', function () {
     // create a private key for signing the JWT Token
     $privKey = openssl_pkey_new(['digest_alg' => 'sha256',
-        'private_key_bits' => 1024,
+        'private_key_bits' => 2048,
         'private_key_type' => OPENSSL_KEYTYPE_RSA, ]);
 
     // define the payload

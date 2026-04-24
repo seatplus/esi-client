@@ -25,7 +25,7 @@
     "require": {
         "php": "^8.3",
         "ext-json": "*",
-        "firebase/php-jwt": "^6.4",
+        "firebase/php-jwt": "^7.0",
         "kevinrob/guzzle-cache-middleware": "^4.0",
         "monolog/monolog": "^3.7",
         "nesbot/carbon": "^2.53"
