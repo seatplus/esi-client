@@ -20,7 +20,7 @@ class VerifyAccessToken
         $decodedJson = json_decode((string) $response->getBody(), true);
         $parsedKeySet = $this->jwtService->parseJWKS($decodedJson);
 
-        $decodedArray = (array) $this->jwtService->decodeJWT($access_token, $parsedKeySet, ['RS256']);
+        $decodedArray = (array) $this->jwtService->decodeJWT($access_token, $parsedKeySet);
 
         if ($decodedArray['iss'] !== 'login.eveonline.com' && $decodedArray['iss'] !== self::TRANQUILITY_ENDPOINT) {
             throw new UnexpectedValueException('Access token issuer mismatch');
