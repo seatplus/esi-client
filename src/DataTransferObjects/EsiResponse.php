@@ -16,7 +16,11 @@ class EsiResponse
     // Rate-limit headers (floating-window system, live as of 2025)
     public ?string $ratelimitGroup;
 
+    /** The token count from X-Ratelimit-Limit, e.g. 1800 from "1800/15m". */
     public ?int $ratelimitLimit;
+
+    /** The window duration in seconds from X-Ratelimit-Limit, e.g. 900 from "1800/15m". */
+    public ?int $ratelimitWindowSeconds;
 
     public ?int $ratelimitRemaining;
 
@@ -45,6 +49,7 @@ class EsiResponse
         $this->pages = $this->getIntHeader($parsed_headers, 'X-Pages');
         $this->ratelimitGroup = $this->getHeader($parsed_headers, 'X-Ratelimit-Group');
         $this->ratelimitLimit = $this->parseRatelimitLimit($parsed_headers);
+        $this->ratelimitWindowSeconds = $this->parseRatelimitWindowSeconds($parsed_headers);
         $this->ratelimitRemaining = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Remaining');
         $this->ratelimitUsed = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Used');
         $this->retryAfter = $this->getIntHeader($parsed_headers, 'Retry-After');
@@ -134,6 +139,32 @@ class EsiResponse
         }
 
         return (int) explode('/', $value)[0];
+    }
+
+    /**
+     * Parse "1800/15m" format — returns the window duration in seconds.
+     * Supports units: s (seconds), m (minutes), h (hours).
+     */
+    private function parseRatelimitWindowSeconds(array $headers): ?int
+    {
+        $value = $this->getHeader($headers, 'X-Ratelimit-Limit');
+        if ($value === null || ! str_contains($value, '/')) {
+            return null;
+        }
+
+        $window = explode('/', $value)[1] ?? null;
+        if ($window === null) {
+            return null;
+        }
+
+        $amount = (int) $window;
+        $unit = strtolower(preg_replace('/[0-9]/', '', $window));
+
+        return match ($unit) {
+            'm' => $amount * 60,
+            'h' => $amount * 3600,
+            default => $amount, // 's' or bare number
+        };
     }
 
     private function parseErrorMessage(string $data): string

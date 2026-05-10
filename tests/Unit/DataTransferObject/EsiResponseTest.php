@@ -90,6 +90,7 @@ it('parses rate limit headers correctly', function () {
 
     expect($response->ratelimitGroup)->toBe('char-asset')
         ->and($response->ratelimitLimit)->toBe(1800)
+        ->and($response->ratelimitWindowSeconds)->toBe(900)
         ->and($response->ratelimitRemaining)->toBe(1750)
         ->and($response->ratelimitUsed)->toBe(50);
 });
@@ -97,7 +98,26 @@ it('parses rate limit headers correctly', function () {
 it('parses rate limit limit without window suffix', function () {
     $response = new EsiResponse('{}', ['X-Ratelimit-Limit' => ['300']], 'now', 200);
 
-    expect($response->ratelimitLimit)->toBe(300);
+    expect($response->ratelimitLimit)->toBe(300)
+        ->and($response->ratelimitWindowSeconds)->toBeNull();
+});
+
+it('parses rate limit window in minutes', function () {
+    $response = new EsiResponse('{}', ['X-Ratelimit-Limit' => ['600/10m']], 'now', 200);
+
+    expect($response->ratelimitWindowSeconds)->toBe(600);
+});
+
+it('parses rate limit window in hours', function () {
+    $response = new EsiResponse('{}', ['X-Ratelimit-Limit' => ['3600/1h']], 'now', 200);
+
+    expect($response->ratelimitWindowSeconds)->toBe(3600);
+});
+
+it('parses rate limit window in seconds', function () {
+    $response = new EsiResponse('{}', ['X-Ratelimit-Limit' => ['60/30s']], 'now', 200);
+
+    expect($response->ratelimitWindowSeconds)->toBe(30);
 });
 
 it('parses Retry-After header', function () {
@@ -111,6 +131,7 @@ it('returns null for missing rate limit headers', function () {
 
     expect($response->ratelimitGroup)->toBeNull()
         ->and($response->ratelimitLimit)->toBeNull()
+        ->and($response->ratelimitWindowSeconds)->toBeNull()
         ->and($response->ratelimitRemaining)->toBeNull()
         ->and($response->ratelimitUsed)->toBeNull()
         ->and($response->retryAfter)->toBeNull();
