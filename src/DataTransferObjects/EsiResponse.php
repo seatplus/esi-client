@@ -2,17 +2,28 @@
 
 namespace Seatplus\EsiClient\DataTransferObjects;
 
-use ArrayObject;
-
-class EsiResponse extends ArrayObject
+class EsiResponse
 {
     public array $parsed_headers;
 
+    /** The decoded JSON body of the ESI response. */
     public object $data;
 
     public ?int $error_limit_remain;
 
     public ?int $pages;
+
+    // Rate-limit headers (floating-window system, live as of 2025)
+    public ?string $ratelimitGroup;
+
+    public ?int $ratelimitLimit;
+
+    public ?int $ratelimitRemaining;
+
+    public ?int $ratelimitUsed;
+
+    /** Seconds to wait before retrying; present on 429 responses. */
+    public ?int $retryAfter;
 
     protected string $expires_at;
 
@@ -30,18 +41,59 @@ class EsiResponse extends ArrayObject
 
         $parsed_headers = $this->parseHeaders($raw_headers);
         $this->parsed_headers = $parsed_headers;
-        $this->error_limit_remain = $this->getErrorLimitRemain($this->parsed_headers);
-        $this->pages = $this->getPages($this->parsed_headers);
+        $this->error_limit_remain = $this->getIntHeader($parsed_headers, 'X-Esi-Error-Limit-Remain');
+        $this->pages = $this->getIntHeader($parsed_headers, 'X-Pages');
+        $this->ratelimitGroup = $this->getHeader($parsed_headers, 'X-Ratelimit-Group');
+        $this->ratelimitLimit = $this->parseRatelimitLimit($parsed_headers);
+        $this->ratelimitRemaining = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Remaining');
+        $this->ratelimitUsed = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Used');
+        $this->retryAfter = $this->getIntHeader($parsed_headers, 'Retry-After');
 
         $this->error_message = $this->parseErrorMessage($raw);
         $this->cache_loaded = $this->isCachedLoad();
 
-        parent::__construct((object) json_decode($raw), ArrayObject::ARRAY_AS_PROPS);
+        $this->data = (object) json_decode($raw);
     }
 
     public function isCachedLoad(): bool
     {
         return $this->get_data($this->parsed_headers, 'X-Kevinrob-Cache', false) === 'HIT';
+    }
+
+    /**
+     * Returns true when the floating-window rate limit bucket is running low (< 10% remaining).
+     * Only meaningful once ESI starts returning X-Ratelimit-* headers for the endpoint.
+     */
+    public function isRateLimitLow(): bool
+    {
+        if ($this->ratelimitRemaining === null || $this->ratelimitLimit === null || $this->ratelimitLimit === 0) {
+            return false;
+        }
+
+        return ($this->ratelimitRemaining / $this->ratelimitLimit) < 0.10;
+    }
+
+    public function getErrorMessage(): mixed
+    {
+        return $this->error_message;
+    }
+
+    /**
+     * @deprecated Access response body fields via ->data->propertyName instead.
+     *             This bridge shim will be removed in the next eveapi major update.
+     */
+    public function __get(string $name): mixed
+    {
+        return $this->data->$name ?? null;
+    }
+
+    /**
+     * @deprecated Access response body fields via ->data->propertyName instead.
+     *             This bridge shim will be removed in the next eveapi major update.
+     */
+    public function __isset(string $name): bool
+    {
+        return isset($this->data->$name);
     }
 
     private function parseHeaders(array $headers): array
@@ -66,14 +118,22 @@ class EsiResponse extends ArrayObject
         return $this->hasHeader($stack, $needle) ? $this->getHeader($stack, $needle) : $default;
     }
 
-    private function getErrorLimitRemain(array $parsed_headers): ?int
+    private function getIntHeader(array $headers, string $name): ?int
     {
-        return $this->get_data($parsed_headers, 'X-Esi-Error-Limit-Remain');
+        $value = $this->getHeader($headers, $name);
+
+        return $value !== null ? (int) $value : null;
     }
 
-    private function getPages(array $parsed_headers): ?int
+    /** Parse "1800/15m" format — returns only the numeric token count. */
+    private function parseRatelimitLimit(array $headers): ?int
     {
-        return $this->get_data($parsed_headers, 'X-Pages');
+        $value = $this->getHeader($headers, 'X-Ratelimit-Limit');
+        if ($value === null) {
+            return null;
+        }
+
+        return (int) explode('/', $value)[0];
     }
 
     private function parseErrorMessage(string $data): string
@@ -85,10 +145,5 @@ class EsiResponse extends ArrayObject
         }
 
         return $error_message;
-    }
-
-    public function getErrorMessage(): mixed
-    {
-        return $this->error_message;
     }
 }

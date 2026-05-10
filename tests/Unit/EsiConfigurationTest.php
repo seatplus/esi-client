@@ -21,7 +21,8 @@ it('initializes with default values', function () {
         ->and($config->logfile_location)->toBe('logs/')
         ->and($config->log_max_files)->toBe(10)
         ->and($config->cache_middleware)->toBe(NullCacheMiddleware::class)
-        ->and($config->fetcher)->toBe(GuzzleFetcher::class);
+        ->and($config->fetcher)->toBe(GuzzleFetcher::class)
+        ->and($config->compatibility_date)->toBeNull();
 });
 
 it('singleton instance is consistent', function () {
@@ -53,4 +54,19 @@ it('get NullLogger through instance', function () {
     $logger = $config->getLogger();
 
     expect($logger)->toBeInstanceOf(LogInterface::class);
+});
+
+it('compatibility_date can be set via constructor', function () {
+    $config = new EsiConfiguration(compatibility_date: '2025-10-01');
+
+    expect($config->compatibility_date)->toBe('2025-10-01');
+});
+
+it('compatibility_date defaults to null', function () {
+    EsiConfiguration::resetInstance();
+    $config = EsiConfiguration::getInstance();
+
+    expect($config->compatibility_date)->toBeNull();
+
+    EsiConfiguration::resetInstance();
 });

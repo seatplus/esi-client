@@ -14,6 +14,8 @@ use Psr\Http\Message\ResponseInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiConfiguration;
+use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
+use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
 use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -64,6 +66,8 @@ class GuzzleFetcher
 
     /**
      * @throws GuzzleException
+     * @throws EsiRateLimitedException
+     * @throws EsiErrorLimitedException
      * @throws RequestFailedException
      */
     public function httpRequest(string $method, string $uri, array $headers = [], array $body = []): EsiResponse
@@ -75,16 +79,23 @@ class GuzzleFetcher
         // json encode the body if present, else null it
         $body = count($body) > 0 ? json_encode($body) : null;
 
+        $requestHeaders = array_merge($headers, [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'Seatplus Esi Client /'.InstalledVersions::getPrettyVersion('seatplus/esi-client').'/'.EsiConfiguration::getInstance()->http_user_agent,
+        ]);
+
+        if (EsiConfiguration::getInstance()->compatibility_date !== null) {
+            $requestHeaders['X-Compatibility-Date'] = EsiConfiguration::getInstance()->compatibility_date;
+        }
+
         try {
             $response = $this->client->request($method, $uri, [
-                RequestOptions::HEADERS => array_merge($headers, [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => 'Seatplus Esi Client /'.InstalledVersions::getPrettyVersion('seatplus/esi-client').'/'.EsiConfiguration::getInstance()->http_user_agent,
-                ]),
+                RequestOptions::HEADERS => $requestHeaders,
                 RequestOptions::BODY => $body,
             ]);
         } catch (ClientException|ServerException $e) {
+            $statusCode = $e->getResponse()->getStatusCode();
             $this->logFetcherActivity('error', $e->getResponse(), $method, $uri, $start);
 
             $this->logger->debug(sprintf(
@@ -94,6 +105,16 @@ class GuzzleFetcher
                 $e->getResponse()->getBody()->getContents()
             ));
 
+            if ($statusCode === 429) {
+                $retryAfter = (int) ($e->getResponse()->getHeader('Retry-After')[0] ?? 60);
+
+                throw new EsiRateLimitedException($retryAfter);
+            }
+
+            if ($statusCode === 420) {
+                throw new EsiErrorLimitedException;
+            }
+
             // Raise the exception that should be handled by the caller
             throw new RequestFailedException(
                 $e,
@@ -101,7 +122,7 @@ class GuzzleFetcher
                     $e->getResponse()->getBody()->getContents(),
                     $e->getResponse()->getHeaders(),
                     'now',
-                    $e->getResponse()->getStatusCode()
+                    $statusCode
                 )
             );
         }
@@ -128,13 +149,14 @@ class GuzzleFetcher
         $message = $is_cache_loaded
             ? sprintf('Cache loaded for %s, [t: %s]', $uri, number_format(microtime(true) - $start, 2))
             : sprintf(
-                '[http %d, %s] %s -> %s [t/e: %Fs/%s]',
+                '[http %d, %s] %s -> %s [t/e: %Fs/%s ratelimit-remaining: %s]',
                 $response->getStatusCode(),
                 strtolower($response->getReasonPhrase()),
                 $method,
                 $uri,
                 number_format(microtime(true) - $start, 2),
-                implode(' ', $response->getHeader('X-Esi-Error-Limit-Remain'))
+                implode(' ', $response->getHeader('X-Esi-Error-Limit-Remain')),
+                implode(' ', $response->getHeader('X-Ratelimit-Remaining'))
             );
 
         match ($level) {

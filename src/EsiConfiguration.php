@@ -44,6 +44,11 @@ class EsiConfiguration
 
         // Fetching
         public string $fetcher = GuzzleFetcher::class,
+
+        // Versioning — X-Compatibility-Date header value (YYYY-MM-DD).
+        // Only needed for new-style ESI endpoints without a URL version prefix.
+        // Leave null for all existing versioned endpoints (/v5/...).
+        public ?string $compatibility_date = null,
     ) {}
 
     public static function getInstance(...$args): self
