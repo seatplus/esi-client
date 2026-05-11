@@ -3,24 +3,24 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\Insurance\GetInsurancePricesItem;
+use Seatplus\EsiClient\Generated\Responses\InsurancePricesGetItem;
 
 /**
  * ESI tag: Insurance
  *
- * Generated from ESI OpenAPI spec (compatibility date: 2025-10-01).
+ * Generated from ESI OpenAPI spec (compatibility date: 2025-12-16).
  * Do not edit manually — run bin/generate.php instead.
  */
 class InsuranceResource extends AbstractResource
 {
     /**
-     * @return EsiResult<array<GetInsurancePricesItem>>
+     * @return EsiResult<array<InsurancePricesGetItem>>
      */
-    public function getInsurancePrices(?string $language = null): EsiResult
+    public function getInsurancePrices(): EsiResult
     {
-        $response = $this->client->invoke('get', '/insurance/prices/', [], 'latest', ['language' => $language]);
+        $response = $this->client->invoke('get', '/insurance/prices', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetInsurancePricesItem::from($item),
+            fn(object $item) => InsurancePricesGetItem::from($item),
             (array) $response->data,
         ));
     }

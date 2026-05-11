@@ -3,66 +3,66 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseAncestriesItem;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseAsteroidBeltsAsteroidBeltIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseBloodlinesItem;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseCategoriesCategoryIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseConstellationsConstellationIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseFactionsItem;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseGraphicsGraphicIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseGroupsGroupIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseMoonsMoonIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniversePlanetsPlanetIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseRacesItem;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseRegionsRegionIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseStargatesStargateIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseStarsStarIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseStationsStationIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseStructuresStructureIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseSystemJumpsItem;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseSystemKillsItem;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseSystemsSystemIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseTypesTypeIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\PostUniverseIdsResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\PostUniverseNamesItem;
+use Seatplus\EsiClient\Generated\Responses\UniverseAncestriesGetItem;
+use Seatplus\EsiClient\Generated\Responses\UniverseAsteroidBeltsAsteroidBeltIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseBloodlinesGetItem;
+use Seatplus\EsiClient\Generated\Responses\UniverseCategoriesCategoryIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseConstellationsConstellationIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseFactionsGetItem;
+use Seatplus\EsiClient\Generated\Responses\UniverseGraphicsGraphicIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseGroupsGroupIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseIdsPost;
+use Seatplus\EsiClient\Generated\Responses\UniverseMoonsMoonIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseNamesPostItem;
+use Seatplus\EsiClient\Generated\Responses\UniversePlanetsPlanetIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseRacesGetItem;
+use Seatplus\EsiClient\Generated\Responses\UniverseRegionsRegionIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseStargatesStargateIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseStarsStarIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseStationsStationIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseStructuresStructureIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseSystemJumpsGetItem;
+use Seatplus\EsiClient\Generated\Responses\UniverseSystemKillsGetItem;
+use Seatplus\EsiClient\Generated\Responses\UniverseSystemsSystemIdGet;
+use Seatplus\EsiClient\Generated\Responses\UniverseTypesTypeIdGet;
 
 /**
  * ESI tag: Universe
  *
- * Generated from ESI OpenAPI spec (compatibility date: 2025-10-01).
+ * Generated from ESI OpenAPI spec (compatibility date: 2025-12-16).
  * Do not edit manually — run bin/generate.php instead.
  */
 class UniverseResource extends AbstractResource
 {
     /**
-     * @return EsiResult<array<GetUniverseAncestriesItem>>
+     * @return EsiResult<array<UniverseAncestriesGetItem>>
      */
-    public function getUniverseAncestries(?string $language = null): EsiResult
+    public function getUniverseAncestries(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/ancestries/', [], 'latest', ['language' => $language]);
+        $response = $this->client->invoke('get', '/universe/ancestries', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetUniverseAncestriesItem::from($item),
+            fn(object $item) => UniverseAncestriesGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<GetUniverseAsteroidBeltsAsteroidBeltIdResponse>
+     * @return EsiResult<UniverseAsteroidBeltsAsteroidBeltIdGet>
      */
     public function getUniverseAsteroidBeltsAsteroidBeltId(int $asteroidBeltId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/asteroid_belts/{asteroid_belt_id}/', ['asteroid_belt_id' => $asteroidBeltId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniverseAsteroidBeltsAsteroidBeltIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/asteroid_belts/{asteroid_belt_id}', ['asteroid_belt_id' => $asteroidBeltId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseAsteroidBeltsAsteroidBeltIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<array<GetUniverseBloodlinesItem>>
+     * @return EsiResult<array<UniverseBloodlinesGetItem>>
      */
-    public function getUniverseBloodlines(?string $language = null): EsiResult
+    public function getUniverseBloodlines(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/bloodlines/', [], 'latest', ['language' => $language]);
+        $response = $this->client->invoke('get', '/universe/bloodlines', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetUniverseBloodlinesItem::from($item),
+            fn(object $item) => UniverseBloodlinesGetItem::from($item),
             (array) $response->data,
         ));
     }
@@ -72,19 +72,19 @@ class UniverseResource extends AbstractResource
      */
     public function getUniverseCategories(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/categories/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/universe/categories', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseCategoriesCategoryIdResponse>
+     * @return EsiResult<UniverseCategoriesCategoryIdGet>
      */
-    public function getUniverseCategoriesCategoryId(int $categoryId, ?string $language = null): EsiResult
+    public function getUniverseCategoriesCategoryId(int $categoryId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/categories/{category_id}/', ['category_id' => $categoryId], 'latest', ['language' => $language]);
-        return EsiResult::fromResponse($response, GetUniverseCategoriesCategoryIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/categories/{category_id}', ['category_id' => $categoryId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseCategoriesCategoryIdGet::from($response->data));
     }
 
     /**
@@ -92,29 +92,29 @@ class UniverseResource extends AbstractResource
      */
     public function getUniverseConstellations(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/constellations/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/universe/constellations', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseConstellationsConstellationIdResponse>
+     * @return EsiResult<UniverseConstellationsConstellationIdGet>
      */
-    public function getUniverseConstellationsConstellationId(int $constellationId, ?string $language = null): EsiResult
+    public function getUniverseConstellationsConstellationId(int $constellationId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/constellations/{constellation_id}/', ['constellation_id' => $constellationId], 'latest', ['language' => $language]);
-        return EsiResult::fromResponse($response, GetUniverseConstellationsConstellationIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/constellations/{constellation_id}', ['constellation_id' => $constellationId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseConstellationsConstellationIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<array<GetUniverseFactionsItem>>
+     * @return EsiResult<array<UniverseFactionsGetItem>>
      */
-    public function getUniverseFactions(?string $language = null): EsiResult
+    public function getUniverseFactions(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/factions/', [], 'latest', ['language' => $language]);
+        $response = $this->client->invoke('get', '/universe/factions', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetUniverseFactionsItem::from($item),
+            fn(object $item) => UniverseFactionsGetItem::from($item),
             (array) $response->data,
         ));
     }
@@ -124,89 +124,89 @@ class UniverseResource extends AbstractResource
      */
     public function getUniverseGraphics(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/graphics/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/universe/graphics', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseGraphicsGraphicIdResponse>
+     * @return EsiResult<UniverseGraphicsGraphicIdGet>
      */
     public function getUniverseGraphicsGraphicId(int $graphicId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/graphics/{graphic_id}/', ['graphic_id' => $graphicId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniverseGraphicsGraphicIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/graphics/{graphic_id}', ['graphic_id' => $graphicId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseGraphicsGraphicIdGet::from($response->data));
     }
 
     /**
      * @return EsiResult<array<int>>
-     * @paginated    Use $page parameter to iterate pages.
+     * @paginated Use $page param to iterate pages.
      */
     public function getUniverseGroups(int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/groups/', [], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/universe/groups', [], 'latest', ['page' => $page]);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseGroupsGroupIdResponse>
+     * @return EsiResult<UniverseGroupsGroupIdGet>
      */
-    public function getUniverseGroupsGroupId(int $groupId, ?string $language = null): EsiResult
+    public function getUniverseGroupsGroupId(int $groupId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/groups/{group_id}/', ['group_id' => $groupId], 'latest', ['language' => $language]);
-        return EsiResult::fromResponse($response, GetUniverseGroupsGroupIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/groups/{group_id}', ['group_id' => $groupId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseGroupsGroupIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<PostUniverseIdsResponse>
+     * @return EsiResult<UniverseIdsPost>
      */
-    public function postUniverseIds(mixed $names, ?string $language = null): EsiResult
+    public function postUniverseIds(mixed $requestBody): EsiResult
     {
-        $response = $this->client->invoke('post', '/universe/ids/', [], 'latest', ['language' => $language], (array) $names);
-        return EsiResult::fromResponse($response, PostUniverseIdsResponse::from($response->data));
+        $response = $this->client->invoke('post', '/universe/ids', [], 'latest', [], (array) $requestBody);
+        return EsiResult::fromResponse($response, UniverseIdsPost::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetUniverseMoonsMoonIdResponse>
+     * @return EsiResult<UniverseMoonsMoonIdGet>
      */
     public function getUniverseMoonsMoonId(int $moonId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/moons/{moon_id}/', ['moon_id' => $moonId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniverseMoonsMoonIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/moons/{moon_id}', ['moon_id' => $moonId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseMoonsMoonIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<array<PostUniverseNamesItem>>
+     * @return EsiResult<array<UniverseNamesPostItem>>
      */
-    public function postUniverseNames(mixed $ids): EsiResult
+    public function postUniverseNames(mixed $requestBody): EsiResult
     {
-        $response = $this->client->invoke('post', '/universe/names/', [], 'latest', [], (array) $ids);
+        $response = $this->client->invoke('post', '/universe/names', [], 'latest', [], (array) $requestBody);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => PostUniverseNamesItem::from($item),
+            fn(object $item) => UniverseNamesPostItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<GetUniversePlanetsPlanetIdResponse>
+     * @return EsiResult<UniversePlanetsPlanetIdGet>
      */
     public function getUniversePlanetsPlanetId(int $planetId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/planets/{planet_id}/', ['planet_id' => $planetId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniversePlanetsPlanetIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/planets/{planet_id}', ['planet_id' => $planetId], 'latest', []);
+        return EsiResult::fromResponse($response, UniversePlanetsPlanetIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<array<GetUniverseRacesItem>>
+     * @return EsiResult<array<UniverseRacesGetItem>>
      */
-    public function getUniverseRaces(?string $language = null): EsiResult
+    public function getUniverseRaces(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/races/', [], 'latest', ['language' => $language]);
+        $response = $this->client->invoke('get', '/universe/races', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetUniverseRacesItem::from($item),
+            fn(object $item) => UniverseRacesGetItem::from($item),
             (array) $response->data,
         ));
     }
@@ -216,46 +216,46 @@ class UniverseResource extends AbstractResource
      */
     public function getUniverseRegions(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/regions/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/universe/regions', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseRegionsRegionIdResponse>
+     * @return EsiResult<UniverseRegionsRegionIdGet>
      */
-    public function getUniverseRegionsRegionId(int $regionId, ?string $language = null): EsiResult
+    public function getUniverseRegionsRegionId(int $regionId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/regions/{region_id}/', ['region_id' => $regionId], 'latest', ['language' => $language]);
-        return EsiResult::fromResponse($response, GetUniverseRegionsRegionIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/regions/{region_id}', ['region_id' => $regionId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseRegionsRegionIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetUniverseStargatesStargateIdResponse>
+     * @return EsiResult<UniverseStargatesStargateIdGet>
      */
     public function getUniverseStargatesStargateId(int $stargateId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/stargates/{stargate_id}/', ['stargate_id' => $stargateId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniverseStargatesStargateIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/stargates/{stargate_id}', ['stargate_id' => $stargateId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseStargatesStargateIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetUniverseStarsStarIdResponse>
+     * @return EsiResult<UniverseStarsStarIdGet>
      */
     public function getUniverseStarsStarId(int $starId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/stars/{star_id}/', ['star_id' => $starId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniverseStarsStarIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/stars/{star_id}', ['star_id' => $starId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseStarsStarIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetUniverseStationsStationIdResponse>
+     * @return EsiResult<UniverseStationsStationIdGet>
      */
     public function getUniverseStationsStationId(int $stationId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/stations/{station_id}/', ['station_id' => $stationId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniverseStationsStationIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/stations/{station_id}', ['station_id' => $stationId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseStationsStationIdGet::from($response->data));
     }
 
     /**
@@ -263,42 +263,42 @@ class UniverseResource extends AbstractResource
      */
     public function getUniverseStructures(?string $filter = null): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/structures/', [], 'latest', ['filter' => $filter]);
+        $response = $this->client->invoke('get', '/universe/structures', [], 'latest', ['filter' => $filter]);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseStructuresStructureIdResponse>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<UniverseStructuresStructureIdGet>
+     * @scope esi-universe.read_structures.v1
      */
     public function getUniverseStructuresStructureId(int $structureId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/structures/{structure_id}/', ['structure_id' => $structureId], 'latest', []);
-        return EsiResult::fromResponse($response, GetUniverseStructuresStructureIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/structures/{structure_id}', ['structure_id' => $structureId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseStructuresStructureIdGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<array<GetUniverseSystemJumpsItem>>
+     * @return EsiResult<array<UniverseSystemJumpsGetItem>>
      */
     public function getUniverseSystemJumps(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/system_jumps/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/universe/system_jumps', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetUniverseSystemJumpsItem::from($item),
+            fn(object $item) => UniverseSystemJumpsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetUniverseSystemKillsItem>>
+     * @return EsiResult<array<UniverseSystemKillsGetItem>>
      */
     public function getUniverseSystemKills(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/system_kills/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/universe/system_kills', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetUniverseSystemKillsItem::from($item),
+            fn(object $item) => UniverseSystemKillsGetItem::from($item),
             (array) $response->data,
         ));
     }
@@ -308,39 +308,39 @@ class UniverseResource extends AbstractResource
      */
     public function getUniverseSystems(): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/systems/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/universe/systems', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseSystemsSystemIdResponse>
+     * @return EsiResult<UniverseSystemsSystemIdGet>
      */
-    public function getUniverseSystemsSystemId(int $systemId, ?string $language = null): EsiResult
+    public function getUniverseSystemsSystemId(int $systemId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/systems/{system_id}/', ['system_id' => $systemId], 'latest', ['language' => $language]);
-        return EsiResult::fromResponse($response, GetUniverseSystemsSystemIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/systems/{system_id}', ['system_id' => $systemId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseSystemsSystemIdGet::from($response->data));
     }
 
     /**
      * @return EsiResult<array<int>>
-     * @paginated    Use $page parameter to iterate pages.
+     * @paginated Use $page param to iterate pages.
      */
     public function getUniverseTypes(int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/types/', [], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/universe/types', [], 'latest', ['page' => $page]);
         /** @var array<int> $data */
-        $data = array_values((array) $response->data);
+        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
         return EsiResult::fromResponse($response, $data);
     }
 
     /**
-     * @return EsiResult<GetUniverseTypesTypeIdResponse>
+     * @return EsiResult<UniverseTypesTypeIdGet>
      */
-    public function getUniverseTypesTypeId(int $typeId, ?string $language = null): EsiResult
+    public function getUniverseTypesTypeId(int $typeId): EsiResult
     {
-        $response = $this->client->invoke('get', '/universe/types/{type_id}/', ['type_id' => $typeId], 'latest', ['language' => $language]);
-        return EsiResult::fromResponse($response, GetUniverseTypesTypeIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/universe/types/{type_id}', ['type_id' => $typeId], 'latest', []);
+        return EsiResult::fromResponse($response, UniverseTypesTypeIdGet::from($response->data));
     }
 }

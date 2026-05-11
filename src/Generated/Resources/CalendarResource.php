@@ -3,60 +3,60 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\Calendar\GetCharactersCharacterIdCalendarEventIdAttendeesItem;
-use Seatplus\EsiClient\Generated\Responses\Calendar\GetCharactersCharacterIdCalendarEventIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Calendar\GetCharactersCharacterIdCalendarItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdCalendarGetItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdCalendarEventIdGet;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdCalendarEventIdAttendeesGetItem;
 
 /**
  * ESI tag: Calendar
  *
- * Generated from ESI OpenAPI spec (compatibility date: 2025-10-01).
+ * Generated from ESI OpenAPI spec (compatibility date: 2025-12-16).
  * Do not edit manually — run bin/generate.php instead.
  */
 class CalendarResource extends AbstractResource
 {
     /**
-     * @return EsiResult<array<GetCharactersCharacterIdCalendarItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CharactersCharacterIdCalendarGetItem>>
+     * @scope esi-calendar.read_calendar_events.v1
      */
     public function getCharactersCharacterIdCalendar(int $characterId, ?int $fromEvent = null): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/calendar/', ['character_id' => $characterId], 'latest', ['from_event' => $fromEvent]);
+        $response = $this->client->invoke('get', '/characters/{character_id}/calendar', ['character_id' => $characterId], 'latest', ['from_event' => $fromEvent]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCharactersCharacterIdCalendarItem::from($item),
+            fn(object $item) => CharactersCharacterIdCalendarGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<GetCharactersCharacterIdCalendarEventIdResponse>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<CharactersCharacterIdCalendarEventIdGet>
+     * @scope esi-calendar.read_calendar_events.v1
      */
     public function getCharactersCharacterIdCalendarEventId(int $characterId, int $eventId): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/calendar/{event_id}/', ['character_id' => $characterId, 'event_id' => $eventId], 'latest', []);
-        return EsiResult::fromResponse($response, GetCharactersCharacterIdCalendarEventIdResponse::from($response->data));
+        $response = $this->client->invoke('get', '/characters/{character_id}/calendar/{event_id}', ['character_id' => $characterId, 'event_id' => $eventId], 'latest', []);
+        return EsiResult::fromResponse($response, CharactersCharacterIdCalendarEventIdGet::from($response->data));
     }
 
     /**
      * @return EsiResult<null>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @scope esi-calendar.respond_calendar_events.v1
      */
-    public function putCharactersCharacterIdCalendarEventId(int $characterId, int $eventId, mixed $response): EsiResult
+    public function putCharactersCharacterIdCalendarEventId(mixed $requestBody, int $characterId, int $eventId): EsiResult
     {
-        $response = $this->client->invoke('put', '/characters/{character_id}/calendar/{event_id}/', ['character_id' => $characterId, 'event_id' => $eventId], 'latest', [], (array) $response);
+        $response = $this->client->invoke('put', '/characters/{character_id}/calendar/{event_id}', ['character_id' => $characterId, 'event_id' => $eventId], 'latest', [], (array) $requestBody);
         return EsiResult::fromResponse($response, null);
     }
 
     /**
-     * @return EsiResult<array<GetCharactersCharacterIdCalendarEventIdAttendeesItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CharactersCharacterIdCalendarEventIdAttendeesGetItem>>
+     * @scope esi-calendar.read_calendar_events.v1
      */
     public function getCharactersCharacterIdCalendarEventIdAttendees(int $characterId, int $eventId): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/calendar/{event_id}/attendees/', ['character_id' => $characterId, 'event_id' => $eventId], 'latest', []);
+        $response = $this->client->invoke('get', '/characters/{character_id}/calendar/{event_id}/attendees', ['character_id' => $characterId, 'event_id' => $eventId], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCharactersCharacterIdCalendarEventIdAttendeesItem::from($item),
+            fn(object $item) => CharactersCharacterIdCalendarEventIdAttendeesGetItem::from($item),
             (array) $response->data,
         ));
     }

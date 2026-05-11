@@ -3,140 +3,140 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetCharactersCharacterIdContractsContractIdBidsItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetCharactersCharacterIdContractsContractIdItemsItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetCharactersCharacterIdContractsItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetContractsPublicBidsContractIdItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetContractsPublicItemsContractIdItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetContractsPublicRegionIdItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetCorporationsCorporationIdContractsContractIdBidsItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetCorporationsCorporationIdContractsContractIdItemsItem;
-use Seatplus\EsiClient\Generated\Responses\Contracts\GetCorporationsCorporationIdContractsItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdContractsGetItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdContractsContractIdBidsGetItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdContractsContractIdItemsGetItem;
+use Seatplus\EsiClient\Generated\Responses\ContractsPublicBidsContractIdGetItem;
+use Seatplus\EsiClient\Generated\Responses\ContractsPublicItemsContractIdGetItem;
+use Seatplus\EsiClient\Generated\Responses\ContractsPublicRegionIdGetItem;
+use Seatplus\EsiClient\Generated\Responses\CorporationsCorporationIdContractsGetItem;
+use Seatplus\EsiClient\Generated\Responses\CorporationsCorporationIdContractsContractIdBidsGetItem;
+use Seatplus\EsiClient\Generated\Responses\CorporationsCorporationIdContractsContractIdItemsGetItem;
 
 /**
  * ESI tag: Contracts
  *
- * Generated from ESI OpenAPI spec (compatibility date: 2025-10-01).
+ * Generated from ESI OpenAPI spec (compatibility date: 2025-12-16).
  * Do not edit manually — run bin/generate.php instead.
  */
 class ContractsResource extends AbstractResource
 {
     /**
-     * @return EsiResult<array<GetCharactersCharacterIdContractsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<CharactersCharacterIdContractsGetItem>>
+     * @scope esi-contracts.read_character_contracts.v1
+     * @paginated Use $page param to iterate pages.
      */
     public function getCharactersCharacterIdContracts(int $characterId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/contracts/', ['character_id' => $characterId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/characters/{character_id}/contracts', ['character_id' => $characterId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCharactersCharacterIdContractsItem::from($item),
+            fn(object $item) => CharactersCharacterIdContractsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetCharactersCharacterIdContractsContractIdBidsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CharactersCharacterIdContractsContractIdBidsGetItem>>
+     * @scope esi-contracts.read_character_contracts.v1
      */
     public function getCharactersCharacterIdContractsContractIdBids(int $characterId, int $contractId): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/contracts/{contract_id}/bids/', ['character_id' => $characterId, 'contract_id' => $contractId], 'latest', []);
+        $response = $this->client->invoke('get', '/characters/{character_id}/contracts/{contract_id}/bids', ['character_id' => $characterId, 'contract_id' => $contractId], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCharactersCharacterIdContractsContractIdBidsItem::from($item),
+            fn(object $item) => CharactersCharacterIdContractsContractIdBidsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetCharactersCharacterIdContractsContractIdItemsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CharactersCharacterIdContractsContractIdItemsGetItem>>
+     * @scope esi-contracts.read_character_contracts.v1
      */
     public function getCharactersCharacterIdContractsContractIdItems(int $characterId, int $contractId): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/contracts/{contract_id}/items/', ['character_id' => $characterId, 'contract_id' => $contractId], 'latest', []);
+        $response = $this->client->invoke('get', '/characters/{character_id}/contracts/{contract_id}/items', ['character_id' => $characterId, 'contract_id' => $contractId], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCharactersCharacterIdContractsContractIdItemsItem::from($item),
+            fn(object $item) => CharactersCharacterIdContractsContractIdItemsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetContractsPublicBidsContractIdItem>>
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<ContractsPublicBidsContractIdGetItem>>
+     * @paginated Use $page param to iterate pages.
      */
     public function getContractsPublicBidsContractId(int $contractId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/contracts/public/bids/{contract_id}/', ['contract_id' => $contractId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/contracts/public/bids/{contract_id}', ['contract_id' => $contractId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetContractsPublicBidsContractIdItem::from($item),
+            fn(object $item) => ContractsPublicBidsContractIdGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetContractsPublicItemsContractIdItem>>
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<ContractsPublicItemsContractIdGetItem>>
+     * @paginated Use $page param to iterate pages.
      */
     public function getContractsPublicItemsContractId(int $contractId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/contracts/public/items/{contract_id}/', ['contract_id' => $contractId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/contracts/public/items/{contract_id}', ['contract_id' => $contractId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetContractsPublicItemsContractIdItem::from($item),
+            fn(object $item) => ContractsPublicItemsContractIdGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetContractsPublicRegionIdItem>>
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<ContractsPublicRegionIdGetItem>>
+     * @paginated Use $page param to iterate pages.
      */
     public function getContractsPublicRegionId(int $regionId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/contracts/public/{region_id}/', ['region_id' => $regionId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/contracts/public/{region_id}', ['region_id' => $regionId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetContractsPublicRegionIdItem::from($item),
+            fn(object $item) => ContractsPublicRegionIdGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetCorporationsCorporationIdContractsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<CorporationsCorporationIdContractsGetItem>>
+     * @scope esi-contracts.read_corporation_contracts.v1
+     * @paginated Use $page param to iterate pages.
      */
     public function getCorporationsCorporationIdContracts(int $corporationId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/corporations/{corporation_id}/contracts/', ['corporation_id' => $corporationId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/corporations/{corporation_id}/contracts', ['corporation_id' => $corporationId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCorporationsCorporationIdContractsItem::from($item),
+            fn(object $item) => CorporationsCorporationIdContractsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetCorporationsCorporationIdContractsContractIdBidsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<CorporationsCorporationIdContractsContractIdBidsGetItem>>
+     * @scope esi-contracts.read_corporation_contracts.v1
+     * @paginated Use $page param to iterate pages.
      */
     public function getCorporationsCorporationIdContractsContractIdBids(int $contractId, int $corporationId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/corporations/{corporation_id}/contracts/{contract_id}/bids/', ['contract_id' => $contractId, 'corporation_id' => $corporationId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/corporations/{corporation_id}/contracts/{contract_id}/bids', ['contract_id' => $contractId, 'corporation_id' => $corporationId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCorporationsCorporationIdContractsContractIdBidsItem::from($item),
+            fn(object $item) => CorporationsCorporationIdContractsContractIdBidsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetCorporationsCorporationIdContractsContractIdItemsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CorporationsCorporationIdContractsContractIdItemsGetItem>>
+     * @scope esi-contracts.read_corporation_contracts.v1
      */
     public function getCorporationsCorporationIdContractsContractIdItems(int $contractId, int $corporationId): EsiResult
     {
-        $response = $this->client->invoke('get', '/corporations/{corporation_id}/contracts/{contract_id}/items/', ['contract_id' => $contractId, 'corporation_id' => $corporationId], 'latest', []);
+        $response = $this->client->invoke('get', '/corporations/{corporation_id}/contracts/{contract_id}/items', ['contract_id' => $contractId, 'corporation_id' => $corporationId], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCorporationsCorporationIdContractsContractIdItemsItem::from($item),
+            fn(object $item) => CorporationsCorporationIdContractsContractIdItemsGetItem::from($item),
             (array) $response->data,
         ));
     }

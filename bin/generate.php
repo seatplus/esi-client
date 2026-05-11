@@ -2,432 +2,401 @@
 <?php
 
 /**
- * ESI SDK Generator
+ * ESI SDK Generator — OpenAPI 3.1.0 edition
  *
- * Fetches the ESI OpenAPI spec and generates:
- *   - src/Generated/Resources/{Tag}Resource.php  (one per ESI tag group)
- *   - src/Generated/Responses/{Tag}/{OperationId}Response.php  (DTOs)
+ * Fetches the ESI OpenAPI YAML spec and generates:
+ *   - src/Generated/Resources/{Tag}Resource.php  (one per tag)
+ *   - src/Generated/Responses/{SchemaName}.php   (flat, one per schema)
  *
  * Usage:
- *   php bin/generate.php
- *   php bin/generate.php --spec=/path/to/swagger.json   (use local file)
- *   php bin/generate.php --dry-run                       (print to stdout, don't write)
- *
- * Compatibility-date policy:
- *   The spec is fetched from the URL defined in ESI_SPEC_URL (with ?version=_latest).
- *   The compatibility_date constant at the top of this file must be updated when the
- *   spec is regenerated. A major version bump to esi-client is required when the
- *   compatibility_date changes (it affects the X-Compatibility-Date header sent to ESI).
+ *   php bin/generate.php [--compatibility-date=2025-12-16] [--spec=/path/to/openapi.yaml] [--dry-run]
  */
 
 declare(strict_types=1);
 
+require __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Yaml\Yaml;
+
 // ---------------------------------------------------------------------------
-// Configuration
+// CLI args
 // ---------------------------------------------------------------------------
 
-const ESI_SPEC_URL = 'https://esi.evetech.net/latest/swagger.json';
-
-/** The X-Compatibility-Date sent with every ESI request by this client version. */
-const ESI_COMPATIBILITY_DATE = '2025-10-01';
-
-/** Parameters that are ESI infrastructure noise — never exposed in method signatures. */
-const SKIP_PARAMS = ['datasource', 'If-None-Match', 'token', 'user_agent', 'Accept-Language'];
-
-$dryRun   = in_array('--dry-run', $argv, true);
-$specFile = null;
-foreach ($argv as $arg) {
-    if (str_starts_with($arg, '--spec=')) {
-        $specFile = substr($arg, 7);
+$args = [];
+foreach (array_slice($argv, 1) as $arg) {
+    if (str_starts_with($arg, '--')) {
+        [$k, $v] = explode('=', ltrim($arg, '-'), 2) + [1 => 'true'];
+        $args[$k] = $v;
     }
 }
 
-$generatedDir = __DIR__.'/../src/Generated';
+$dryRun = isset($args['dry-run']);
+$specFile = $args['spec'] ?? null;
 
 // ---------------------------------------------------------------------------
-// Load spec
+// Fetch compatibility dates and spec
 // ---------------------------------------------------------------------------
 
-echo "Loading ESI spec...\n";
-$specJson = $specFile ? file_get_contents($specFile) : file_get_contents(ESI_SPEC_URL);
-if ($specJson === false) {
-    fwrite(STDERR, "ERROR: Failed to load ESI spec.\n");
-    exit(1);
+$COMPAT_DATE_URL = 'https://esi.evetech.net/meta/compatibility-dates';
+$SPEC_BASE_URL   = 'https://esi.evetech.net/meta/openapi.yaml';
+
+if (isset($args['compatibility-date'])) {
+    $compatDate = $args['compatibility-date'];
+} else {
+    echo "Fetching compatibility dates...\n";
+    $datesJson = file_get_contents($COMPAT_DATE_URL);
+    $dates = json_decode($datesJson, true)['compatibility_dates'] ?? [];
+    $compatDate = $dates[0] ?? '2025-12-16'; // first = latest
+    echo "Using compatibility_date: {$compatDate}\n";
 }
-$spec = json_decode($specJson, true, 512, JSON_THROW_ON_ERROR);
-echo "Loaded. Processing ".count($spec['paths'])." paths.\n";
+
+if ($specFile) {
+    echo "Loading spec from file: {$specFile}\n";
+    $rawSpec = file_get_contents($specFile);
+} else {
+    $specUrl = "{$SPEC_BASE_URL}?compatibility_date={$compatDate}";
+    echo "Fetching spec from {$specUrl}...\n";
+    $rawSpec = file_get_contents($specUrl);
+}
+
+$spec = Yaml::parse($rawSpec);
+$schemas = $spec['components']['schemas'] ?? [];
+$paths   = $spec['paths'] ?? [];
+
+define('ESI_COMPATIBILITY_DATE', $compatDate);
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Output directories
 // ---------------------------------------------------------------------------
 
-function resolveParam(array $param, array $spec): array
-{
-    if (isset($param['$ref'])) {
-        $key = basename($param['$ref']);
-        return $spec['parameters'][$key] ?? $param;
-    }
-    return $param;
-}
+$generatedDir = __DIR__ . '/../src/Generated';
 
-function toCamelCase(string $snake): string
-{
-    return lcfirst(str_replace('_', '', ucwords($snake, '_')));
-}
+// ---------------------------------------------------------------------------
+// Helper: convert OAS3 type/format to PHP type
+// ---------------------------------------------------------------------------
 
-function toPascalCase(string $snake): string
+function oas3TypeToPhp(array $prop): string
 {
-    return str_replace('_', '', ucwords($snake, '_'));
-}
+    $type   = $prop['type'] ?? 'mixed';
+    $format = $prop['format'] ?? '';
 
-/** "Faction Warfare" → "FactionWarfareResource" */
-function tagToResourceClass(string $tag): string
-{
-    return str_replace(' ', '', ucwords($tag)).'Resource';
-}
-
-/** "Faction Warfare" → "FactionWarfare" (namespace subdir) */
-function tagToNamespace(string $tag): string
-{
-    return str_replace(' ', '', ucwords($tag));
-}
-
-/** Map swagger type to PHP type hint */
-function swaggerTypeToPhp(string $type, string $format = ''): string
-{
     return match (true) {
-        $type === 'integer'           => 'int',
-        $type === 'boolean'           => 'bool',
-        $type === 'number'            => 'float',
-        $type === 'string'            => 'string',
-        $type === 'array'             => 'array',
-        default                       => 'mixed',
+        $type === 'integer'                         => 'int',
+        $type === 'number'                          => 'float',
+        $type === 'boolean'                         => 'bool',
+        $type === 'string'                          => 'string',
+        $type === 'array'                           => 'array',
+        default                                     => 'mixed',
     };
 }
 
-/**
- * Generate a DTO class from a schema object.
- * Returns [className, phpCode, nestedDtos[]]
- * nestedDtos is an array of ['class'=>..., 'namespace'=>..., 'code'=>...]
- */
-function generateDto(
-    string $className,
-    string $namespace,
-    array $schema,
-    array $spec,
-    bool $isItem = false
-): array {
-    $properties = $schema['properties'] ?? [];
-    $required   = $schema['required'] ?? [];
+// ---------------------------------------------------------------------------
+// Helper: resolve a $ref string to a PHP type (or class name if object)
+// ---------------------------------------------------------------------------
 
-    if (empty($properties)) {
-        // Primitive or empty schema — don't generate a DTO
-        return [$className, null, []];
+/** @var array<string,string> $commonModelTypes  schemaName → 'int'|'string'|'float' */
+$commonModelTypes = [];
+
+foreach ($schemas as $name => $schema) {
+    if ($schema['x-common-model'] ?? false) {
+        $commonModelTypes[$name] = oas3TypeToPhp($schema);
     }
+}
 
-    $nestedDtos = [];
-
-    // Separate required vs optional
-    $requiredProps  = [];
-    $optionalProps  = [];
-    foreach ($properties as $propName => $propSchema) {
-        if (in_array($propName, $required, true)) {
-            $requiredProps[$propName] = $propSchema;
-        } else {
-            $optionalProps[$propName] = $propSchema;
-        }
-    }
-
-    $lines = [];
-    $fromLines = [];
-
-    foreach ([$requiredProps, $optionalProps] as $isOptional => $props) {
-        foreach ($props as $propName => $propSchema) {
-            $phpType = resolvePropType($propName, $propSchema, $className, $namespace, $spec, $nestedDtos);
-            $nullable = (bool) $isOptional;
-            if ($nullable) {
-                $lines[]     = "        public readonly ?{$phpType} \${$propName} = null,";
-                $fromLines[] = "            {$propName}: \$data->{$propName} ?? null,";
-            } else {
-                $lines[]     = "        public readonly {$phpType} \${$propName},";
-                $fromLines[] = "            {$propName}: \$data->{$propName},";
-            }
-        }
-    }
-
-    // Build from() body with casting for nested DTOs
-    $fromBody = buildFromBody($properties, $required, $className, $namespace, $nestedDtos);
-
-    $constructorBody = implode("\n", $lines);
-
-    $code = <<<PHP
-<?php
-
-namespace Seatplus\\EsiClient\\Generated\\Responses\\{$namespace};
-
-/**
- * Generated from ESI OpenAPI spec.
- * Do not edit manually — run bin/generate.php instead.
- */
-readonly class {$className}
+function resolveRef(string $ref, array $commonModelTypes): string
 {
-    public function __construct(
-{$constructorBody}
-    ) {}
-
-    public static function from(object \$data): self
-    {
-        return new self(
-{$fromBody}
-        );
-    }
-}
-PHP;
-
-    return [$className, $code, $nestedDtos];
+    $name = basename(str_replace('#/components/schemas/', '', $ref));
+    return $commonModelTypes[$name] ?? $name; // primitive or class name
 }
 
-/** Resolve the PHP type for a property, generating nested DTOs as needed. */
-function resolvePropType(
-    string $propName,
-    array $propSchema,
-    string $parentClass,
-    string $namespace,
-    array $spec,
-    array &$nestedDtos
-): string {
-    $type   = $propSchema['type'] ?? '';
-    $format = $propSchema['format'] ?? '';
+// ---------------------------------------------------------------------------
+// Helper: determine PHP type for a schema property
+// ---------------------------------------------------------------------------
 
-    if ($type === 'object' || isset($propSchema['properties'])) {
-        // Nested object — generate a sub-DTO
-        $nestedClass = $parentClass.toPascalCase($propName);
-        [$nc, $code, $subNested] = generateDto($nestedClass, $namespace, $propSchema, $spec);
-        if ($code) {
-            $nestedDtos[] = ['class' => $nestedClass, 'namespace' => $namespace, 'code' => $code];
-            $nestedDtos   = array_merge($nestedDtos, $subNested);
-        }
-        return $nestedClass;
+function propToPhpType(array $prop, array $commonModelTypes, array $schemas): string
+{
+    if (isset($prop['$ref'])) {
+        return resolveRef($prop['$ref'], $commonModelTypes);
     }
+
+    $type = $prop['type'] ?? 'mixed';
 
     if ($type === 'array') {
-        $items = $propSchema['items'] ?? [];
-        $itemType = $items['type'] ?? '';
-        if ($itemType === 'object' || isset($items['properties'])) {
-            $nestedClass = $parentClass.toPascalCase($propName).'Item';
-            [$nc, $code, $subNested] = generateDto($nestedClass, $namespace, $items, $spec);
-            if ($code) {
-                $nestedDtos[] = ['class' => $nestedClass, 'namespace' => $namespace, 'code' => $code];
-                $nestedDtos   = array_merge($nestedDtos, $subNested);
-            }
+        $items = $prop['items'] ?? [];
+        if (isset($items['$ref'])) {
+            $itemType = resolveRef($items['$ref'], $commonModelTypes);
+            return "array"; // @var array<{$itemType}> used in phpdoc
         }
         return 'array';
     }
 
-    return swaggerTypeToPhp($type, $format);
+    return oas3TypeToPhp($prop);
 }
 
-/** Build the body of the from() method, with proper casting for nested DTOs and arrays. */
-function buildFromBody(
+// ---------------------------------------------------------------------------
+// Helper: PascalCase tag → resource class name
+// ---------------------------------------------------------------------------
+
+function tagToResourceClass(string $tag): string
+{
+    return str_replace(' ', '', ucwords($tag)) . 'Resource';
+}
+
+// ---------------------------------------------------------------------------
+// Generate a DTO class for an object schema (or the items of an array schema)
+// ---------------------------------------------------------------------------
+
+function generateDtoClass(
+    string $className,
     array $properties,
     array $required,
-    string $parentClass,
-    string $namespace,
-    array $nestedDtos
+    array $commonModelTypes,
+    array $schemas,
+    string $suffix = ''
 ): string {
-    $nestedClassNames = array_column($nestedDtos, 'class');
+    $requiredSet = array_flip($required);
 
-    $lines = [];
-    // Required first
-    foreach ([$required, array_diff(array_keys($properties), $required)] as $isOptional => $propNames) {
-        foreach ((array) $propNames as $propName) {
-            if (! isset($properties[$propName])) {
-                continue;
-            }
-            $propSchema = $properties[$propName];
-            $type       = $propSchema['type'] ?? '';
-
-            if ($type === 'object' || isset($propSchema['properties'])) {
-                $nestedClass = $parentClass.toPascalCase($propName);
-                if ((bool) $isOptional) {
-                    $lines[] = "            {$propName}: isset(\$data->{$propName}) ? {$nestedClass}::from(\$data->{$propName}) : null,";
-                } else {
-                    $lines[] = "            {$propName}: {$nestedClass}::from(\$data->{$propName}),";
-                }
-                continue;
-            }
-
-            if ($type === 'array') {
-                $items     = $propSchema['items'] ?? [];
-                $itemType  = $items['type'] ?? '';
-                $nestedClass = $parentClass.toPascalCase($propName).'Item';
-                if (($itemType === 'object' || isset($items['properties'])) && in_array($nestedClass, $nestedClassNames, true)) {
-                    if ((bool) $isOptional) {
-                        $lines[] = "            {$propName}: isset(\$data->{$propName}) ? array_map(fn(object \$i) => {$nestedClass}::from(\$i), (array) \$data->{$propName}) : null,";
-                    } else {
-                        $lines[] = "            {$propName}: array_map(fn(object \$i) => {$nestedClass}::from(\$i), (array) \$data->{$propName}),";
-                    }
-                    continue;
-                }
-            }
-
-            if ((bool) $isOptional) {
-                $lines[] = "            {$propName}: \$data->{$propName} ?? null,";
-            } else {
-                $lines[] = "            {$propName}: \$data->{$propName},";
-            }
+    // Split into required (non-nullable) and optional (nullable)
+    $requiredProps = [];
+    $optionalProps = [];
+    foreach ($properties as $propName => $prop) {
+        if (isset($requiredSet[$propName])) {
+            $requiredProps[$propName] = $prop;
+        } else {
+            $optionalProps[$propName] = $prop;
         }
     }
 
-    return implode("\n", $lines);
+    $constructorLines  = [];
+    $fromLines         = [];
+    $useStatements     = [];
+
+    foreach ($requiredProps as $propName => $prop) {
+        $phpType = propToPhpType($prop, $commonModelTypes, $schemas);
+        // Track class references for use statements
+        if (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+            $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$phpType};";
+        }
+        $constructorLines[] = "        public readonly {$phpType} \${$propName},";
+
+        if ($phpType === 'array') {
+            $items = $prop['items'] ?? [];
+            if (isset($items['$ref'])) {
+                $itemClass = resolveRef($items['$ref'], $commonModelTypes);
+                if (! in_array($itemClass, ['int','float','bool','string'], true)) {
+                    $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$itemClass};";
+                    $fromLines[] = "            {$propName}: array_map(fn(object \$i) => {$itemClass}::from(\$i), (array) (\$data->{$propName} ?? [])),";
+                } else {
+                    $fromLines[] = "            {$propName}: (array) (\$data->{$propName} ?? []),";
+                }
+            } else {
+                $fromLines[] = "            {$propName}: (array) (\$data->{$propName} ?? []),";
+            }
+        } elseif (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+            $fromLines[] = "            {$propName}: {$phpType}::from(\$data->{$propName}),";
+        } else {
+            $fromLines[] = "            {$propName}: \$data->{$propName},";
+        }
+    }
+
+    foreach ($optionalProps as $propName => $prop) {
+        $phpType = propToPhpType($prop, $commonModelTypes, $schemas);
+        if (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+            $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$phpType};";
+        }
+        if ($phpType === 'array') {
+            $constructorLines[] = "        public readonly ?array \${$propName} = null,";
+            $fromLines[] = "            {$propName}: isset(\$data->{$propName}) ? (array) \$data->{$propName} : null,";
+        } elseif (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+            $constructorLines[] = "        public readonly ?{$phpType} \${$propName} = null,";
+            $fromLines[] = "            {$propName}: isset(\$data->{$propName}) ? {$phpType}::from(\$data->{$propName}) : null,";
+        } elseif ($phpType === 'mixed') {
+            $constructorLines[] = "        public readonly mixed \${$propName} = null,";
+            $fromLines[] = "            {$propName}: \$data->{$propName} ?? null,";
+        } else {
+            $constructorLines[] = "        public readonly ?{$phpType} \${$propName} = null,";
+            $fromLines[] = "            {$propName}: \$data->{$propName} ?? null,";
+        }
+    }
+
+    $constructorBlock = implode("\n", $constructorLines);
+    $fromBlock        = implode("\n", $fromLines);
+    $useBlock         = empty($useStatements)
+        ? ''
+        : "\n" . implode("\n", array_unique($useStatements)) . "\n";
+
+    $fullName  = $className . $suffix;
+    $compatDate = ESI_COMPATIBILITY_DATE;
+
+    return <<<PHP
+    <?php
+
+    namespace Seatplus\\EsiClient\\Generated\\Responses;
+    {$useBlock}
+    /**
+     * Generated from ESI OpenAPI spec (compatibility date: {$compatDate}).
+     * Do not edit manually — run bin/generate.php instead.
+     */
+    readonly class {$fullName}
+    {
+        public function __construct(
+    {$constructorBlock}
+        ) {}
+
+        public static function from(object \$data): self
+        {
+            return new self(
+    {$fromBlock}
+            );
+        }
+    }
+    PHP;
 }
 
 // ---------------------------------------------------------------------------
-// Process operations
+// Tag → operations map
 // ---------------------------------------------------------------------------
 
-/** @var array<string, list<array>> $resourceOps  tag → list of operations */
-$resourceOps = [];
+$SKIP_PARAMS = ['AcceptLanguage', 'IfNoneMatch', 'CompatibilityDate', 'Tenant', 'IfModifiedSince'];
 
-/** @var array<string, array{namespace: string, code: string}> $allDtos */
-$allDtos = [];
+/** @var array<string, array<array>> $tagOps */
+$tagOps = [];
 
-foreach ($spec['paths'] as $path => $pathData) {
-    $pathLevelParams = array_map(
-        fn (array $p) => resolveParam($p, $spec),
-        $pathData['parameters'] ?? []
-    );
-
-    foreach (['get', 'post', 'put', 'delete'] as $httpMethod) {
-        if (! isset($pathData[$httpMethod])) {
+foreach ($paths as $path => $pathItem) {
+    foreach ($pathItem as $httpMethod => $op) {
+        if (! is_array($op) || ! isset($op['operationId'])) {
             continue;
         }
-        $op = $pathData[$httpMethod];
 
-        $tag         = $op['tags'][0] ?? 'Unknown';
-        $operationId = $op['operationId'] ?? '';
-        $methodName  = toCamelCase($operationId);
-        $namespace   = tagToNamespace($tag);
+        $tag        = str_replace(' ', '', ucwords($op['tags'][0] ?? 'Unknown'));
+        $operationId = $op['operationId'];
+        // method = camelCase(operationId)
+        $methodName = lcfirst($operationId);
 
-        // Collect and filter parameters
-        $opParams = array_map(
-            fn (array $p) => resolveParam($p, $spec),
-            $op['parameters'] ?? []
-        );
-        $allParams = array_merge($pathLevelParams, $opParams);
-
-        // Deduplicate by name (op-level overrides path-level)
-        $paramsByName = [];
-        foreach ($allParams as $p) {
-            $paramsByName[$p['name']] = $p;
+        // Collect params
+        $params = [];
+        foreach ($op['parameters'] ?? [] as $param) {
+            if (isset($param['$ref'])) {
+                // Shared param ref — get name from ref string
+                $paramName = basename(str_replace('#/components/parameters/', '', $param['$ref']));
+                if (in_array($paramName, $SKIP_PARAMS, true)) {
+                    continue;
+                }
+                // We don't know details from ref — shouldn't happen for real params
+                continue;
+            }
+            $params[] = $param;
         }
 
-        $filteredParams = array_filter(
-            $paramsByName,
-            fn (array $p) => ! in_array($p['name'], SKIP_PARAMS, true)
-        );
+        // requestBody
+        $requestBody = null;
+        $rbSchema = $op['requestBody']['content']['application/json']['schema'] ?? null;
+        if ($rbSchema) {
+            $requestBody = $rbSchema;
+        }
 
-        // Sort: required path first, required query/body next, optional last
-        usort($filteredParams, function (array $a, array $b): int {
-            $inOrder   = ['path' => 0, 'query' => 1, 'body' => 2, 'header' => 3];
-            $aRequired = $a['required'] ?? false;
-            $bRequired = $b['required'] ?? false;
-            // Required params always before optional
-            if ($aRequired !== $bRequired) {
-                return $bRequired <=> $aRequired; // true > false
-            }
-            return ($inOrder[$a['in']] ?? 9) <=> ($inOrder[$b['in']] ?? 9);
-        });
+        // Auth
+        $isAuth = ! empty($op['security']);
+        $scopes = $op['security'][0]['OAuth2'] ?? [];
 
-        // Determine response schema
-        $resp200    = $op['responses']['200'] ?? null;
-        $schema     = $resp200['schema'] ?? null;
-        $xPages     = isset($resp200['headers']['X-Pages']);
-        $isAuth     = isset($paramsByName['token']);
+        // Response schema
+        $resp200 = $op['responses']['200'] ?? [];
+        $respSchema = $resp200['content']['application/json']['schema'] ?? null;
+        $schemaRef  = $respSchema['$ref'] ?? null;
+        $schemaName = $schemaRef ? basename(str_replace('#/components/schemas/', '', $schemaRef)) : null;
 
-        $responseType = 'void';
-        $dtoClass     = null;
-        $returnPhpDoc = 'EsiResult<null>';
-        $phpItemType  = 'mixed';
-        $phpType      = 'mixed';
+        // X-Pages header
+        $xPages = isset($resp200['headers']['X-Pages']);
 
-        if ($schema) {
-            $stype = $schema['type'] ?? (isset($schema['properties']) ? 'object' : '');
+        // Determine response type
+        $schema        = $schemaName ? ($schemas[$schemaName] ?? []) : [];
+        $schemaType    = $schema['type'] ?? 'void';
+        $responseType  = 'void';
+        $dtoClass      = null;
+        $phpDocReturn  = 'EsiResult<null>';
+        $primitiveType = null;
+        $primitivePhp  = null;
 
-            if ($stype === 'object' || isset($schema['properties'])) {
+        if ($schemaName) {
+            if ($schemaType === 'object') {
                 $responseType = 'object';
-                $dtoClass     = toPascalCase($operationId).'Response';
-                [$dtoClass, $dtoCode, $nestedDtos] = generateDto($dtoClass, $namespace, $schema, $spec);
-                if ($dtoCode) {
-                    $allDtos[$dtoClass] = ['namespace' => $namespace, 'code' => $dtoCode];
-                    foreach ($nestedDtos as $nd) {
-                        $allDtos[$nd['class']] = ['namespace' => $nd['namespace'], 'code' => $nd['code']];
-                    }
-                }
-                $returnPhpDoc = "EsiResult<{$dtoClass}>";
-
-            } elseif ($stype === 'array') {
-                $items    = $schema['items'] ?? [];
-                $itemType = $items['type'] ?? (isset($items['properties']) ? 'object' : '');
-
-                if ($itemType === 'object' || isset($items['properties'])) {
-                    $responseType = $xPages ? 'paginated_array' : 'plain_array';
-                    $dtoClass     = toPascalCase($operationId).'Item';
-                    [$dtoClass, $dtoCode, $nestedDtos] = generateDto($dtoClass, $namespace, $items, $spec);
-                    if ($dtoCode) {
-                        $allDtos[$dtoClass] = ['namespace' => $namespace, 'code' => $dtoCode];
-                        foreach ($nestedDtos as $nd) {
-                            $allDtos[$nd['class']] = ['namespace' => $nd['namespace'], 'code' => $nd['code']];
-                        }
-                    }
-                    $returnPhpDoc = "EsiResult<array<{$dtoClass}>>";
+                $dtoClass     = $schemaName;
+                $phpDocReturn = "EsiResult<{$schemaName}>";
+            } elseif ($schemaType === 'array') {
+                $items = $schema['items'] ?? [];
+                if (isset($items['$ref'])) {
+                    // array<OtherSchema>
+                    $itemClass    = resolveRef($items['$ref'], $commonModelTypes);
+                    $responseType = 'array_ref';
+                    $dtoClass     = $itemClass;
+                    $phpDocReturn = "EsiResult<array<{$itemClass}>>";
+                } elseif (($items['type'] ?? '') === 'object') {
+                    // array<inline-object> → use SchemaNameItem DTO
+                    $responseType = 'array_item';
+                    $dtoClass     = $schemaName . 'Item';
+                    $phpDocReturn = "EsiResult<array<{$schemaName}Item>>";
                 } else {
-                    // Primitive array (array of int/string/etc.)
-                    $phpItemType  = swaggerTypeToPhp($itemType);
-                    $responseType = 'primitive_array';
-                    $returnPhpDoc = "EsiResult<array<{$phpItemType}>>";
+                    // array<primitive>
+                    $primitiveType = oas3TypeToPhp($items);
+                    $responseType  = 'array_primitive';
+                    $dtoClass      = null;
+                    $phpDocReturn  = "EsiResult<array<{$primitiveType}>>";
                 }
-            } else {
-                // Scalar (number/integer/string)
-                $phpType      = swaggerTypeToPhp($stype);
-                $phpItemType  = $phpType;
-                $responseType = 'scalar';
-                $returnPhpDoc = "EsiResult<{$phpType}>";
+            } elseif ($schemaType !== 'void') {
+                // primitive (e.g. wallet balance → float)
+                $responseType = 'primitive';
+                $primitivePhp = oas3TypeToPhp($schema);
+                $dtoClass     = null;
+                $phpDocReturn = "EsiResult<{$primitivePhp}>";
             }
         }
 
-        $resourceOps[$tag][] = [
-            'httpMethod'   => $httpMethod,
-            'path'         => $path,
-            'operationId'  => $operationId,
-            'methodName'   => $methodName,
-            'params'       => array_values($filteredParams),
-            'responseType' => $responseType,
-            'dtoClass'     => $dtoClass,
-            'namespace'    => $namespace,
-            'returnPhpDoc' => $returnPhpDoc,
-            'xPages'       => $xPages,
-            'isAuth'       => $isAuth,
-            'phpItemType'  => $phpItemType ?? ($phpType ?? 'mixed'),
+        $tagOps[$tag][] = [
+            'path'             => $path,
+            'httpMethod'       => $httpMethod,
+            'methodName'       => $methodName,
+            'params'           => $params,
+            'requestBody'      => $requestBody,
+            'isAuth'           => $isAuth,
+            'scopes'           => $scopes,
+            'schemaName'       => $schemaName,
+            'responseType'     => $responseType,
+            'dtoClass'         => $dtoClass,
+            'phpDocReturn'     => $phpDocReturn,
+            'xPages'           => $xPages,
+            'primitiveType'    => $primitiveType ?? ($primitivePhp ?? null),
+            '_commonModelTypes'=> $commonModelTypes,
         ];
     }
 }
 
 // ---------------------------------------------------------------------------
-// Generate resource files
+// Build method signature
 // ---------------------------------------------------------------------------
 
-function buildMethodSignature(array $op): string
+function buildMethodSig(array $op): string
 {
     $args = [];
+
+    // Sort: required path, required query/body, optional last
+    usort($op['params'], function ($a, $b) {
+        $aReq = $a['required'] ?? false;
+        $bReq = $b['required'] ?? false;
+        return $bReq <=> $aReq;
+    });
+
     foreach ($op['params'] as $param) {
-        // Body params have a schema.type, not a top-level type
-        $schemaType = $param['schema']['type'] ?? null;
-        $phpType  = swaggerTypeToPhp($param['type'] ?? ($schemaType ?? 'mixed'), $param['format'] ?? '');
-        if ($param['in'] === 'body') {
-            $phpType = 'mixed'; // body can be array or object depending on schema
+        $name     = lcfirst(str_replace('_', '', ucwords($param['name'], '_')));
+        $paramSchema = $param['schema'] ?? $param;
+        // Resolve $ref in param schema (e.g., CharacterID → int)
+        if (isset($paramSchema['$ref'])) {
+            $phpType = resolveRef($paramSchema['$ref'], $op['_commonModelTypes'] ?? []);
+            if (!in_array($phpType, ['int', 'float', 'string', 'bool', 'array'], true)) {
+                $phpType = 'mixed'; // unexpected object ref in param — use mixed
+            }
+        } else {
+            $phpType = oas3TypeToPhp($paramSchema);
         }
-        $name     = lcfirst(toPascalCase($param['name']));
         $required = $param['required'] ?? false;
 
         if ($name === 'page') {
@@ -439,143 +408,186 @@ function buildMethodSignature(array $op): string
         }
     }
 
+    // requestBody
+    if ($op['requestBody']) {
+        $args = array_merge(["mixed \$requestBody"], $args);
+    }
+
     return implode(', ', $args);
 }
 
-function buildInvokeCall(array $op): string
+// ---------------------------------------------------------------------------
+// Build return statement
+// ---------------------------------------------------------------------------
+
+function buildInvoke(array $op): string
 {
-    $path      = $op['path'];
-    $method    = $op['httpMethod'];
+    $path   = $op['path'];
+    $method = $op['httpMethod'];
+
     $uriData   = [];
     $queryData = [];
-    $bodyVar   = null;
 
     foreach ($op['params'] as $param) {
-        $name = lcfirst(toPascalCase($param['name']));
-        if ($param['in'] === 'path') {
+        $name = lcfirst(str_replace('_', '', ucwords($param['name'], '_')));
+        if (($param['in'] ?? '') === 'path') {
             $uriData[] = "'{$param['name']}' => \${$name}";
-        } elseif ($param['in'] === 'query') {
+        } elseif (($param['in'] ?? '') === 'query') {
             $queryData[] = "'{$param['name']}' => \${$name}";
-        } elseif ($param['in'] === 'body') {
-            $bodyVar = $name;
         }
     }
 
-    $uriDataStr   = empty($uriData)   ? '[]' : '['.implode(', ', $uriData).']';
-    $queryDataStr = empty($queryData) ? '[]' : '['.implode(', ', $queryData).']';
-    $bodyStr      = $bodyVar ? "(array) \${$bodyVar}" : '[]';
+    $uriStr   = empty($uriData)   ? '[]' : '[' . implode(', ', $uriData) . ']';
+    $queryStr = empty($queryData) ? '[]' : '[' . implode(', ', $queryData) . ']';
+    $bodyStr  = $op['requestBody'] ? '(array) $requestBody' : '[]';
 
-    if ($bodyVar || $method !== 'get') {
-        return "\$this->client->invoke('{$method}', '{$path}', {$uriDataStr}, 'latest', {$queryDataStr}, {$bodyStr})";
+    if ($op['requestBody'] || $method !== 'get') {
+        return "\$this->client->invoke('{$method}', '{$path}', {$uriStr}, 'latest', {$queryStr}, {$bodyStr})";
     }
-
-    return "\$this->client->invoke('{$method}', '{$path}', {$uriDataStr}, 'latest', {$queryDataStr})";
+    return "\$this->client->invoke('{$method}', '{$path}', {$uriStr}, 'latest', {$queryStr})";
 }
 
-function buildReturnStatement(array $op): string
+function buildReturn(array $op): string
 {
-    $responseType = $op['responseType'];
-    $dtoClass     = $op['dtoClass'];
-    $invoke       = buildInvokeCall($op);
-    $phpItemType  = $op['phpItemType'] ?? 'int';
+    $invoke = buildInvoke($op);
+    $type   = $op['responseType'];
+    $dto    = $op['dtoClass'];
+    $primT  = $op['primitiveType'] ?? 'int';
 
-    switch ($responseType) {
-        case 'object':
-            return <<<PHP
-        \$response = {$invoke};
-        return EsiResult::fromResponse(\$response, {$dtoClass}::from(\$response->data));
-PHP;
-        case 'paginated_array':
-        case 'plain_array':
-            return <<<PHP
-        \$response = {$invoke};
-        return EsiResult::fromResponse(\$response, array_map(
-            fn(object \$item) => {$dtoClass}::from(\$item),
-            (array) \$response->data,
-        ));
-PHP;
-        case 'primitive_array':
-            return <<<PHP
-        \$response = {$invoke};
-        /** @var array<{$phpItemType}> \$data */
-        \$data = array_values((array) \$response->data);
-        return EsiResult::fromResponse(\$response, \$data);
-PHP;
-        case 'scalar':
-            return <<<PHP
-        \$response = {$invoke};
-        /** @var {$phpItemType} \$scalar */
-        \$scalar = json_decode(\$response->raw);
-        return EsiResult::fromResponse(\$response, \$scalar);
-PHP;
-        default: // void
-            return <<<PHP
-        \$response = {$invoke};
-        return EsiResult::fromResponse(\$response, null);
-PHP;
-    }
+    return match ($type) {
+        'object' => <<<PHP
+                \$response = {$invoke};
+                return EsiResult::fromResponse(\$response, {$dto}::from(\$response->data));
+        PHP,
+
+        'array_item' => <<<PHP
+                \$response = {$invoke};
+                return EsiResult::fromResponse(\$response, array_map(
+                    fn(object \$item) => {$dto}::from(\$item),
+                    (array) \$response->data,
+                ));
+        PHP,
+
+        'array_ref' => <<<PHP
+                \$response = {$invoke};
+                return EsiResult::fromResponse(\$response, array_map(
+                    fn(object \$item) => {$dto}::from(\$item),
+                    (array) \$response->data,
+                ));
+        PHP,
+
+        'array_primitive' => <<<PHP
+                \$response = {$invoke};
+                /** @var array<{$primT}> \$data */
+                \$data = array_map(fn(mixed \$i) => ({$primT}) \$i, (array) \$response->data);
+                return EsiResult::fromResponse(\$response, \$data);
+        PHP,
+
+        'primitive' => <<<PHP
+                \$response = {$invoke};
+                /** @var {$primT} \$scalar */
+                \$scalar = json_decode(\$response->raw);
+                return EsiResult::fromResponse(\$response, \$scalar);
+        PHP,
+
+        default => <<<PHP
+                \$response = {$invoke};
+                return EsiResult::fromResponse(\$response, null);
+        PHP,
+    };
 }
 
-function generateResourceFile(string $tag, array $ops, array $allDtos): string
+// ---------------------------------------------------------------------------
+// Generate resource file
+// ---------------------------------------------------------------------------
+
+function generateResourceFile(string $tag, array $ops, array $schemas, array $commonModelTypes): string
 {
     $resourceClass = tagToResourceClass($tag);
-    $namespace     = tagToNamespace($tag);
+    $compatDate    = ESI_COMPATIBILITY_DATE;
 
-    // Collect use statements for DTOs
     $useStatements = [];
-    foreach ($ops as $op) {
-        if ($op['dtoClass']) {
-            $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$namespace}\\{$op['dtoClass']};";
-            // Also collect nested DTOs used in from() methods
-            if (isset($allDtos[$op['dtoClass']])) {
-                // nested DTOs are in the same namespace, no extra use needed
-            }
-        }
-    }
-    $useStatements = array_unique($useStatements);
-    sort($useStatements);
-    $useBlock = empty($useStatements) ? '' : implode("\n", $useStatements)."\n";
+    $methods       = [];
 
-    $methods = [];
     foreach ($ops as $op) {
-        $sig      = buildMethodSignature($op);
-        $body     = buildReturnStatement($op);
-        $doc      = "     * @return {$op['returnPhpDoc']}";
-        $auth     = $op['isAuth'] ? "\n     * @requires-auth Use ->withToken(\$accessToken) on the client." : '';
-        $paged    = $op['xPages'] ? "\n     * @paginated    Use \$page parameter to iterate pages." : '';
+        $sig    = buildMethodSig($op);
+        $body   = buildReturn($op);
+        $doc    = "     * @return {$op['phpDocReturn']}";
+        $auth   = $op['isAuth']  ? "\n     * @scope " . implode(', ', $op['scopes']) : '';
+        $paged  = $op['xPages'] ? "\n     * @paginated Use \$page param to iterate pages." : '';
+
+        // use statement for the DTO
+        if ($op['dtoClass'] && ! in_array($op['dtoClass'], ['int','float','bool','string'], true)) {
+            $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$op['dtoClass']};";
+        }
 
         $methods[] = <<<PHP
-    /**
-{$doc}{$auth}{$paged}
-     */
-    public function {$op['methodName']}({$sig}): EsiResult
-    {
-{$body}
-    }
-PHP;
+            /**
+        {$doc}{$auth}{$paged}
+             */
+            public function {$op['methodName']}({$sig}): EsiResult
+            {
+        {$body}
+            }
+        PHP;
     }
 
+    $useBlock     = empty($useStatements)
+        ? ''
+        : implode("\n", array_unique($useStatements)) . "\n";
     $methodsBlock = implode("\n\n", $methods);
-    $compatDate = ESI_COMPATIBILITY_DATE;
 
     return <<<PHP
-<?php
+    <?php
 
-namespace Seatplus\\EsiClient\\Generated\\Resources;
+    namespace Seatplus\\EsiClient\\Generated\\Resources;
 
-use Seatplus\\EsiClient\\EsiResult;
-{$useBlock}
-/**
- * ESI tag: {$tag}
- *
- * Generated from ESI OpenAPI spec (compatibility date: {$compatDate}).
- * Do not edit manually — run bin/generate.php instead.
- */
-class {$resourceClass} extends AbstractResource
-{
-{$methodsBlock}
+    use Seatplus\\EsiClient\\EsiResult;
+    {$useBlock}
+    /**
+     * ESI tag: {$tag}
+     *
+     * Generated from ESI OpenAPI spec (compatibility date: {$compatDate}).
+     * Do not edit manually — run bin/generate.php instead.
+     */
+    class {$resourceClass} extends AbstractResource
+    {
+    {$methodsBlock}
+    }
+    PHP;
 }
-PHP;
+
+// ---------------------------------------------------------------------------
+// Collect all DTOs to generate
+// ---------------------------------------------------------------------------
+
+/** @var array<string, string> $dtoFiles  className → PHP source */
+$dtoFiles = [];
+
+foreach ($schemas as $name => $schema) {
+    // Skip ID aliases
+    if ($schema['x-common-model'] ?? false) {
+        continue;
+    }
+
+    $type = $schema['type'] ?? null;
+
+    if ($type === 'object') {
+        $props    = $schema['properties'] ?? [];
+        $required = $schema['required'] ?? [];
+        $dtoFiles[$name] = generateDtoClass($name, $props, $required, $commonModelTypes, $schemas);
+    } elseif ($type === 'array') {
+        $items = $schema['items'] ?? [];
+        if (($items['type'] ?? '') === 'object') {
+            // Generate an Item DTO
+            $itemClass = $name . 'Item';
+            $props    = $items['properties'] ?? [];
+            $required = $items['required'] ?? [];
+            $dtoFiles[$itemClass] = generateDtoClass($itemClass, $props, $required, $commonModelTypes, $schemas);
+        }
+        // primitive arrays need no DTO
+    }
+    // primitives need no DTO
 }
 
 // ---------------------------------------------------------------------------
@@ -585,44 +597,37 @@ PHP;
 $writtenFiles = 0;
 
 if (! $dryRun) {
-    // Ensure directories exist
-    foreach (array_keys($resourceOps) as $tag) {
-        $dir = "{$generatedDir}/Responses/".tagToNamespace($tag);
-        if (! is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
+    // Responses directory (flat)
+    $responsesDir = "{$generatedDir}/Responses";
+    if (! is_dir($responsesDir)) {
+        mkdir($responsesDir, 0755, true);
     }
-}
 
-// Write resource files
-foreach ($resourceOps as $tag => $ops) {
-    $resourceClass = tagToResourceClass($tag);
-    $code          = generateResourceFile($tag, $ops, $allDtos);
-    $filePath      = "{$generatedDir}/Resources/{$resourceClass}.php";
-
-    if ($dryRun) {
-        echo "\n// === {$filePath} ===\n";
-        echo substr($code, 0, 500)."...\n";
-    } else {
-        file_put_contents($filePath, $code);
-        echo "  wrote: src/Generated/Resources/{$resourceClass}.php\n";
+    // Resources directory
+    $resourcesDir = "{$generatedDir}/Resources";
+    if (! is_dir($resourcesDir)) {
+        mkdir($resourcesDir, 0755, true);
     }
-    $writtenFiles++;
-}
 
-// Write DTO files
-foreach ($allDtos as $className => $dto) {
-    $dir      = "{$generatedDir}/Responses/{$dto['namespace']}";
-    $filePath = "{$dir}/{$className}.php";
-
-    if ($dryRun) {
-        echo "\n// === {$filePath} ===\n";
-        echo substr($dto['code'], 0, 300)."...\n";
-    } else {
-        file_put_contents($filePath, $dto['code']);
-        echo "  wrote: src/Generated/Responses/{$dto['namespace']}/{$className}.php\n";
+    // Write DTO files
+    foreach ($dtoFiles as $className => $source) {
+        $file = "{$responsesDir}/{$className}.php";
+        file_put_contents($file, $source);
+        echo "  wrote: src/Generated/Responses/{$className}.php\n";
+        $writtenFiles++;
     }
-    $writtenFiles++;
+
+    // Write resource files
+    foreach ($tagOps as $tag => $ops) {
+        $source = generateResourceFile($tag, $ops, $schemas, $commonModelTypes);
+        $class  = tagToResourceClass($tag);
+        $file   = "{$resourcesDir}/{$class}.php";
+        file_put_contents($file, $source);
+        echo "  wrote: src/Generated/Resources/{$class}.php\n";
+        $writtenFiles++;
+    }
 }
 
 echo "\nDone. Wrote {$writtenFiles} files.\n";
+echo "Tags found: " . count($tagOps) . "\n";
+echo "DTOs generated: " . count($dtoFiles) . "\n";

@@ -3,102 +3,102 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetCharactersCharacterIdFwStatsResponse;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetCorporationsCorporationIdFwStatsResponse;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetFwLeaderboardsCharactersResponse;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetFwLeaderboardsCorporationsResponse;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetFwLeaderboardsResponse;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetFwStatsItem;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetFwSystemsItem;
-use Seatplus\EsiClient\Generated\Responses\FactionWarfare\GetFwWarsItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdFwStatsGet;
+use Seatplus\EsiClient\Generated\Responses\CorporationsCorporationIdFwStatsGet;
+use Seatplus\EsiClient\Generated\Responses\FwLeaderboardsGet;
+use Seatplus\EsiClient\Generated\Responses\FwLeaderboardsCharactersGet;
+use Seatplus\EsiClient\Generated\Responses\FwLeaderboardsCorporationsGet;
+use Seatplus\EsiClient\Generated\Responses\FwStatsGetItem;
+use Seatplus\EsiClient\Generated\Responses\FwSystemsGetItem;
+use Seatplus\EsiClient\Generated\Responses\FwWarsGetItem;
 
 /**
- * ESI tag: Faction Warfare
+ * ESI tag: FactionWarfare
  *
- * Generated from ESI OpenAPI spec (compatibility date: 2025-10-01).
+ * Generated from ESI OpenAPI spec (compatibility date: 2025-12-16).
  * Do not edit manually — run bin/generate.php instead.
  */
 class FactionWarfareResource extends AbstractResource
 {
     /**
-     * @return EsiResult<GetCharactersCharacterIdFwStatsResponse>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<CharactersCharacterIdFwStatsGet>
+     * @scope esi-characters.read_fw_stats.v1
      */
     public function getCharactersCharacterIdFwStats(int $characterId): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/fw/stats/', ['character_id' => $characterId], 'latest', []);
-        return EsiResult::fromResponse($response, GetCharactersCharacterIdFwStatsResponse::from($response->data));
+        $response = $this->client->invoke('get', '/characters/{character_id}/fw/stats', ['character_id' => $characterId], 'latest', []);
+        return EsiResult::fromResponse($response, CharactersCharacterIdFwStatsGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetCorporationsCorporationIdFwStatsResponse>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<CorporationsCorporationIdFwStatsGet>
+     * @scope esi-corporations.read_fw_stats.v1
      */
     public function getCorporationsCorporationIdFwStats(int $corporationId): EsiResult
     {
-        $response = $this->client->invoke('get', '/corporations/{corporation_id}/fw/stats/', ['corporation_id' => $corporationId], 'latest', []);
-        return EsiResult::fromResponse($response, GetCorporationsCorporationIdFwStatsResponse::from($response->data));
+        $response = $this->client->invoke('get', '/corporations/{corporation_id}/fw/stats', ['corporation_id' => $corporationId], 'latest', []);
+        return EsiResult::fromResponse($response, CorporationsCorporationIdFwStatsGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetFwLeaderboardsResponse>
+     * @return EsiResult<FwLeaderboardsGet>
      */
     public function getFwLeaderboards(): EsiResult
     {
-        $response = $this->client->invoke('get', '/fw/leaderboards/', [], 'latest', []);
-        return EsiResult::fromResponse($response, GetFwLeaderboardsResponse::from($response->data));
+        $response = $this->client->invoke('get', '/fw/leaderboards', [], 'latest', []);
+        return EsiResult::fromResponse($response, FwLeaderboardsGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetFwLeaderboardsCharactersResponse>
+     * @return EsiResult<FwLeaderboardsCharactersGet>
      */
     public function getFwLeaderboardsCharacters(): EsiResult
     {
-        $response = $this->client->invoke('get', '/fw/leaderboards/characters/', [], 'latest', []);
-        return EsiResult::fromResponse($response, GetFwLeaderboardsCharactersResponse::from($response->data));
+        $response = $this->client->invoke('get', '/fw/leaderboards/characters', [], 'latest', []);
+        return EsiResult::fromResponse($response, FwLeaderboardsCharactersGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<GetFwLeaderboardsCorporationsResponse>
+     * @return EsiResult<FwLeaderboardsCorporationsGet>
      */
     public function getFwLeaderboardsCorporations(): EsiResult
     {
-        $response = $this->client->invoke('get', '/fw/leaderboards/corporations/', [], 'latest', []);
-        return EsiResult::fromResponse($response, GetFwLeaderboardsCorporationsResponse::from($response->data));
+        $response = $this->client->invoke('get', '/fw/leaderboards/corporations', [], 'latest', []);
+        return EsiResult::fromResponse($response, FwLeaderboardsCorporationsGet::from($response->data));
     }
 
     /**
-     * @return EsiResult<array<GetFwStatsItem>>
+     * @return EsiResult<array<FwStatsGetItem>>
      */
     public function getFwStats(): EsiResult
     {
-        $response = $this->client->invoke('get', '/fw/stats/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/fw/stats', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetFwStatsItem::from($item),
+            fn(object $item) => FwStatsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetFwSystemsItem>>
+     * @return EsiResult<array<FwSystemsGetItem>>
      */
     public function getFwSystems(): EsiResult
     {
-        $response = $this->client->invoke('get', '/fw/systems/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/fw/systems', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetFwSystemsItem::from($item),
+            fn(object $item) => FwSystemsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetFwWarsItem>>
+     * @return EsiResult<array<FwWarsGetItem>>
      */
     public function getFwWars(): EsiResult
     {
-        $response = $this->client->invoke('get', '/fw/wars/', [], 'latest', []);
+        $response = $this->client->invoke('get', '/fw/wars', [], 'latest', []);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetFwWarsItem::from($item),
+            fn(object $item) => FwWarsGetItem::from($item),
             (array) $response->data,
         ));
     }

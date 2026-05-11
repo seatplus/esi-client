@@ -8,9 +8,9 @@ use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Generated\Resources\AllianceResource;
 use Seatplus\EsiClient\Generated\Resources\CharacterResource;
 use Seatplus\EsiClient\Generated\Resources\UniverseResource;
-use Seatplus\EsiClient\Generated\Responses\Alliance\GetAlliancesAllianceIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Character\GetCharactersCharacterIdResponse;
-use Seatplus\EsiClient\Generated\Responses\Universe\GetUniverseTypesTypeIdResponse;
+use Seatplus\EsiClient\Generated\Responses\AllianceDetail;
+use Seatplus\EsiClient\Generated\Responses\CharactersDetail;
+use Seatplus\EsiClient\Generated\Responses\UniverseTypesTypeIdGet;
 use Seatplus\EsiClient\Services\CheckAccess;
 
 function makeEsiResponse(string $raw, array $headers = []): EsiResponse
@@ -98,7 +98,7 @@ it('getCharactersCharacterId returns a typed EsiResult', function () {
     $result = $client->characters()->getCharactersCharacterId(123);
 
     expect($result)->toBeInstanceOf(EsiResult::class)
-        ->and($result->data)->toBeInstanceOf(GetCharactersCharacterIdResponse::class)
+        ->and($result->data)->toBeInstanceOf(CharactersDetail::class)
         ->and($result->data->name)->toBe('Test Pilot')
         ->and($result->data->corporation_id)->toBe(98000001)
         ->and($result->pages)->toBe(1);
@@ -146,7 +146,7 @@ it('getUniverseTypesTypeId returns typed DTO with required fields', function () 
     $result = $client->universe()->getUniverseTypesTypeId(35);
 
     expect($result)->toBeInstanceOf(EsiResult::class)
-        ->and($result->data)->toBeInstanceOf(GetUniverseTypesTypeIdResponse::class)
+        ->and($result->data)->toBeInstanceOf(UniverseTypesTypeIdGet::class)
         ->and($result->data->name)->toBe('Tritanium')
         ->and($result->data->type_id)->toBe(35);
 });
@@ -171,5 +171,6 @@ it('isCachedLoad is true when response has X-Kevinrob-Cache HIT', function () {
 
     $result = makeAuthedClient($fetcher)->alliance()->getAlliancesAllianceId(99000001);
 
-    expect($result->isCachedLoad)->toBeTrue();
+    expect($result->isCachedLoad)->toBeTrue()
+        ->and($result->data)->toBeInstanceOf(AllianceDetail::class);
 });

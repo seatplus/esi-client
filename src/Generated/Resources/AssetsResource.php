@@ -3,97 +3,97 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\Assets\GetCharactersCharacterIdAssetsItem;
-use Seatplus\EsiClient\Generated\Responses\Assets\GetCorporationsCorporationIdAssetsItem;
-use Seatplus\EsiClient\Generated\Responses\Assets\PostCharactersCharacterIdAssetsLocationsItem;
-use Seatplus\EsiClient\Generated\Responses\Assets\PostCharactersCharacterIdAssetsNamesItem;
-use Seatplus\EsiClient\Generated\Responses\Assets\PostCorporationsCorporationIdAssetsLocationsItem;
-use Seatplus\EsiClient\Generated\Responses\Assets\PostCorporationsCorporationIdAssetsNamesItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdAssetsGetItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdAssetsLocationsPostItem;
+use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdAssetsNamesPostItem;
+use Seatplus\EsiClient\Generated\Responses\CorporationsCorporationIdAssetsGetItem;
+use Seatplus\EsiClient\Generated\Responses\CorporationsCorporationIdAssetsLocationsPostItem;
+use Seatplus\EsiClient\Generated\Responses\CorporationsCorporationIdAssetsNamesPostItem;
 
 /**
  * ESI tag: Assets
  *
- * Generated from ESI OpenAPI spec (compatibility date: 2025-10-01).
+ * Generated from ESI OpenAPI spec (compatibility date: 2025-12-16).
  * Do not edit manually — run bin/generate.php instead.
  */
 class AssetsResource extends AbstractResource
 {
     /**
-     * @return EsiResult<array<GetCharactersCharacterIdAssetsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<CharactersCharacterIdAssetsGetItem>>
+     * @scope esi-assets.read_assets.v1
+     * @paginated Use $page param to iterate pages.
      */
     public function getCharactersCharacterIdAssets(int $characterId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/characters/{character_id}/assets/', ['character_id' => $characterId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/characters/{character_id}/assets', ['character_id' => $characterId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCharactersCharacterIdAssetsItem::from($item),
+            fn(object $item) => CharactersCharacterIdAssetsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<PostCharactersCharacterIdAssetsLocationsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CharactersCharacterIdAssetsLocationsPostItem>>
+     * @scope esi-assets.read_assets.v1
      */
-    public function postCharactersCharacterIdAssetsLocations(int $characterId, mixed $itemIds): EsiResult
+    public function postCharactersCharacterIdAssetsLocations(mixed $requestBody, int $characterId): EsiResult
     {
-        $response = $this->client->invoke('post', '/characters/{character_id}/assets/locations/', ['character_id' => $characterId], 'latest', [], (array) $itemIds);
+        $response = $this->client->invoke('post', '/characters/{character_id}/assets/locations', ['character_id' => $characterId], 'latest', [], (array) $requestBody);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => PostCharactersCharacterIdAssetsLocationsItem::from($item),
+            fn(object $item) => CharactersCharacterIdAssetsLocationsPostItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<PostCharactersCharacterIdAssetsNamesItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CharactersCharacterIdAssetsNamesPostItem>>
+     * @scope esi-assets.read_assets.v1
      */
-    public function postCharactersCharacterIdAssetsNames(int $characterId, mixed $itemIds): EsiResult
+    public function postCharactersCharacterIdAssetsNames(mixed $requestBody, int $characterId): EsiResult
     {
-        $response = $this->client->invoke('post', '/characters/{character_id}/assets/names/', ['character_id' => $characterId], 'latest', [], (array) $itemIds);
+        $response = $this->client->invoke('post', '/characters/{character_id}/assets/names', ['character_id' => $characterId], 'latest', [], (array) $requestBody);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => PostCharactersCharacterIdAssetsNamesItem::from($item),
+            fn(object $item) => CharactersCharacterIdAssetsNamesPostItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<GetCorporationsCorporationIdAssetsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
-     * @paginated    Use $page parameter to iterate pages.
+     * @return EsiResult<array<CorporationsCorporationIdAssetsGetItem>>
+     * @scope esi-assets.read_corporation_assets.v1
+     * @paginated Use $page param to iterate pages.
      */
     public function getCorporationsCorporationIdAssets(int $corporationId, int $page = 1): EsiResult
     {
-        $response = $this->client->invoke('get', '/corporations/{corporation_id}/assets/', ['corporation_id' => $corporationId], 'latest', ['page' => $page]);
+        $response = $this->client->invoke('get', '/corporations/{corporation_id}/assets', ['corporation_id' => $corporationId], 'latest', ['page' => $page]);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => GetCorporationsCorporationIdAssetsItem::from($item),
+            fn(object $item) => CorporationsCorporationIdAssetsGetItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<PostCorporationsCorporationIdAssetsLocationsItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CorporationsCorporationIdAssetsLocationsPostItem>>
+     * @scope esi-assets.read_corporation_assets.v1
      */
-    public function postCorporationsCorporationIdAssetsLocations(int $corporationId, mixed $itemIds): EsiResult
+    public function postCorporationsCorporationIdAssetsLocations(mixed $requestBody, int $corporationId): EsiResult
     {
-        $response = $this->client->invoke('post', '/corporations/{corporation_id}/assets/locations/', ['corporation_id' => $corporationId], 'latest', [], (array) $itemIds);
+        $response = $this->client->invoke('post', '/corporations/{corporation_id}/assets/locations', ['corporation_id' => $corporationId], 'latest', [], (array) $requestBody);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => PostCorporationsCorporationIdAssetsLocationsItem::from($item),
+            fn(object $item) => CorporationsCorporationIdAssetsLocationsPostItem::from($item),
             (array) $response->data,
         ));
     }
 
     /**
-     * @return EsiResult<array<PostCorporationsCorporationIdAssetsNamesItem>>
-     * @requires-auth Use ->withToken($accessToken) on the client.
+     * @return EsiResult<array<CorporationsCorporationIdAssetsNamesPostItem>>
+     * @scope esi-assets.read_corporation_assets.v1
      */
-    public function postCorporationsCorporationIdAssetsNames(int $corporationId, mixed $itemIds): EsiResult
+    public function postCorporationsCorporationIdAssetsNames(mixed $requestBody, int $corporationId): EsiResult
     {
-        $response = $this->client->invoke('post', '/corporations/{corporation_id}/assets/names/', ['corporation_id' => $corporationId], 'latest', [], (array) $itemIds);
+        $response = $this->client->invoke('post', '/corporations/{corporation_id}/assets/names', ['corporation_id' => $corporationId], 'latest', [], (array) $requestBody);
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => PostCorporationsCorporationIdAssetsNamesItem::from($item),
+            fn(object $item) => CorporationsCorporationIdAssetsNamesPostItem::from($item),
             (array) $response->data,
         ));
     }

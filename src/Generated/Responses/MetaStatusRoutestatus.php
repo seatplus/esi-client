@@ -1,0 +1,25 @@
+<?php
+
+namespace Seatplus\EsiClient\Generated\Responses;
+
+/**
+ * Generated from ESI OpenAPI spec (compatibility date: 2025-12-16).
+ * Do not edit manually — run bin/generate.php instead.
+ */
+readonly class MetaStatusRoutestatus
+{
+    public function __construct(
+        public readonly string $method,
+        public readonly string $path,
+        public readonly string $status,
+    ) {}
+
+    public static function from(object $data): self
+    {
+        return new self(
+            method: $data->method,
+            path: $data->path,
+            status: $data->status,
+        );
+    }
+}

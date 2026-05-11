@@ -11,6 +11,9 @@ use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
+use Seatplus\EsiClient\Generated\Resources\CorporationProjectsResource;
+use Seatplus\EsiClient\Generated\Resources\FreelanceJobsResource;
+use Seatplus\EsiClient\Generated\Resources\MetaResource;
 use Seatplus\EsiClient\Generated\Resources\AllianceResource;
 use Seatplus\EsiClient\Generated\Resources\AssetsResource;
 use Seatplus\EsiClient\Generated\Resources\CalendarResource;
@@ -144,6 +147,12 @@ class EsiClient
     public function wallet(): WalletResource { return new WalletResource($this); }
 
     public function wars(): WarsResource { return new WarsResource($this); }
+
+    public function corporationProjects(): CorporationProjectsResource { return new CorporationProjectsResource($this); }
+
+    public function freelanceJobs(): FreelanceJobsResource { return new FreelanceJobsResource($this); }
+
+    public function meta(): MetaResource { return new MetaResource($this); }
 
     private function createFetcher(): GuzzleFetcher
     {
