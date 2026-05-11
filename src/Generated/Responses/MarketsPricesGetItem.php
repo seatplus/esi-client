@@ -17,7 +17,7 @@ readonly class MarketsPricesGetItem
     public static function from(object $data): self
     {
         return new self(
-            type_id: $data->type_id,
+            type_id: (int) ($data->type_id ?? 0),
             adjusted_price: $data->adjusted_price ?? null,
             average_price: $data->average_price ?? null,
         );

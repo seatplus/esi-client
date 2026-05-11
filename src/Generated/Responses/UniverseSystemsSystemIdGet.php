@@ -24,11 +24,11 @@ readonly class UniverseSystemsSystemIdGet
     public static function from(object $data): self
     {
         return new self(
-            constellation_id: $data->constellation_id,
-            name: $data->name,
-            position: $data->position,
-            security_status: $data->security_status,
-            system_id: $data->system_id,
+            constellation_id: (int) ($data->constellation_id ?? 0),
+            name: (string) ($data->name ?? ''),
+            position: ($data->position ?? null),
+            security_status: (float) ($data->security_status ?? 0.0),
+            system_id: (int) ($data->system_id ?? 0),
             planets: isset($data->planets) ? (array) $data->planets : null,
             security_class: $data->security_class ?? null,
             star_id: $data->star_id ?? null,

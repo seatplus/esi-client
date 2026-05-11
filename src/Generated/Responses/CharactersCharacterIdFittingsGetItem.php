@@ -19,11 +19,11 @@ readonly class CharactersCharacterIdFittingsGetItem
     public static function from(object $data): self
     {
         return new self(
-            description: $data->description,
-            fitting_id: $data->fitting_id,
+            description: (string) ($data->description ?? ''),
+            fitting_id: (int) ($data->fitting_id ?? 0),
             items: (array) ($data->items ?? []),
-            name: $data->name,
-            ship_type_id: $data->ship_type_id,
+            name: (string) ($data->name ?? ''),
+            ship_type_id: (int) ($data->ship_type_id ?? 0),
         );
     }
 }

@@ -35,7 +35,7 @@ readonly class DogmaEffectsEffectIdGet
     public static function from(object $data): self
     {
         return new self(
-            effect_id: $data->effect_id,
+            effect_id: (int) ($data->effect_id ?? 0),
             description: $data->description ?? null,
             disallow_auto_repeat: $data->disallow_auto_repeat ?? null,
             discharge_attribute_id: $data->discharge_attribute_id ?? null,

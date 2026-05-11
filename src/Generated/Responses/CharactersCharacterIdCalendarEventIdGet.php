@@ -24,16 +24,16 @@ readonly class CharactersCharacterIdCalendarEventIdGet
     public static function from(object $data): self
     {
         return new self(
-            date: $data->date,
-            duration: $data->duration,
-            event_id: $data->event_id,
-            importance: $data->importance,
-            owner_id: $data->owner_id,
-            owner_name: $data->owner_name,
-            owner_type: $data->owner_type,
-            response: $data->response,
-            text: $data->text,
-            title: $data->title,
+            date: (string) ($data->date ?? ''),
+            duration: (int) ($data->duration ?? 0),
+            event_id: (int) ($data->event_id ?? 0),
+            importance: (int) ($data->importance ?? 0),
+            owner_id: (int) ($data->owner_id ?? 0),
+            owner_name: (string) ($data->owner_name ?? ''),
+            owner_type: (string) ($data->owner_type ?? ''),
+            response: (string) ($data->response ?? ''),
+            text: (string) ($data->text ?? ''),
+            title: (string) ($data->title ?? ''),
         );
     }
 }

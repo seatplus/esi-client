@@ -18,10 +18,10 @@ readonly class UniverseRacesGetItem
     public static function from(object $data): self
     {
         return new self(
-            alliance_id: $data->alliance_id,
-            description: $data->description,
-            name: $data->name,
-            race_id: $data->race_id,
+            alliance_id: (int) ($data->alliance_id ?? 0),
+            description: (string) ($data->description ?? ''),
+            name: (string) ($data->name ?? ''),
+            race_id: (int) ($data->race_id ?? 0),
         );
     }
 }

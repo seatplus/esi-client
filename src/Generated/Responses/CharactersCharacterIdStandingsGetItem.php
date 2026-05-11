@@ -17,9 +17,9 @@ readonly class CharactersCharacterIdStandingsGetItem
     public static function from(object $data): self
     {
         return new self(
-            from_id: $data->from_id,
-            from_type: $data->from_type,
-            standing: $data->standing,
+            from_id: (int) ($data->from_id ?? 0),
+            from_type: (string) ($data->from_type ?? ''),
+            standing: (float) ($data->standing ?? 0.0),
         );
     }
 }

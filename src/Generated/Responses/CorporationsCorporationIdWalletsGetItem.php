@@ -16,8 +16,8 @@ readonly class CorporationsCorporationIdWalletsGetItem
     public static function from(object $data): self
     {
         return new self(
-            balance: $data->balance,
-            division: $data->division,
+            balance: (float) ($data->balance ?? 0.0),
+            division: (int) ($data->division ?? 0),
         );
     }
 }

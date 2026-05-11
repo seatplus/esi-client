@@ -16,8 +16,8 @@ readonly class CorporationsProjectsDetailCreator
     public static function from(object $data): self
     {
         return new self(
-            id: $data->id,
-            name: $data->name,
+            id: (int) ($data->id ?? 0),
+            name: (string) ($data->name ?? ''),
         );
     }
 }

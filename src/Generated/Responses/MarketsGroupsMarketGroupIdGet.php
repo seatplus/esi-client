@@ -19,9 +19,9 @@ readonly class MarketsGroupsMarketGroupIdGet
     public static function from(object $data): self
     {
         return new self(
-            description: $data->description,
-            market_group_id: $data->market_group_id,
-            name: $data->name,
+            description: (string) ($data->description ?? ''),
+            market_group_id: (int) ($data->market_group_id ?? 0),
+            name: (string) ($data->name ?? ''),
             types: (array) ($data->types ?? []),
             parent_group_id: $data->parent_group_id ?? null,
         );

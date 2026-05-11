@@ -22,10 +22,10 @@ readonly class KillmailsKillmailIdKillmailHashGet
     {
         return new self(
             attackers: (array) ($data->attackers ?? []),
-            killmail_id: $data->killmail_id,
-            killmail_time: $data->killmail_time,
-            solar_system_id: $data->solar_system_id,
-            victim: $data->victim,
+            killmail_id: (int) ($data->killmail_id ?? 0),
+            killmail_time: (string) ($data->killmail_time ?? ''),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            victim: ($data->victim ?? null),
             moon_id: $data->moon_id ?? null,
             war_id: $data->war_id ?? null,
         );

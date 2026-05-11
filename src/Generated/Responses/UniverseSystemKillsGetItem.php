@@ -18,10 +18,10 @@ readonly class UniverseSystemKillsGetItem
     public static function from(object $data): self
     {
         return new self(
-            npc_kills: $data->npc_kills,
-            pod_kills: $data->pod_kills,
-            ship_kills: $data->ship_kills,
-            system_id: $data->system_id,
+            npc_kills: (int) ($data->npc_kills ?? 0),
+            pod_kills: (int) ($data->pod_kills ?? 0),
+            ship_kills: (int) ($data->ship_kills ?? 0),
+            system_id: (int) ($data->system_id ?? 0),
         );
     }
 }

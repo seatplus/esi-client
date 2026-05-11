@@ -26,13 +26,13 @@ readonly class CorporationsCorporationIdContainersLogsGetItem
     public static function from(object $data): self
     {
         return new self(
-            action: $data->action,
-            character_id: $data->character_id,
-            container_id: $data->container_id,
-            container_type_id: $data->container_type_id,
-            location_flag: $data->location_flag,
-            location_id: $data->location_id,
-            logged_at: $data->logged_at,
+            action: (string) ($data->action ?? ''),
+            character_id: (int) ($data->character_id ?? 0),
+            container_id: (int) ($data->container_id ?? 0),
+            container_type_id: (int) ($data->container_type_id ?? 0),
+            location_flag: (string) ($data->location_flag ?? ''),
+            location_id: (int) ($data->location_id ?? 0),
+            logged_at: (string) ($data->logged_at ?? ''),
             new_config_bitmask: $data->new_config_bitmask ?? null,
             old_config_bitmask: $data->old_config_bitmask ?? null,
             password_type: $data->password_type ?? null,

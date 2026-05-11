@@ -23,15 +23,15 @@ readonly class CharactersCharacterIdMedalsGetItem
     public static function from(object $data): self
     {
         return new self(
-            corporation_id: $data->corporation_id,
-            date: $data->date,
-            description: $data->description,
+            corporation_id: (int) ($data->corporation_id ?? 0),
+            date: (string) ($data->date ?? ''),
+            description: (string) ($data->description ?? ''),
             graphics: (array) ($data->graphics ?? []),
-            issuer_id: $data->issuer_id,
-            medal_id: $data->medal_id,
-            reason: $data->reason,
-            status: $data->status,
-            title: $data->title,
+            issuer_id: (int) ($data->issuer_id ?? 0),
+            medal_id: (int) ($data->medal_id ?? 0),
+            reason: (string) ($data->reason ?? ''),
+            status: (string) ($data->status ?? ''),
+            title: (string) ($data->title ?? ''),
         );
     }
 }

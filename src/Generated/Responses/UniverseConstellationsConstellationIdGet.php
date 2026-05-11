@@ -19,10 +19,10 @@ readonly class UniverseConstellationsConstellationIdGet
     public static function from(object $data): self
     {
         return new self(
-            constellation_id: $data->constellation_id,
-            name: $data->name,
-            position: $data->position,
-            region_id: $data->region_id,
+            constellation_id: (int) ($data->constellation_id ?? 0),
+            name: (string) ($data->name ?? ''),
+            position: ($data->position ?? null),
+            region_id: (int) ($data->region_id ?? 0),
             systems: (array) ($data->systems ?? []),
         );
     }

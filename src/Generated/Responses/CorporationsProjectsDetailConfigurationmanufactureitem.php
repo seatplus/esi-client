@@ -17,7 +17,7 @@ readonly class CorporationsProjectsDetailConfigurationmanufactureitem
     public static function from(object $data): self
     {
         return new self(
-            owner: $data->owner,
+            owner: (string) ($data->owner ?? ''),
             docking_locations: isset($data->docking_locations) ? (array) $data->docking_locations : null,
             items: isset($data->items) ? (array) $data->items : null,
         );

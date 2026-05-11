@@ -20,10 +20,10 @@ readonly class UniverseAncestriesGetItem
     public static function from(object $data): self
     {
         return new self(
-            bloodline_id: $data->bloodline_id,
-            description: $data->description,
-            id: $data->id,
-            name: $data->name,
+            bloodline_id: (int) ($data->bloodline_id ?? 0),
+            description: (string) ($data->description ?? ''),
+            id: (int) ($data->id ?? 0),
+            name: (string) ($data->name ?? ''),
             icon_id: $data->icon_id ?? null,
             short_description: $data->short_description ?? null,
         );

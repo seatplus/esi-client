@@ -27,10 +27,10 @@ readonly class CorporationsCorporationIdWalletsDivisionJournalGetItem
     public static function from(object $data): self
     {
         return new self(
-            date: $data->date,
-            description: $data->description,
-            id: $data->id,
-            ref_type: $data->ref_type,
+            date: (string) ($data->date ?? ''),
+            description: (string) ($data->description ?? ''),
+            id: (int) ($data->id ?? 0),
+            ref_type: (string) ($data->ref_type ?? ''),
             amount: $data->amount ?? null,
             balance: $data->balance ?? null,
             context_id: $data->context_id ?? null,

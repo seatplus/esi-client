@@ -22,7 +22,7 @@ readonly class UniverseGraphicsGraphicIdGet
     public static function from(object $data): self
     {
         return new self(
-            graphic_id: $data->graphic_id,
+            graphic_id: (int) ($data->graphic_id ?? 0),
             collision_file: $data->collision_file ?? null,
             graphic_file: $data->graphic_file ?? null,
             icon_folder: $data->icon_folder ?? null,

@@ -17,9 +17,9 @@ readonly class UniverseAsteroidBeltsAsteroidBeltIdGet
     public static function from(object $data): self
     {
         return new self(
-            name: $data->name,
-            position: $data->position,
-            system_id: $data->system_id,
+            name: (string) ($data->name ?? ''),
+            position: ($data->position ?? null),
+            system_id: (int) ($data->system_id ?? 0),
         );
     }
 }

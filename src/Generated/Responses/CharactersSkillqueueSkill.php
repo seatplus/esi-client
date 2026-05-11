@@ -22,9 +22,9 @@ readonly class CharactersSkillqueueSkill
     public static function from(object $data): self
     {
         return new self(
-            finished_level: $data->finished_level,
-            queue_position: $data->queue_position,
-            skill_id: $data->skill_id,
+            finished_level: (int) ($data->finished_level ?? 0),
+            queue_position: (int) ($data->queue_position ?? 0),
+            skill_id: (int) ($data->skill_id ?? 0),
             finish_date: $data->finish_date ?? null,
             level_end_sp: $data->level_end_sp ?? null,
             level_start_sp: $data->level_start_sp ?? null,

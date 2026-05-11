@@ -17,9 +17,9 @@ readonly class CharactersFreelanceJobsParticipation
     public static function from(object $data): self
     {
         return new self(
-            contributed: $data->contributed,
-            last_modified: $data->last_modified,
-            state: $data->state,
+            contributed: (int) ($data->contributed ?? 0),
+            last_modified: (string) ($data->last_modified ?? ''),
+            state: (string) ($data->state ?? ''),
         );
     }
 }

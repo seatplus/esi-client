@@ -18,7 +18,7 @@ readonly class CharactersCharacterIdOnlineGet
     public static function from(object $data): self
     {
         return new self(
-            online: $data->online,
+            online: (bool) ($data->online ?? false),
             last_login: $data->last_login ?? null,
             last_logout: $data->last_logout ?? null,
             logins: $data->logins ?? null,

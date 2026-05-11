@@ -19,11 +19,11 @@ readonly class CorporationCorporationIdMiningExtractionsGetItem
     public static function from(object $data): self
     {
         return new self(
-            chunk_arrival_time: $data->chunk_arrival_time,
-            extraction_start_time: $data->extraction_start_time,
-            moon_id: $data->moon_id,
-            natural_decay_time: $data->natural_decay_time,
-            structure_id: $data->structure_id,
+            chunk_arrival_time: (string) ($data->chunk_arrival_time ?? ''),
+            extraction_start_time: (string) ($data->extraction_start_time ?? ''),
+            moon_id: (int) ($data->moon_id ?? 0),
+            natural_decay_time: (string) ($data->natural_decay_time ?? ''),
+            structure_id: (int) ($data->structure_id ?? 0),
         );
     }
 }

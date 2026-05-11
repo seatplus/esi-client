@@ -20,12 +20,12 @@ readonly class CorporationsCorporationIdRolesHistoryGetItem
     public static function from(object $data): self
     {
         return new self(
-            changed_at: $data->changed_at,
-            character_id: $data->character_id,
-            issuer_id: $data->issuer_id,
+            changed_at: (string) ($data->changed_at ?? ''),
+            character_id: (int) ($data->character_id ?? 0),
+            issuer_id: (int) ($data->issuer_id ?? 0),
             new_roles: (array) ($data->new_roles ?? []),
             old_roles: (array) ($data->old_roles ?? []),
-            role_type: $data->role_type,
+            role_type: (string) ($data->role_type ?? ''),
         );
     }
 }

@@ -17,9 +17,9 @@ readonly class MetaStatusRoutestatus
     public static function from(object $data): self
     {
         return new self(
-            method: $data->method,
-            path: $data->path,
-            status: $data->status,
+            method: (string) ($data->method ?? ''),
+            path: (string) ($data->path ?? ''),
+            status: (string) ($data->status ?? ''),
         );
     }
 }

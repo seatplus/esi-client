@@ -18,10 +18,10 @@ readonly class UniverseMoonsMoonIdGet
     public static function from(object $data): self
     {
         return new self(
-            moon_id: $data->moon_id,
-            name: $data->name,
-            position: $data->position,
-            system_id: $data->system_id,
+            moon_id: (int) ($data->moon_id ?? 0),
+            name: (string) ($data->name ?? ''),
+            position: ($data->position ?? null),
+            system_id: (int) ($data->system_id ?? 0),
         );
     }
 }

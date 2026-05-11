@@ -24,12 +24,12 @@ readonly class WarsWarIdGet
     public static function from(object $data): self
     {
         return new self(
-            aggressor: $data->aggressor,
-            declared: $data->declared,
-            defender: $data->defender,
-            id: $data->id,
-            mutual: $data->mutual,
-            open_for_allies: $data->open_for_allies,
+            aggressor: ($data->aggressor ?? null),
+            declared: (string) ($data->declared ?? ''),
+            defender: ($data->defender ?? null),
+            id: (int) ($data->id ?? 0),
+            mutual: (bool) ($data->mutual ?? false),
+            open_for_allies: (bool) ($data->open_for_allies ?? false),
             allies: isset($data->allies) ? (array) $data->allies : null,
             finished: $data->finished ?? null,
             retracted: $data->retracted ?? null,

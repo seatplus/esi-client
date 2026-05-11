@@ -29,12 +29,12 @@ readonly class CorporationsCorporationIdCustomsOfficesGetItem
     public static function from(object $data): self
     {
         return new self(
-            allow_access_with_standings: $data->allow_access_with_standings,
-            allow_alliance_access: $data->allow_alliance_access,
-            office_id: $data->office_id,
-            reinforce_exit_end: $data->reinforce_exit_end,
-            reinforce_exit_start: $data->reinforce_exit_start,
-            system_id: $data->system_id,
+            allow_access_with_standings: (bool) ($data->allow_access_with_standings ?? false),
+            allow_alliance_access: (bool) ($data->allow_alliance_access ?? false),
+            office_id: (int) ($data->office_id ?? 0),
+            reinforce_exit_end: (int) ($data->reinforce_exit_end ?? 0),
+            reinforce_exit_start: (int) ($data->reinforce_exit_start ?? 0),
+            system_id: (int) ($data->system_id ?? 0),
             alliance_tax_rate: $data->alliance_tax_rate ?? null,
             bad_standing_tax_rate: $data->bad_standing_tax_rate ?? null,
             corporation_tax_rate: $data->corporation_tax_rate ?? null,

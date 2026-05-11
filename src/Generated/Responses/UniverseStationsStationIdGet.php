@@ -26,16 +26,16 @@ readonly class UniverseStationsStationIdGet
     public static function from(object $data): self
     {
         return new self(
-            max_dockable_ship_volume: $data->max_dockable_ship_volume,
-            name: $data->name,
-            office_rental_cost: $data->office_rental_cost,
-            position: $data->position,
-            reprocessing_efficiency: $data->reprocessing_efficiency,
-            reprocessing_stations_take: $data->reprocessing_stations_take,
+            max_dockable_ship_volume: (float) ($data->max_dockable_ship_volume ?? 0.0),
+            name: (string) ($data->name ?? ''),
+            office_rental_cost: (float) ($data->office_rental_cost ?? 0.0),
+            position: ($data->position ?? null),
+            reprocessing_efficiency: (float) ($data->reprocessing_efficiency ?? 0.0),
+            reprocessing_stations_take: (float) ($data->reprocessing_stations_take ?? 0.0),
             services: (array) ($data->services ?? []),
-            station_id: $data->station_id,
-            system_id: $data->system_id,
-            type_id: $data->type_id,
+            station_id: (int) ($data->station_id ?? 0),
+            system_id: (int) ($data->system_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
             owner: $data->owner ?? null,
             race_id: $data->race_id ?? null,
         );

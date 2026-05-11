@@ -16,8 +16,8 @@ readonly class FreelanceJobsDetailProgress
     public static function from(object $data): self
     {
         return new self(
-            current: $data->current,
-            desired: $data->desired,
+            current: (int) ($data->current ?? 0),
+            desired: (int) ($data->desired ?? 0),
         );
     }
 }

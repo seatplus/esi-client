@@ -18,9 +18,9 @@ readonly class StatusGet
     public static function from(object $data): self
     {
         return new self(
-            players: $data->players,
-            server_version: $data->server_version,
-            start_time: $data->start_time,
+            players: (int) ($data->players ?? 0),
+            server_version: (string) ($data->server_version ?? ''),
+            start_time: (string) ($data->start_time ?? ''),
             vip: $data->vip ?? null,
         );
     }

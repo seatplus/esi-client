@@ -16,8 +16,8 @@ readonly class CorporationsProjectsDetailConfigurationunknown
     public static function from(object $data): self
     {
         return new self(
-            data: $data->data,
-            type: $data->type,
+            data: ($data->data ?? null),
+            type: (string) ($data->type ?? ''),
         );
     }
 }

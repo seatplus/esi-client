@@ -18,10 +18,10 @@ readonly class CorporationsFreelanceJobsParticipantsParticipant
     public static function from(object $data): self
     {
         return new self(
-            contributed: $data->contributed,
-            id: $data->id,
-            name: $data->name,
-            state: $data->state,
+            contributed: (int) ($data->contributed ?? 0),
+            id: (int) ($data->id ?? 0),
+            name: (string) ($data->name ?? ''),
+            state: (string) ($data->state ?? ''),
         );
     }
 }

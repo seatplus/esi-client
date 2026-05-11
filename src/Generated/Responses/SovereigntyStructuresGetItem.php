@@ -21,10 +21,10 @@ readonly class SovereigntyStructuresGetItem
     public static function from(object $data): self
     {
         return new self(
-            alliance_id: $data->alliance_id,
-            solar_system_id: $data->solar_system_id,
-            structure_id: $data->structure_id,
-            structure_type_id: $data->structure_type_id,
+            alliance_id: (int) ($data->alliance_id ?? 0),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            structure_id: (int) ($data->structure_id ?? 0),
+            structure_type_id: (int) ($data->structure_type_id ?? 0),
             vulnerability_occupancy_level: $data->vulnerability_occupancy_level ?? null,
             vulnerable_end_time: $data->vulnerable_end_time ?? null,
             vulnerable_start_time: $data->vulnerable_start_time ?? null,

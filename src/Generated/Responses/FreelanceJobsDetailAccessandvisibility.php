@@ -19,7 +19,7 @@ readonly class FreelanceJobsDetailAccessandvisibility
     public static function from(object $data): self
     {
         return new self(
-            acl_protected: $data->acl_protected,
+            acl_protected: (bool) ($data->acl_protected ?? false),
             broadcast_locations: isset($data->broadcast_locations) ? (array) $data->broadcast_locations : null,
             restrictions: isset($data->restrictions) ? FreelanceJobsDetailRestrictions::from($data->restrictions) : null,
         );

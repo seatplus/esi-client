@@ -24,13 +24,13 @@ readonly class UniverseFactionsGetItem
     public static function from(object $data): self
     {
         return new self(
-            description: $data->description,
-            faction_id: $data->faction_id,
-            is_unique: $data->is_unique,
-            name: $data->name,
-            size_factor: $data->size_factor,
-            station_count: $data->station_count,
-            station_system_count: $data->station_system_count,
+            description: (string) ($data->description ?? ''),
+            faction_id: (int) ($data->faction_id ?? 0),
+            is_unique: (bool) ($data->is_unique ?? false),
+            name: (string) ($data->name ?? ''),
+            size_factor: (float) ($data->size_factor ?? 0.0),
+            station_count: (int) ($data->station_count ?? 0),
+            station_system_count: (int) ($data->station_system_count ?? 0),
             corporation_id: $data->corporation_id ?? null,
             militia_corporation_id: $data->militia_corporation_id ?? null,
             solar_system_id: $data->solar_system_id ?? null,

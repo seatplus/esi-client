@@ -15,7 +15,7 @@ readonly class MetaChangelog
     public static function from(object $data): self
     {
         return new self(
-            changelog: $data->changelog,
+            changelog: ($data->changelog ?? null),
         );
     }
 }

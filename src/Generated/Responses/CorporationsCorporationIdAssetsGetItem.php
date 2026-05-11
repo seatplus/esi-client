@@ -22,13 +22,13 @@ readonly class CorporationsCorporationIdAssetsGetItem
     public static function from(object $data): self
     {
         return new self(
-            is_singleton: $data->is_singleton,
-            item_id: $data->item_id,
-            location_flag: $data->location_flag,
-            location_id: $data->location_id,
-            location_type: $data->location_type,
-            quantity: $data->quantity,
-            type_id: $data->type_id,
+            is_singleton: (bool) ($data->is_singleton ?? false),
+            item_id: (int) ($data->item_id ?? 0),
+            location_flag: (string) ($data->location_flag ?? ''),
+            location_id: (int) ($data->location_id ?? 0),
+            location_type: (string) ($data->location_type ?? ''),
+            quantity: (int) ($data->quantity ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
             is_blueprint_copy: $data->is_blueprint_copy ?? null,
         );
     }

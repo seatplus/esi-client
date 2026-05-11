@@ -23,7 +23,7 @@ readonly class CorporationsCorporationIdRolesGetItem
     public static function from(object $data): self
     {
         return new self(
-            character_id: $data->character_id,
+            character_id: (int) ($data->character_id ?? 0),
             grantable_roles: isset($data->grantable_roles) ? (array) $data->grantable_roles : null,
             grantable_roles_at_base: isset($data->grantable_roles_at_base) ? (array) $data->grantable_roles_at_base : null,
             grantable_roles_at_hq: isset($data->grantable_roles_at_hq) ? (array) $data->grantable_roles_at_hq : null,

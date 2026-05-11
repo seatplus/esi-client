@@ -25,12 +25,12 @@ readonly class CharactersDetail
     public static function from(object $data): self
     {
         return new self(
-            birthday: $data->birthday,
-            bloodline_id: $data->bloodline_id,
-            corporation_id: $data->corporation_id,
-            gender: $data->gender,
-            name: $data->name,
-            race_id: $data->race_id,
+            birthday: (string) ($data->birthday ?? ''),
+            bloodline_id: (int) ($data->bloodline_id ?? 0),
+            corporation_id: (int) ($data->corporation_id ?? 0),
+            gender: (string) ($data->gender ?? ''),
+            name: (string) ($data->name ?? ''),
+            race_id: (int) ($data->race_id ?? 0),
             alliance_id: $data->alliance_id ?? null,
             description: $data->description ?? null,
             faction_id: $data->faction_id ?? null,

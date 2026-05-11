@@ -24,16 +24,16 @@ readonly class CharactersCharacterIdWalletTransactionsGetItem
     public static function from(object $data): self
     {
         return new self(
-            client_id: $data->client_id,
-            date: $data->date,
-            is_buy: $data->is_buy,
-            is_personal: $data->is_personal,
-            journal_ref_id: $data->journal_ref_id,
-            location_id: $data->location_id,
-            quantity: $data->quantity,
-            transaction_id: $data->transaction_id,
-            type_id: $data->type_id,
-            unit_price: $data->unit_price,
+            client_id: (int) ($data->client_id ?? 0),
+            date: (string) ($data->date ?? ''),
+            is_buy: (bool) ($data->is_buy ?? false),
+            is_personal: (bool) ($data->is_personal ?? false),
+            journal_ref_id: (int) ($data->journal_ref_id ?? 0),
+            location_id: (int) ($data->location_id ?? 0),
+            quantity: (int) ($data->quantity ?? 0),
+            transaction_id: (int) ($data->transaction_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
+            unit_price: (float) ($data->unit_price ?? 0.0),
         );
     }
 }

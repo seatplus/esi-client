@@ -19,11 +19,11 @@ readonly class CharactersCharacterIdFleetGet
     public static function from(object $data): self
     {
         return new self(
-            fleet_boss_id: $data->fleet_boss_id,
-            fleet_id: $data->fleet_id,
-            role: $data->role,
-            squad_id: $data->squad_id,
-            wing_id: $data->wing_id,
+            fleet_boss_id: (int) ($data->fleet_boss_id ?? 0),
+            fleet_id: (int) ($data->fleet_id ?? 0),
+            role: (string) ($data->role ?? ''),
+            squad_id: (int) ($data->squad_id ?? 0),
+            wing_id: (int) ($data->wing_id ?? 0),
         );
     }
 }

@@ -22,14 +22,14 @@ readonly class CharactersCharacterIdBlueprintsGetItem
     public static function from(object $data): self
     {
         return new self(
-            item_id: $data->item_id,
-            location_flag: $data->location_flag,
-            location_id: $data->location_id,
-            material_efficiency: $data->material_efficiency,
-            quantity: $data->quantity,
-            runs: $data->runs,
-            time_efficiency: $data->time_efficiency,
-            type_id: $data->type_id,
+            item_id: (int) ($data->item_id ?? 0),
+            location_flag: (string) ($data->location_flag ?? ''),
+            location_id: (int) ($data->location_id ?? 0),
+            material_efficiency: (int) ($data->material_efficiency ?? 0),
+            quantity: (int) ($data->quantity ?? 0),
+            runs: (int) ($data->runs ?? 0),
+            time_efficiency: (int) ($data->time_efficiency ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
         );
     }
 }

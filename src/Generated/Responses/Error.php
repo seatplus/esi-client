@@ -16,7 +16,7 @@ readonly class Error
     public static function from(object $data): self
     {
         return new self(
-            error: $data->error,
+            error: (string) ($data->error ?? ''),
             details: isset($data->details) ? (array) $data->details : null,
         );
     }

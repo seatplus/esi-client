@@ -15,7 +15,7 @@ readonly class FreelanceJobsDetailParameterboolean
     public static function from(object $data): self
     {
         return new self(
-            value: $data->value,
+            value: (bool) ($data->value ?? false),
         );
     }
 }

@@ -21,12 +21,12 @@ readonly class LoyaltyStoresCorporationIdOffersGetItem
     public static function from(object $data): self
     {
         return new self(
-            isk_cost: $data->isk_cost,
-            lp_cost: $data->lp_cost,
-            offer_id: $data->offer_id,
-            quantity: $data->quantity,
+            isk_cost: (int) ($data->isk_cost ?? 0),
+            lp_cost: (int) ($data->lp_cost ?? 0),
+            offer_id: (int) ($data->offer_id ?? 0),
+            quantity: (int) ($data->quantity ?? 0),
             required_items: (array) ($data->required_items ?? []),
-            type_id: $data->type_id,
+            type_id: (int) ($data->type_id ?? 0),
             ak_cost: $data->ak_cost ?? null,
         );
     }

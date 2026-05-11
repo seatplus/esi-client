@@ -22,9 +22,9 @@ readonly class CorporationsCorporationIdStarbasesGetItem
     public static function from(object $data): self
     {
         return new self(
-            starbase_id: $data->starbase_id,
-            system_id: $data->system_id,
-            type_id: $data->type_id,
+            starbase_id: (int) ($data->starbase_id ?? 0),
+            system_id: (int) ($data->system_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
             moon_id: $data->moon_id ?? null,
             onlined_since: $data->onlined_since ?? null,
             reinforced_until: $data->reinforced_until ?? null,

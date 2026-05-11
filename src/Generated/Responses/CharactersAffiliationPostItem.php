@@ -18,8 +18,8 @@ readonly class CharactersAffiliationPostItem
     public static function from(object $data): self
     {
         return new self(
-            character_id: $data->character_id,
-            corporation_id: $data->corporation_id,
+            character_id: (int) ($data->character_id ?? 0),
+            corporation_id: (int) ($data->corporation_id ?? 0),
             alliance_id: $data->alliance_id ?? null,
             faction_id: $data->faction_id ?? null,
         );

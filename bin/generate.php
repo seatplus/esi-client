@@ -90,6 +90,23 @@ function oas3TypeToPhp(array $prop): string
     };
 }
 
+/**
+ * Return a PHP zero/fallback value expression for a given PHP type.
+ * Used in defensive from() — required fields use ?? fallback to survive
+ * CCP stealth changes that remove fields without bumping the compatibility date.
+ */
+function phpTypeZeroValue(string $phpType): string
+{
+    return match ($phpType) {
+        'int'   => '0',
+        'float' => '0.0',
+        'bool'  => 'false',
+        'string'=> "''",
+        'array' => '[]',
+        default => 'null',
+    };
+}
+
 // ---------------------------------------------------------------------------
 // Helper: resolve a $ref string to a PHP type (or class name if object)
 // ---------------------------------------------------------------------------
@@ -193,9 +210,13 @@ function generateDtoClass(
                 $fromLines[] = "            {$propName}: (array) (\$data->{$propName} ?? []),";
             }
         } elseif (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
-            $fromLines[] = "            {$propName}: {$phpType}::from(\$data->{$propName}),";
+            // Object DTO — defensive: fall back to empty object so ::from() still runs
+            $fromLines[] = "            {$propName}: {$phpType}::from(\$data->{$propName} ?? new \\stdClass()),";
         } else {
-            $fromLines[] = "            {$propName}: \$data->{$propName},";
+            // Primitive — defensive cast with zero-value fallback
+            $zero = phpTypeZeroValue($phpType);
+            $cast = $phpType !== 'mixed' ? "({$phpType}) " : '';
+            $fromLines[] = "            {$propName}: {$cast}(\$data->{$propName} ?? {$zero}),";
         }
     }
 

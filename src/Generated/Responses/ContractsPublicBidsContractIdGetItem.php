@@ -17,9 +17,9 @@ readonly class ContractsPublicBidsContractIdGetItem
     public static function from(object $data): self
     {
         return new self(
-            amount: $data->amount,
-            bid_id: $data->bid_id,
-            date_bid: $data->date_bid,
+            amount: (float) ($data->amount ?? 0.0),
+            bid_id: (int) ($data->bid_id ?? 0),
+            date_bid: (string) ($data->date_bid ?? ''),
         );
     }
 }

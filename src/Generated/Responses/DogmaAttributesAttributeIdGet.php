@@ -24,7 +24,7 @@ readonly class DogmaAttributesAttributeIdGet
     public static function from(object $data): self
     {
         return new self(
-            attribute_id: $data->attribute_id,
+            attribute_id: (int) ($data->attribute_id ?? 0),
             default_value: $data->default_value ?? null,
             description: $data->description ?? null,
             display_name: $data->display_name ?? null,

@@ -20,11 +20,11 @@ readonly class CorporationsCorporationIdContractsContractIdItemsGetItem
     public static function from(object $data): self
     {
         return new self(
-            is_included: $data->is_included,
-            is_singleton: $data->is_singleton,
-            quantity: $data->quantity,
-            record_id: $data->record_id,
-            type_id: $data->type_id,
+            is_included: (bool) ($data->is_included ?? false),
+            is_singleton: (bool) ($data->is_singleton ?? false),
+            quantity: (int) ($data->quantity ?? 0),
+            record_id: (int) ($data->record_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
             raw_quantity: $data->raw_quantity ?? null,
         );
     }

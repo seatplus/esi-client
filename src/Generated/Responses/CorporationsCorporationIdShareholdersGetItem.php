@@ -17,9 +17,9 @@ readonly class CorporationsCorporationIdShareholdersGetItem
     public static function from(object $data): self
     {
         return new self(
-            share_count: $data->share_count,
-            shareholder_id: $data->shareholder_id,
-            shareholder_type: $data->shareholder_type,
+            share_count: (int) ($data->share_count ?? 0),
+            shareholder_id: (int) ($data->shareholder_id ?? 0),
+            shareholder_type: (string) ($data->shareholder_type ?? ''),
         );
     }
 }

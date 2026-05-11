@@ -19,9 +19,9 @@ readonly class CorporationsProjectsDetailDetails
     public static function from(object $data): self
     {
         return new self(
-            career: $data->career,
-            created: $data->created,
-            description: $data->description,
+            career: (string) ($data->career ?? ''),
+            created: (string) ($data->created ?? ''),
+            description: (string) ($data->description ?? ''),
             expires: $data->expires ?? null,
             finished: $data->finished ?? null,
         );

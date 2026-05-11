@@ -16,8 +16,8 @@ readonly class AlliancesAllianceIdContactsLabelsGetItem
     public static function from(object $data): self
     {
         return new self(
-            label_id: $data->label_id,
-            label_name: $data->label_name,
+            label_id: (int) ($data->label_id ?? 0),
+            label_name: (string) ($data->label_name ?? ''),
         );
     }
 }

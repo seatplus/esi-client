@@ -19,8 +19,8 @@ readonly class UniverseRegionsRegionIdGet
     {
         return new self(
             constellations: (array) ($data->constellations ?? []),
-            name: $data->name,
-            region_id: $data->region_id,
+            name: (string) ($data->name ?? ''),
+            region_id: (int) ($data->region_id ?? 0),
             description: $data->description ?? null,
         );
     }

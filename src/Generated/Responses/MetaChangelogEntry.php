@@ -19,11 +19,11 @@ readonly class MetaChangelogEntry
     public static function from(object $data): self
     {
         return new self(
-            compatibility_date: $data->compatibility_date,
-            description: $data->description,
-            method: $data->method,
-            path: $data->path,
-            type: $data->type,
+            compatibility_date: (string) ($data->compatibility_date ?? ''),
+            description: (string) ($data->description ?? ''),
+            method: (string) ($data->method ?? ''),
+            path: (string) ($data->path ?? ''),
+            type: (string) ($data->type ?? ''),
         );
     }
 }

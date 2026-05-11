@@ -24,15 +24,15 @@ readonly class FleetsFleetIdMembersGetItem
     public static function from(object $data): self
     {
         return new self(
-            character_id: $data->character_id,
-            join_time: $data->join_time,
-            role: $data->role,
-            role_name: $data->role_name,
-            ship_type_id: $data->ship_type_id,
-            solar_system_id: $data->solar_system_id,
-            squad_id: $data->squad_id,
-            takes_fleet_warp: $data->takes_fleet_warp,
-            wing_id: $data->wing_id,
+            character_id: (int) ($data->character_id ?? 0),
+            join_time: (string) ($data->join_time ?? ''),
+            role: (string) ($data->role ?? ''),
+            role_name: (string) ($data->role_name ?? ''),
+            ship_type_id: (int) ($data->ship_type_id ?? 0),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            squad_id: (int) ($data->squad_id ?? 0),
+            takes_fleet_warp: (bool) ($data->takes_fleet_warp ?? false),
+            wing_id: (int) ($data->wing_id ?? 0),
             station_id: $data->station_id ?? null,
         );
     }

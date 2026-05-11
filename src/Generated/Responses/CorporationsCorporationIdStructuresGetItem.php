@@ -29,12 +29,12 @@ readonly class CorporationsCorporationIdStructuresGetItem
     public static function from(object $data): self
     {
         return new self(
-            corporation_id: $data->corporation_id,
-            profile_id: $data->profile_id,
-            state: $data->state,
-            structure_id: $data->structure_id,
-            system_id: $data->system_id,
-            type_id: $data->type_id,
+            corporation_id: (int) ($data->corporation_id ?? 0),
+            profile_id: (int) ($data->profile_id ?? 0),
+            state: (string) ($data->state ?? ''),
+            structure_id: (int) ($data->structure_id ?? 0),
+            system_id: (int) ($data->system_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
             fuel_expires: $data->fuel_expires ?? null,
             name: $data->name ?? null,
             next_reinforce_apply: $data->next_reinforce_apply ?? null,

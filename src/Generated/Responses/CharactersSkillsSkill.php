@@ -18,10 +18,10 @@ readonly class CharactersSkillsSkill
     public static function from(object $data): self
     {
         return new self(
-            active_skill_level: $data->active_skill_level,
-            skill_id: $data->skill_id,
-            skillpoints_in_skill: $data->skillpoints_in_skill,
-            trained_skill_level: $data->trained_skill_level,
+            active_skill_level: (int) ($data->active_skill_level ?? 0),
+            skill_id: (int) ($data->skill_id ?? 0),
+            skillpoints_in_skill: (int) ($data->skillpoints_in_skill ?? 0),
+            trained_skill_level: (int) ($data->trained_skill_level ?? 0),
         );
     }
 }

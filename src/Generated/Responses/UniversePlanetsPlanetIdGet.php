@@ -19,11 +19,11 @@ readonly class UniversePlanetsPlanetIdGet
     public static function from(object $data): self
     {
         return new self(
-            name: $data->name,
-            planet_id: $data->planet_id,
-            position: $data->position,
-            system_id: $data->system_id,
-            type_id: $data->type_id,
+            name: (string) ($data->name ?? ''),
+            planet_id: (int) ($data->planet_id ?? 0),
+            position: ($data->position ?? null),
+            system_id: (int) ($data->system_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
         );
     }
 }

@@ -18,10 +18,10 @@ readonly class UniverseCategoriesCategoryIdGet
     public static function from(object $data): self
     {
         return new self(
-            category_id: $data->category_id,
+            category_id: (int) ($data->category_id ?? 0),
             groups: (array) ($data->groups ?? []),
-            name: $data->name,
-            published: $data->published,
+            name: (string) ($data->name ?? ''),
+            published: (bool) ($data->published ?? false),
         );
     }
 }

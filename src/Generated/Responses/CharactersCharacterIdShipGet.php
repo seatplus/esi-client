@@ -17,9 +17,9 @@ readonly class CharactersCharacterIdShipGet
     public static function from(object $data): self
     {
         return new self(
-            ship_item_id: $data->ship_item_id,
-            ship_name: $data->ship_name,
-            ship_type_id: $data->ship_type_id,
+            ship_item_id: (int) ($data->ship_item_id ?? 0),
+            ship_name: (string) ($data->ship_name ?? ''),
+            ship_type_id: (int) ($data->ship_type_id ?? 0),
         );
     }
 }

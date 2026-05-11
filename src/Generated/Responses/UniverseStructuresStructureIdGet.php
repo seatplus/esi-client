@@ -19,9 +19,9 @@ readonly class UniverseStructuresStructureIdGet
     public static function from(object $data): self
     {
         return new self(
-            name: $data->name,
-            owner_id: $data->owner_id,
-            solar_system_id: $data->solar_system_id,
+            name: (string) ($data->name ?? ''),
+            owner_id: (int) ($data->owner_id ?? 0),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
             position: $data->position ?? null,
             type_id: $data->type_id ?? null,
         );

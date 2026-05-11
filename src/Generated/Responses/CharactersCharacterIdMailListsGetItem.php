@@ -16,8 +16,8 @@ readonly class CharactersCharacterIdMailListsGetItem
     public static function from(object $data): self
     {
         return new self(
-            mailing_list_id: $data->mailing_list_id,
-            name: $data->name,
+            mailing_list_id: (int) ($data->mailing_list_id ?? 0),
+            name: (string) ($data->name ?? ''),
         );
     }
 }

@@ -19,11 +19,11 @@ readonly class CorporationsCorporationIdMedalsGetItem
     public static function from(object $data): self
     {
         return new self(
-            created_at: $data->created_at,
-            creator_id: $data->creator_id,
-            description: $data->description,
-            medal_id: $data->medal_id,
-            title: $data->title,
+            created_at: (string) ($data->created_at ?? ''),
+            creator_id: (int) ($data->creator_id ?? 0),
+            description: (string) ($data->description ?? ''),
+            medal_id: (int) ($data->medal_id ?? 0),
+            title: (string) ($data->title ?? ''),
         );
     }
 }

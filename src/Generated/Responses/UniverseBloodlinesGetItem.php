@@ -25,17 +25,17 @@ readonly class UniverseBloodlinesGetItem
     public static function from(object $data): self
     {
         return new self(
-            bloodline_id: $data->bloodline_id,
-            charisma: $data->charisma,
-            corporation_id: $data->corporation_id,
-            description: $data->description,
-            intelligence: $data->intelligence,
-            memory: $data->memory,
-            name: $data->name,
-            perception: $data->perception,
-            race_id: $data->race_id,
-            ship_type_id: $data->ship_type_id,
-            willpower: $data->willpower,
+            bloodline_id: (int) ($data->bloodline_id ?? 0),
+            charisma: (int) ($data->charisma ?? 0),
+            corporation_id: (int) ($data->corporation_id ?? 0),
+            description: (string) ($data->description ?? ''),
+            intelligence: (int) ($data->intelligence ?? 0),
+            memory: (int) ($data->memory ?? 0),
+            name: (string) ($data->name ?? ''),
+            perception: (int) ($data->perception ?? 0),
+            race_id: (int) ($data->race_id ?? 0),
+            ship_type_id: (int) ($data->ship_type_id ?? 0),
+            willpower: (int) ($data->willpower ?? 0),
         );
     }
 }

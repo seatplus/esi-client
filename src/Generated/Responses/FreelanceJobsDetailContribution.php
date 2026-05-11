@@ -19,7 +19,7 @@ readonly class FreelanceJobsDetailContribution
     public static function from(object $data): self
     {
         return new self(
-            max_committed_participants: $data->max_committed_participants,
+            max_committed_participants: (int) ($data->max_committed_participants ?? 0),
             contribution_per_participant_limit: $data->contribution_per_participant_limit ?? null,
             reward_per_contribution: $data->reward_per_contribution ?? null,
             submission_limit: $data->submission_limit ?? null,

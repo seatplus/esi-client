@@ -18,10 +18,10 @@ readonly class FleetsFleetIdGet
     public static function from(object $data): self
     {
         return new self(
-            is_free_move: $data->is_free_move,
-            is_registered: $data->is_registered,
-            is_voice_enabled: $data->is_voice_enabled,
-            motd: $data->motd,
+            is_free_move: (bool) ($data->is_free_move ?? false),
+            is_registered: (bool) ($data->is_registered ?? false),
+            is_voice_enabled: (bool) ($data->is_voice_enabled ?? false),
+            motd: (string) ($data->motd ?? ''),
         );
     }
 }

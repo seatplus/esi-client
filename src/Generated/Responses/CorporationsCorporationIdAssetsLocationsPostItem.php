@@ -16,8 +16,8 @@ readonly class CorporationsCorporationIdAssetsLocationsPostItem
     public static function from(object $data): self
     {
         return new self(
-            item_id: $data->item_id,
-            position: $data->position,
+            item_id: (int) ($data->item_id ?? 0),
+            position: ($data->position ?? null),
         );
     }
 }

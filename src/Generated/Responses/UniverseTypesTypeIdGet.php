@@ -30,11 +30,11 @@ readonly class UniverseTypesTypeIdGet
     public static function from(object $data): self
     {
         return new self(
-            description: $data->description,
-            group_id: $data->group_id,
-            name: $data->name,
-            published: $data->published,
-            type_id: $data->type_id,
+            description: (string) ($data->description ?? ''),
+            group_id: (int) ($data->group_id ?? 0),
+            name: (string) ($data->name ?? ''),
+            published: (bool) ($data->published ?? false),
+            type_id: (int) ($data->type_id ?? 0),
             capacity: $data->capacity ?? null,
             dogma_attributes: isset($data->dogma_attributes) ? (array) $data->dogma_attributes : null,
             dogma_effects: isset($data->dogma_effects) ? (array) $data->dogma_effects : null,

@@ -22,14 +22,14 @@ readonly class IncursionsGetItem
     public static function from(object $data): self
     {
         return new self(
-            constellation_id: $data->constellation_id,
-            faction_id: $data->faction_id,
-            has_boss: $data->has_boss,
+            constellation_id: (int) ($data->constellation_id ?? 0),
+            faction_id: (int) ($data->faction_id ?? 0),
+            has_boss: (bool) ($data->has_boss ?? false),
             infested_solar_systems: (array) ($data->infested_solar_systems ?? []),
-            influence: $data->influence,
-            staging_solar_system_id: $data->staging_solar_system_id,
-            state: $data->state,
-            type: $data->type,
+            influence: (float) ($data->influence ?? 0.0),
+            staging_solar_system_id: (int) ($data->staging_solar_system_id ?? 0),
+            state: (string) ($data->state ?? ''),
+            type: (string) ($data->type ?? ''),
         );
     }
 }

@@ -16,8 +16,8 @@ readonly class UniverseSchematicsSchematicIdGet
     public static function from(object $data): self
     {
         return new self(
-            cycle_time: $data->cycle_time,
-            schematic_name: $data->schematic_name,
+            cycle_time: (int) ($data->cycle_time ?? 0),
+            schematic_name: (string) ($data->schematic_name ?? ''),
         );
     }
 }

@@ -15,7 +15,7 @@ readonly class FleetsFleetIdWingsPost
     public static function from(object $data): self
     {
         return new self(
-            wing_id: $data->wing_id,
+            wing_id: (int) ($data->wing_id ?? 0),
         );
     }
 }

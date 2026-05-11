@@ -20,12 +20,12 @@ readonly class CorporationsCorporationIdMedalsIssuedGetItem
     public static function from(object $data): self
     {
         return new self(
-            character_id: $data->character_id,
-            issued_at: $data->issued_at,
-            issuer_id: $data->issuer_id,
-            medal_id: $data->medal_id,
-            reason: $data->reason,
-            status: $data->status,
+            character_id: (int) ($data->character_id ?? 0),
+            issued_at: (string) ($data->issued_at ?? ''),
+            issuer_id: (int) ($data->issuer_id ?? 0),
+            medal_id: (int) ($data->medal_id ?? 0),
+            reason: (string) ($data->reason ?? ''),
+            status: (string) ($data->status ?? ''),
         );
     }
 }

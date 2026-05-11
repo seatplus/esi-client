@@ -19,8 +19,8 @@ readonly class FreelanceJobsDetailCreator
     public static function from(object $data): self
     {
         return new self(
-            character: FreelanceJobsDetailCreatorcharacter::from($data->character),
-            corporation: FreelanceJobsDetailCreatorcorporation::from($data->corporation),
+            character: FreelanceJobsDetailCreatorcharacter::from($data->character ?? new \stdClass()),
+            corporation: FreelanceJobsDetailCreatorcorporation::from($data->corporation ?? new \stdClass()),
         );
     }
 }

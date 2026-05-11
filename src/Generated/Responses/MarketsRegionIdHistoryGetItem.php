@@ -20,12 +20,12 @@ readonly class MarketsRegionIdHistoryGetItem
     public static function from(object $data): self
     {
         return new self(
-            average: $data->average,
-            date: $data->date,
-            highest: $data->highest,
-            lowest: $data->lowest,
-            order_count: $data->order_count,
-            volume: $data->volume,
+            average: (float) ($data->average ?? 0.0),
+            date: (string) ($data->date ?? ''),
+            highest: (float) ($data->highest ?? 0.0),
+            lowest: (float) ($data->lowest ?? 0.0),
+            order_count: (int) ($data->order_count ?? 0),
+            volume: (int) ($data->volume ?? 0),
         );
     }
 }

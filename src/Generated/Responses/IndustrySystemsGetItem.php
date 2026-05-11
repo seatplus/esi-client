@@ -17,7 +17,7 @@ readonly class IndustrySystemsGetItem
     {
         return new self(
             cost_indices: (array) ($data->cost_indices ?? []),
-            solar_system_id: $data->solar_system_id,
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
         );
     }
 }

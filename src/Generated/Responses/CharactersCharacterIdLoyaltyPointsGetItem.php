@@ -16,8 +16,8 @@ readonly class CharactersCharacterIdLoyaltyPointsGetItem
     public static function from(object $data): self
     {
         return new self(
-            corporation_id: $data->corporation_id,
-            loyalty_points: $data->loyalty_points,
+            corporation_id: (int) ($data->corporation_id ?? 0),
+            loyalty_points: (int) ($data->loyalty_points ?? 0),
         );
     }
 }

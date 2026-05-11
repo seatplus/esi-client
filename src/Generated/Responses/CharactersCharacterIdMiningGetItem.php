@@ -18,10 +18,10 @@ readonly class CharactersCharacterIdMiningGetItem
     public static function from(object $data): self
     {
         return new self(
-            date: $data->date,
-            quantity: $data->quantity,
-            solar_system_id: $data->solar_system_id,
-            type_id: $data->type_id,
+            date: (string) ($data->date ?? ''),
+            quantity: (int) ($data->quantity ?? 0),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
         );
     }
 }

@@ -31,14 +31,14 @@ readonly class FreelanceJobsDetail
     public static function from(object $data): self
     {
         return new self(
-            access_and_visibility: FreelanceJobsDetailAccessandvisibility::from($data->access_and_visibility),
-            configuration: FreelanceJobsDetailConfiguration::from($data->configuration),
-            details: FreelanceJobsDetailDetails::from($data->details),
-            id: $data->id,
-            last_modified: $data->last_modified,
-            name: $data->name,
-            progress: FreelanceJobsDetailProgress::from($data->progress),
-            state: $data->state,
+            access_and_visibility: FreelanceJobsDetailAccessandvisibility::from($data->access_and_visibility ?? new \stdClass()),
+            configuration: FreelanceJobsDetailConfiguration::from($data->configuration ?? new \stdClass()),
+            details: FreelanceJobsDetailDetails::from($data->details ?? new \stdClass()),
+            id: (string) ($data->id ?? ''),
+            last_modified: (string) ($data->last_modified ?? ''),
+            name: (string) ($data->name ?? ''),
+            progress: FreelanceJobsDetailProgress::from($data->progress ?? new \stdClass()),
+            state: (string) ($data->state ?? ''),
             contribution: isset($data->contribution) ? FreelanceJobsDetailContribution::from($data->contribution) : null,
             reward: isset($data->reward) ? FreelanceJobsDetailReward::from($data->reward) : null,
         );

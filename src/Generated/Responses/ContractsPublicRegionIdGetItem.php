@@ -30,12 +30,12 @@ readonly class ContractsPublicRegionIdGetItem
     public static function from(object $data): self
     {
         return new self(
-            contract_id: $data->contract_id,
-            date_expired: $data->date_expired,
-            date_issued: $data->date_issued,
-            issuer_corporation_id: $data->issuer_corporation_id,
-            issuer_id: $data->issuer_id,
-            type: $data->type,
+            contract_id: (int) ($data->contract_id ?? 0),
+            date_expired: (string) ($data->date_expired ?? ''),
+            date_issued: (string) ($data->date_issued ?? ''),
+            issuer_corporation_id: (int) ($data->issuer_corporation_id ?? 0),
+            issuer_id: (int) ($data->issuer_id ?? 0),
+            type: (string) ($data->type ?? ''),
             buyout: $data->buyout ?? null,
             collateral: $data->collateral ?? null,
             days_to_complete: $data->days_to_complete ?? null,

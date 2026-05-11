@@ -15,7 +15,7 @@ readonly class CharactersCharacterIdFittingsPost
     public static function from(object $data): self
     {
         return new self(
-            fitting_id: $data->fitting_id,
+            fitting_id: (int) ($data->fitting_id ?? 0),
         );
     }
 }

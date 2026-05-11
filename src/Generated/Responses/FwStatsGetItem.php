@@ -19,11 +19,11 @@ readonly class FwStatsGetItem
     public static function from(object $data): self
     {
         return new self(
-            faction_id: $data->faction_id,
-            kills: $data->kills,
-            pilots: $data->pilots,
-            systems_controlled: $data->systems_controlled,
-            victory_points: $data->victory_points,
+            faction_id: (int) ($data->faction_id ?? 0),
+            kills: ($data->kills ?? null),
+            pilots: (int) ($data->pilots ?? 0),
+            systems_controlled: (int) ($data->systems_controlled ?? 0),
+            victory_points: ($data->victory_points ?? null),
         );
     }
 }

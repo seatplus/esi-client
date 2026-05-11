@@ -19,11 +19,11 @@ readonly class CorporationCorporationIdMiningObserversObserverIdGetItem
     public static function from(object $data): self
     {
         return new self(
-            character_id: $data->character_id,
-            last_updated: $data->last_updated,
-            quantity: $data->quantity,
-            recorded_corporation_id: $data->recorded_corporation_id,
-            type_id: $data->type_id,
+            character_id: (int) ($data->character_id ?? 0),
+            last_updated: (string) ($data->last_updated ?? ''),
+            quantity: (int) ($data->quantity ?? 0),
+            recorded_corporation_id: (int) ($data->recorded_corporation_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
         );
     }
 }

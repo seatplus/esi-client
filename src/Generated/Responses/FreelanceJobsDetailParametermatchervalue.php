@@ -16,7 +16,7 @@ readonly class FreelanceJobsDetailParametermatchervalue
     public static function from(object $data): self
     {
         return new self(
-            value_type: $data->value_type,
+            value_type: (string) ($data->value_type ?? ''),
             values: (array) ($data->values ?? []),
         );
     }

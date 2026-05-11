@@ -19,11 +19,11 @@ readonly class CharactersCharacterIdAgentsResearchGetItem
     public static function from(object $data): self
     {
         return new self(
-            agent_id: $data->agent_id,
-            points_per_day: $data->points_per_day,
-            remainder_points: $data->remainder_points,
-            skill_type_id: $data->skill_type_id,
-            started_at: $data->started_at,
+            agent_id: (int) ($data->agent_id ?? 0),
+            points_per_day: (float) ($data->points_per_day ?? 0.0),
+            remainder_points: (float) ($data->remainder_points ?? 0.0),
+            skill_type_id: (int) ($data->skill_type_id ?? 0),
+            started_at: (string) ($data->started_at ?? ''),
         );
     }
 }

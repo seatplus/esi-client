@@ -21,13 +21,13 @@ readonly class CharactersCharacterIdPlanetsGetItem
     public static function from(object $data): self
     {
         return new self(
-            last_update: $data->last_update,
-            num_pins: $data->num_pins,
-            owner_id: $data->owner_id,
-            planet_id: $data->planet_id,
-            planet_type: $data->planet_type,
-            solar_system_id: $data->solar_system_id,
-            upgrade_level: $data->upgrade_level,
+            last_update: (string) ($data->last_update ?? ''),
+            num_pins: (int) ($data->num_pins ?? 0),
+            owner_id: (int) ($data->owner_id ?? 0),
+            planet_id: (int) ($data->planet_id ?? 0),
+            planet_type: (string) ($data->planet_type ?? ''),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            upgrade_level: (int) ($data->upgrade_level ?? 0),
         );
     }
 }

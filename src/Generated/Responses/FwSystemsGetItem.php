@@ -20,12 +20,12 @@ readonly class FwSystemsGetItem
     public static function from(object $data): self
     {
         return new self(
-            contested: $data->contested,
-            occupier_faction_id: $data->occupier_faction_id,
-            owner_faction_id: $data->owner_faction_id,
-            solar_system_id: $data->solar_system_id,
-            victory_points: $data->victory_points,
-            victory_points_threshold: $data->victory_points_threshold,
+            contested: (string) ($data->contested ?? ''),
+            occupier_faction_id: (int) ($data->occupier_faction_id ?? 0),
+            owner_faction_id: (int) ($data->owner_faction_id ?? 0),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            victory_points: (int) ($data->victory_points ?? 0),
+            victory_points_threshold: (int) ($data->victory_points_threshold ?? 0),
         );
     }
 }

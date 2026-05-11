@@ -17,9 +17,9 @@ readonly class CorporationsCorporationIdFacilitiesGetItem
     public static function from(object $data): self
     {
         return new self(
-            facility_id: $data->facility_id,
-            system_id: $data->system_id,
-            type_id: $data->type_id,
+            facility_id: (int) ($data->facility_id ?? 0),
+            system_id: (int) ($data->system_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
         );
     }
 }

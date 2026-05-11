@@ -17,9 +17,9 @@ readonly class UniverseNamesPostItem
     public static function from(object $data): self
     {
         return new self(
-            category: $data->category,
-            id: $data->id,
-            name: $data->name,
+            category: (string) ($data->category ?? ''),
+            id: (int) ($data->id ?? 0),
+            name: (string) ($data->name ?? ''),
         );
     }
 }

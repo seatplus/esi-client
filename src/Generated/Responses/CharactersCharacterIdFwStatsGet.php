@@ -20,8 +20,8 @@ readonly class CharactersCharacterIdFwStatsGet
     public static function from(object $data): self
     {
         return new self(
-            kills: $data->kills,
-            victory_points: $data->victory_points,
+            kills: ($data->kills ?? null),
+            victory_points: ($data->victory_points ?? null),
             current_rank: $data->current_rank ?? null,
             enlisted_on: $data->enlisted_on ?? null,
             faction_id: $data->faction_id ?? null,

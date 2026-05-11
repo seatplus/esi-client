@@ -20,11 +20,11 @@ readonly class IndustryFacilitiesGetItem
     public static function from(object $data): self
     {
         return new self(
-            facility_id: $data->facility_id,
-            owner_id: $data->owner_id,
-            region_id: $data->region_id,
-            solar_system_id: $data->solar_system_id,
-            type_id: $data->type_id,
+            facility_id: (int) ($data->facility_id ?? 0),
+            owner_id: (int) ($data->owner_id ?? 0),
+            region_id: (int) ($data->region_id ?? 0),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
             tax: $data->tax ?? null,
         );
     }

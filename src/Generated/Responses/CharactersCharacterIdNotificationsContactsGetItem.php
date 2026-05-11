@@ -19,11 +19,11 @@ readonly class CharactersCharacterIdNotificationsContactsGetItem
     public static function from(object $data): self
     {
         return new self(
-            message: $data->message,
-            notification_id: $data->notification_id,
-            send_date: $data->send_date,
-            sender_character_id: $data->sender_character_id,
-            standing_level: $data->standing_level,
+            message: (string) ($data->message ?? ''),
+            notification_id: (int) ($data->notification_id ?? 0),
+            send_date: (string) ($data->send_date ?? ''),
+            sender_character_id: (int) ($data->sender_character_id ?? 0),
+            standing_level: (float) ($data->standing_level ?? 0.0),
         );
     }
 }

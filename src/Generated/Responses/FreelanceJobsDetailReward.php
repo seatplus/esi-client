@@ -16,8 +16,8 @@ readonly class FreelanceJobsDetailReward
     public static function from(object $data): self
     {
         return new self(
-            initial: $data->initial,
-            remaining: $data->remaining,
+            initial: (float) ($data->initial ?? 0.0),
+            remaining: (float) ($data->remaining ?? 0.0),
         );
     }
 }

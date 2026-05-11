@@ -16,8 +16,8 @@ readonly class FwLeaderboardsCorporationsGet
     public static function from(object $data): self
     {
         return new self(
-            kills: $data->kills,
-            victory_points: $data->victory_points,
+            kills: ($data->kills ?? null),
+            victory_points: ($data->victory_points ?? null),
         );
     }
 }

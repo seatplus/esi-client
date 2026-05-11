@@ -30,14 +30,14 @@ readonly class CorporationsProjectsDetail
     public static function from(object $data): self
     {
         return new self(
-            configuration: $data->configuration,
-            creator: CorporationsProjectsDetailCreator::from($data->creator),
-            details: CorporationsProjectsDetailDetails::from($data->details),
-            id: $data->id,
-            last_modified: $data->last_modified,
-            name: $data->name,
-            progress: CorporationsProjectsDetailProgress::from($data->progress),
-            state: $data->state,
+            configuration: ($data->configuration ?? null),
+            creator: CorporationsProjectsDetailCreator::from($data->creator ?? new \stdClass()),
+            details: CorporationsProjectsDetailDetails::from($data->details ?? new \stdClass()),
+            id: (string) ($data->id ?? ''),
+            last_modified: (string) ($data->last_modified ?? ''),
+            name: (string) ($data->name ?? ''),
+            progress: CorporationsProjectsDetailProgress::from($data->progress ?? new \stdClass()),
+            state: (string) ($data->state ?? ''),
             contribution: isset($data->contribution) ? CorporationsProjectsDetailContribution::from($data->contribution) : null,
             reward: isset($data->reward) ? CorporationsProjectsDetailReward::from($data->reward) : null,
         );

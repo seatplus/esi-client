@@ -16,8 +16,8 @@ readonly class FwWarsGetItem
     public static function from(object $data): self
     {
         return new self(
-            against_id: $data->against_id,
-            faction_id: $data->faction_id,
+            against_id: (int) ($data->against_id ?? 0),
+            faction_id: (int) ($data->faction_id ?? 0),
         );
     }
 }

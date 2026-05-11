@@ -24,12 +24,12 @@ readonly class SovereigntyCampaignsGetItem
     public static function from(object $data): self
     {
         return new self(
-            campaign_id: $data->campaign_id,
-            constellation_id: $data->constellation_id,
-            event_type: $data->event_type,
-            solar_system_id: $data->solar_system_id,
-            start_time: $data->start_time,
-            structure_id: $data->structure_id,
+            campaign_id: (int) ($data->campaign_id ?? 0),
+            constellation_id: (int) ($data->constellation_id ?? 0),
+            event_type: (string) ($data->event_type ?? ''),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            start_time: (string) ($data->start_time ?? ''),
+            structure_id: (int) ($data->structure_id ?? 0),
             attackers_score: $data->attackers_score ?? null,
             defender_id: $data->defender_id ?? null,
             defender_score: $data->defender_score ?? null,

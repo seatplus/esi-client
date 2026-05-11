@@ -17,9 +17,9 @@ readonly class CorporationCorporationIdMiningObserversGetItem
     public static function from(object $data): self
     {
         return new self(
-            last_updated: $data->last_updated,
-            observer_id: $data->observer_id,
-            observer_type: $data->observer_type,
+            last_updated: (string) ($data->last_updated ?? ''),
+            observer_id: (int) ($data->observer_id ?? 0),
+            observer_type: (string) ($data->observer_type ?? ''),
         );
     }
 }

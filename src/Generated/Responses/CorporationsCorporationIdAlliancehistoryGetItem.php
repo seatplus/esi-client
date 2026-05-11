@@ -18,8 +18,8 @@ readonly class CorporationsCorporationIdAlliancehistoryGetItem
     public static function from(object $data): self
     {
         return new self(
-            record_id: $data->record_id,
-            start_date: $data->start_date,
+            record_id: (int) ($data->record_id ?? 0),
+            start_date: (string) ($data->start_date ?? ''),
             alliance_id: $data->alliance_id ?? null,
             is_deleted: $data->is_deleted ?? null,
         );

@@ -16,8 +16,8 @@ readonly class UniverseSystemJumpsGetItem
     public static function from(object $data): self
     {
         return new self(
-            ship_jumps: $data->ship_jumps,
-            system_id: $data->system_id,
+            ship_jumps: (int) ($data->ship_jumps ?? 0),
+            system_id: (int) ($data->system_id ?? 0),
         );
     }
 }

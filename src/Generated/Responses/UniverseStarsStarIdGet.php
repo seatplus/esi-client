@@ -22,14 +22,14 @@ readonly class UniverseStarsStarIdGet
     public static function from(object $data): self
     {
         return new self(
-            age: $data->age,
-            luminosity: $data->luminosity,
-            name: $data->name,
-            radius: $data->radius,
-            solar_system_id: $data->solar_system_id,
-            spectral_class: $data->spectral_class,
-            temperature: $data->temperature,
-            type_id: $data->type_id,
+            age: (int) ($data->age ?? 0),
+            luminosity: (float) ($data->luminosity ?? 0.0),
+            name: (string) ($data->name ?? ''),
+            radius: (int) ($data->radius ?? 0),
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
+            spectral_class: (string) ($data->spectral_class ?? ''),
+            temperature: (int) ($data->temperature ?? 0),
+            type_id: (int) ($data->type_id ?? 0),
         );
     }
 }

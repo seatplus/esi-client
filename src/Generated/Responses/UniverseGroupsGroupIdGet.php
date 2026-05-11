@@ -19,10 +19,10 @@ readonly class UniverseGroupsGroupIdGet
     public static function from(object $data): self
     {
         return new self(
-            category_id: $data->category_id,
-            group_id: $data->group_id,
-            name: $data->name,
-            published: $data->published,
+            category_id: (int) ($data->category_id ?? 0),
+            group_id: (int) ($data->group_id ?? 0),
+            name: (string) ($data->name ?? ''),
+            published: (bool) ($data->published ?? false),
             types: (array) ($data->types ?? []),
         );
     }

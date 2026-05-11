@@ -17,7 +17,7 @@ readonly class InsurancePricesGetItem
     {
         return new self(
             levels: (array) ($data->levels ?? []),
-            type_id: $data->type_id,
+            type_id: (int) ($data->type_id ?? 0),
         );
     }
 }

@@ -19,8 +19,8 @@ readonly class CorporationsProjectsDetailConfigurationshipinsurance
     public static function from(object $data): self
     {
         return new self(
-            conflict_type: $data->conflict_type,
-            reimburse_implants: $data->reimburse_implants,
+            conflict_type: (string) ($data->conflict_type ?? ''),
+            reimburse_implants: (bool) ($data->reimburse_implants ?? false),
             identities: isset($data->identities) ? (array) $data->identities : null,
             locations: isset($data->locations) ? (array) $data->locations : null,
             ships: isset($data->ships) ? (array) $data->ships : null,

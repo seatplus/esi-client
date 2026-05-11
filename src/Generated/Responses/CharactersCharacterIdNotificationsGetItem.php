@@ -21,11 +21,11 @@ readonly class CharactersCharacterIdNotificationsGetItem
     public static function from(object $data): self
     {
         return new self(
-            notification_id: $data->notification_id,
-            sender_id: $data->sender_id,
-            sender_type: $data->sender_type,
-            timestamp: $data->timestamp,
-            type: $data->type,
+            notification_id: (int) ($data->notification_id ?? 0),
+            sender_id: (int) ($data->sender_id ?? 0),
+            sender_type: (string) ($data->sender_type ?? ''),
+            timestamp: (string) ($data->timestamp ?? ''),
+            type: (string) ($data->type ?? ''),
             is_read: $data->is_read ?? null,
             text: $data->text ?? null,
         );

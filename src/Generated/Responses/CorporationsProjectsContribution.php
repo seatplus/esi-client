@@ -16,7 +16,7 @@ readonly class CorporationsProjectsContribution
     public static function from(object $data): self
     {
         return new self(
-            contributed: $data->contributed,
+            contributed: (int) ($data->contributed ?? 0),
             last_modified: $data->last_modified ?? null,
         );
     }

@@ -17,7 +17,7 @@ readonly class CharactersCharacterIdLocationGet
     public static function from(object $data): self
     {
         return new self(
-            solar_system_id: $data->solar_system_id,
+            solar_system_id: (int) ($data->solar_system_id ?? 0),
             station_id: $data->station_id ?? null,
             structure_id: $data->structure_id ?? null,
         );

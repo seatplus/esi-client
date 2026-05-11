@@ -17,9 +17,9 @@ readonly class FreelanceJobsDetailConfiguration
     public static function from(object $data): self
     {
         return new self(
-            method: $data->method,
-            parameters: $data->parameters,
-            version: $data->version,
+            method: (string) ($data->method ?? ''),
+            parameters: ($data->parameters ?? null),
+            version: (int) ($data->version ?? 0),
         );
     }
 }

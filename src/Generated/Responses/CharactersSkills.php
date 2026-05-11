@@ -20,7 +20,7 @@ readonly class CharactersSkills
     {
         return new self(
             skills: array_map(fn(object $i) => CharactersSkillsSkill::from($i), (array) ($data->skills ?? [])),
-            total_sp: $data->total_sp,
+            total_sp: (int) ($data->total_sp ?? 0),
             unallocated_sp: $data->unallocated_sp ?? null,
         );
     }

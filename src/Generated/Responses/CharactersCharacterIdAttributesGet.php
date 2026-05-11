@@ -22,11 +22,11 @@ readonly class CharactersCharacterIdAttributesGet
     public static function from(object $data): self
     {
         return new self(
-            charisma: $data->charisma,
-            intelligence: $data->intelligence,
-            memory: $data->memory,
-            perception: $data->perception,
-            willpower: $data->willpower,
+            charisma: (int) ($data->charisma ?? 0),
+            intelligence: (int) ($data->intelligence ?? 0),
+            memory: (int) ($data->memory ?? 0),
+            perception: (int) ($data->perception ?? 0),
+            willpower: (int) ($data->willpower ?? 0),
             accrued_remap_cooldown_date: $data->accrued_remap_cooldown_date ?? null,
             bonus_remaps: $data->bonus_remaps ?? null,
             last_remap_date: $data->last_remap_date ?? null,

@@ -21,7 +21,7 @@ readonly class CorporationsCorporationIdMembertrackingGetItem
     public static function from(object $data): self
     {
         return new self(
-            character_id: $data->character_id,
+            character_id: (int) ($data->character_id ?? 0),
             base_id: $data->base_id ?? null,
             location_id: $data->location_id ?? null,
             logoff_date: $data->logoff_date ?? null,

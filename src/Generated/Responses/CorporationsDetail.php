@@ -28,12 +28,12 @@ readonly class CorporationsDetail
     public static function from(object $data): self
     {
         return new self(
-            ceo_id: $data->ceo_id,
-            creator_id: $data->creator_id,
-            member_count: $data->member_count,
-            name: $data->name,
-            tax_rate: $data->tax_rate,
-            ticker: $data->ticker,
+            ceo_id: (int) ($data->ceo_id ?? 0),
+            creator_id: (int) ($data->creator_id ?? 0),
+            member_count: (int) ($data->member_count ?? 0),
+            name: (string) ($data->name ?? ''),
+            tax_rate: (float) ($data->tax_rate ?? 0.0),
+            ticker: (string) ($data->ticker ?? ''),
             alliance_id: $data->alliance_id ?? null,
             date_founded: $data->date_founded ?? null,
             description: $data->description ?? null,

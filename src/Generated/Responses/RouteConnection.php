@@ -16,8 +16,8 @@ readonly class RouteConnection
     public static function from(object $data): self
     {
         return new self(
-            from: $data->from,
-            to: $data->to,
+            from: (int) ($data->from ?? 0),
+            to: (int) ($data->to ?? 0),
         );
     }
 }

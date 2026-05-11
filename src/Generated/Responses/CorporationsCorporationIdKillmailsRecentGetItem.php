@@ -16,8 +16,8 @@ readonly class CorporationsCorporationIdKillmailsRecentGetItem
     public static function from(object $data): self
     {
         return new self(
-            killmail_hash: $data->killmail_hash,
-            killmail_id: $data->killmail_id,
+            killmail_hash: (string) ($data->killmail_hash ?? ''),
+            killmail_id: (int) ($data->killmail_id ?? 0),
         );
     }
 }

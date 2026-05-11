@@ -16,7 +16,7 @@ readonly class CorporationsCorporationIdMembersTitlesGetItem
     public static function from(object $data): self
     {
         return new self(
-            character_id: $data->character_id,
+            character_id: (int) ($data->character_id ?? 0),
             titles: (array) ($data->titles ?? []),
         );
     }

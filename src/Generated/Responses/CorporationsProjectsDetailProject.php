@@ -23,11 +23,11 @@ readonly class CorporationsProjectsDetailProject
     public static function from(object $data): self
     {
         return new self(
-            id: $data->id,
-            last_modified: $data->last_modified,
-            name: $data->name,
-            progress: CorporationsProjectsDetailProgress::from($data->progress),
-            state: $data->state,
+            id: (string) ($data->id ?? ''),
+            last_modified: (string) ($data->last_modified ?? ''),
+            name: (string) ($data->name ?? ''),
+            progress: CorporationsProjectsDetailProgress::from($data->progress ?? new \stdClass()),
+            state: (string) ($data->state ?? ''),
             reward: isset($data->reward) ? CorporationsProjectsDetailReward::from($data->reward) : null,
         );
     }

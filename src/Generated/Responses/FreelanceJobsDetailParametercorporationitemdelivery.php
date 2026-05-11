@@ -18,8 +18,8 @@ readonly class FreelanceJobsDetailParametercorporationitemdelivery
     public static function from(object $data): self
     {
         return new self(
-            corporation_office_location: FreelanceJobsDetailParametermatcher::from($data->corporation_office_location),
-            item_type: FreelanceJobsDetailParametermatcher::from($data->item_type),
+            corporation_office_location: FreelanceJobsDetailParametermatcher::from($data->corporation_office_location ?? new \stdClass()),
+            item_type: FreelanceJobsDetailParametermatcher::from($data->item_type ?? new \stdClass()),
         );
     }
 }

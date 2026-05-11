@@ -19,11 +19,11 @@ readonly class DogmaDynamicItemsTypeIdItemIdGet
     public static function from(object $data): self
     {
         return new self(
-            created_by: $data->created_by,
+            created_by: (int) ($data->created_by ?? 0),
             dogma_attributes: (array) ($data->dogma_attributes ?? []),
             dogma_effects: (array) ($data->dogma_effects ?? []),
-            mutator_type_id: $data->mutator_type_id,
-            source_type_id: $data->source_type_id,
+            mutator_type_id: (int) ($data->mutator_type_id ?? 0),
+            source_type_id: (int) ($data->source_type_id ?? 0),
         );
     }
 }

@@ -18,9 +18,9 @@ readonly class AlliancesAllianceIdContactsGetItem
     public static function from(object $data): self
     {
         return new self(
-            contact_id: $data->contact_id,
-            contact_type: $data->contact_type,
-            standing: $data->standing,
+            contact_id: (int) ($data->contact_id ?? 0),
+            contact_type: (string) ($data->contact_type ?? ''),
+            standing: (float) ($data->standing ?? 0.0),
             label_ids: isset($data->label_ids) ? (array) $data->label_ids : null,
         );
     }

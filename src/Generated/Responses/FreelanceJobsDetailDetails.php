@@ -22,10 +22,10 @@ readonly class FreelanceJobsDetailDetails
     public static function from(object $data): self
     {
         return new self(
-            career: $data->career,
-            created: $data->created,
-            creator: FreelanceJobsDetailCreator::from($data->creator),
-            description: $data->description,
+            career: (string) ($data->career ?? ''),
+            created: (string) ($data->created ?? ''),
+            creator: FreelanceJobsDetailCreator::from($data->creator ?? new \stdClass()),
+            description: (string) ($data->description ?? ''),
             expires: $data->expires ?? null,
             finished: $data->finished ?? null,
         );
