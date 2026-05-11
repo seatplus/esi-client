@@ -161,23 +161,6 @@ it('isRateLimitLow returns true when remaining is below 10 percent', function ()
     expect($response->isRateLimitLow())->toBeTrue();
 });
 
-it('deprecated __get bridge still delegates to data object', function () {
-    $raw = json_encode(['name' => 'Test Character', 'race_id' => 1]);
-    $response = new EsiResponse($raw, [], 'now', 200);
-
-    expect($response->name)->toBe('Test Character')
-        ->and($response->race_id)->toBe(1)
-        ->and($response->nonExistent)->toBeNull();
-});
-
-it('deprecated __isset bridge checks data object properties', function () {
-    $raw = json_encode(['name' => 'Test Character']);
-    $response = new EsiResponse($raw, [], 'now', 200);
-
-    expect(isset($response->name))->toBeTrue()
-        ->and(isset($response->missing))->toBeFalse();
-});
-
 it('data property holds the decoded json body', function () {
     $raw = json_encode(['ticker' => 'TEST', 'member_count' => 100]);
     $response = new EsiResponse($raw, [], 'now', 200);

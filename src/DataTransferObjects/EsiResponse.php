@@ -83,24 +83,6 @@ class EsiResponse
         return $this->error_message;
     }
 
-    /**
-     * @deprecated Access response body fields via ->data->propertyName instead.
-     *             This bridge shim will be removed in the next eveapi major update.
-     */
-    public function __get(string $name): mixed
-    {
-        return $this->data->$name ?? null;
-    }
-
-    /**
-     * @deprecated Access response body fields via ->data->propertyName instead.
-     *             This bridge shim will be removed in the next eveapi major update.
-     */
-    public function __isset(string $name): bool
-    {
-        return isset($this->data->$name);
-    }
-
     private function parseHeaders(array $headers): array
     {
         return array_map(fn (mixed $value) => is_array($value) ? implode(';', $value) : $value, $headers);
