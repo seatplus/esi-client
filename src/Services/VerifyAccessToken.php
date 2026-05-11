@@ -8,9 +8,9 @@ use UnexpectedValueException;
 
 class VerifyAccessToken
 {
-    const JWKS_URL = 'https://login.eveonline.com/oauth/jwks';
+    const string JWKS_URL = 'https://login.eveonline.com/oauth/jwks';
 
-    const TRANQUILITY_ENDPOINT = 'https://login.eveonline.com';
+    const string TRANQUILITY_ENDPOINT = 'https://login.eveonline.com';
 
     public function __construct(private readonly Client $client = new Client, private readonly JwtService $jwtService = new JwtService) {}
 

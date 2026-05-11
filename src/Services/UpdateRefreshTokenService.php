@@ -13,7 +13,7 @@ use Seatplus\EsiClient\Exceptions\RequestFailedException;
 
 class UpdateRefreshTokenService
 {
-    const TOKEN_URL = 'https://login.eveonline.com/v2/oauth/token';
+    const string TOKEN_URL = 'https://login.eveonline.com/v2/oauth/token';
 
     public function __construct(private readonly Client $client = new Client, private readonly VerifyAccessToken $verifyAccessToken = new VerifyAccessToken) {}
 
