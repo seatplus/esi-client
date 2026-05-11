@@ -2,10 +2,9 @@
 
 namespace Seatplus\EsiClient\Generated\Resources;
 
-use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\MetaChangelog;
-use Seatplus\EsiClient\Generated\Responses\MetaCompatibilityDates;
-use Seatplus\EsiClient\Generated\Responses\MetaStatus;
+use Seatplus\EsiSchema\Responses\MetaChangelog;
+use Seatplus\EsiSchema\Responses\MetaCompatibilityDates;
+use Seatplus\EsiSchema\Responses\MetaStatus;
 
 /**
  * ESI tag: Meta
@@ -15,30 +14,33 @@ use Seatplus\EsiClient\Generated\Responses\MetaStatus;
  */
 class MetaResource extends AbstractResource
 {
-    /**
-     * @return EsiResult<MetaChangelog>
-     */
-    public function getMetaChangelog(): EsiResult
+    public function getMetaChangelog(): MetaChangelog
     {
         $response = $this->client->invoke('get', '/meta/changelog', [], 'latest', []);
-        return EsiResult::fromResponse($response, MetaChangelog::from($response->data));
+        $dto = MetaChangelog::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
-    /**
-     * @return EsiResult<MetaCompatibilityDates>
-     */
-    public function getMetaCompatibilityDates(): EsiResult
+    public function getMetaCompatibilityDates(): MetaCompatibilityDates
     {
         $response = $this->client->invoke('get', '/meta/compatibility-dates', [], 'latest', []);
-        return EsiResult::fromResponse($response, MetaCompatibilityDates::from($response->data));
+        $dto = MetaCompatibilityDates::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
-    /**
-     * @return EsiResult<MetaStatus>
-     */
-    public function getMetaStatus(): EsiResult
+    public function getMetaStatus(): MetaStatus
     {
         $response = $this->client->invoke('get', '/meta/status', [], 'latest', []);
-        return EsiResult::fromResponse($response, MetaStatus::from($response->data));
+        $dto = MetaStatus::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 }

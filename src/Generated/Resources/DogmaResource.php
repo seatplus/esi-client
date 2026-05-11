@@ -3,9 +3,9 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\DogmaAttributesAttributeIdGet;
-use Seatplus\EsiClient\Generated\Responses\DogmaDynamicItemsTypeIdItemIdGet;
-use Seatplus\EsiClient\Generated\Responses\DogmaEffectsEffectIdGet;
+use Seatplus\EsiSchema\Responses\DogmaAttributesAttributeIdGet;
+use Seatplus\EsiSchema\Responses\DogmaDynamicItemsTypeIdItemIdGet;
+use Seatplus\EsiSchema\Responses\DogmaEffectsEffectIdGet;
 
 /**
  * ESI tag: Dogma
@@ -22,26 +22,29 @@ class DogmaResource extends AbstractResource
     {
         $response = $this->client->invoke('get', '/dogma/attributes', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
+        $data = array_map(fn (mixed $i) => (int) $i, (array) $response->data);
+
         return EsiResult::fromResponse($response, $data);
     }
 
-    /**
-     * @return EsiResult<DogmaAttributesAttributeIdGet>
-     */
-    public function getDogmaAttributesAttributeId(int $attributeId): EsiResult
+    public function getDogmaAttributesAttributeId(int $attributeId): DogmaAttributesAttributeIdGet
     {
         $response = $this->client->invoke('get', '/dogma/attributes/{attribute_id}', ['attribute_id' => $attributeId], 'latest', []);
-        return EsiResult::fromResponse($response, DogmaAttributesAttributeIdGet::from($response->data));
+        $dto = DogmaAttributesAttributeIdGet::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
-    /**
-     * @return EsiResult<DogmaDynamicItemsTypeIdItemIdGet>
-     */
-    public function getDogmaDynamicItemsTypeIdItemId(int $itemId, int $typeId): EsiResult
+    public function getDogmaDynamicItemsTypeIdItemId(int $itemId, int $typeId): DogmaDynamicItemsTypeIdItemIdGet
     {
         $response = $this->client->invoke('get', '/dogma/dynamic/items/{type_id}/{item_id}', ['item_id' => $itemId, 'type_id' => $typeId], 'latest', []);
-        return EsiResult::fromResponse($response, DogmaDynamicItemsTypeIdItemIdGet::from($response->data));
+        $dto = DogmaDynamicItemsTypeIdItemIdGet::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
     /**
@@ -51,16 +54,18 @@ class DogmaResource extends AbstractResource
     {
         $response = $this->client->invoke('get', '/dogma/effects', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
+        $data = array_map(fn (mixed $i) => (int) $i, (array) $response->data);
+
         return EsiResult::fromResponse($response, $data);
     }
 
-    /**
-     * @return EsiResult<DogmaEffectsEffectIdGet>
-     */
-    public function getDogmaEffectsEffectId(int $effectId): EsiResult
+    public function getDogmaEffectsEffectId(int $effectId): DogmaEffectsEffectIdGet
     {
         $response = $this->client->invoke('get', '/dogma/effects/{effect_id}', ['effect_id' => $effectId], 'latest', []);
-        return EsiResult::fromResponse($response, DogmaEffectsEffectIdGet::from($response->data));
+        $dto = DogmaEffectsEffectIdGet::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 }

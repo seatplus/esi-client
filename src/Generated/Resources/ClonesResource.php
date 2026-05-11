@@ -3,7 +3,7 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdClonesGet;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdClonesGet;
 
 /**
  * ESI tag: Clones
@@ -14,24 +14,29 @@ use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdClonesGet;
 class ClonesResource extends AbstractResource
 {
     /**
-     * @return EsiResult<CharactersCharacterIdClonesGet>
      * @scope esi-clones.read_clones.v1
      */
-    public function getCharactersCharacterIdClones(int $characterId): EsiResult
+    public function getCharactersCharacterIdClones(int $characterId): CharactersCharacterIdClonesGet
     {
         $response = $this->client->invoke('get', '/characters/{character_id}/clones', ['character_id' => $characterId], 'latest', []);
-        return EsiResult::fromResponse($response, CharactersCharacterIdClonesGet::from($response->data));
+        $dto = CharactersCharacterIdClonesGet::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
     /**
      * @return EsiResult<array<int>>
+     *
      * @scope esi-clones.read_implants.v1
      */
     public function getCharactersCharacterIdImplants(int $characterId): EsiResult
     {
         $response = $this->client->invoke('get', '/characters/{character_id}/implants', ['character_id' => $characterId], 'latest', []);
         /** @var array<int> $data */
-        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
+        $data = array_map(fn (mixed $i) => (int) $i, (array) $response->data);
+
         return EsiResult::fromResponse($response, $data);
     }
 }

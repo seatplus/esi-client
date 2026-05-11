@@ -10,6 +10,10 @@
 
 A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-cache-middleware.
 
+> **ESI compatibility date:** This branch of `esi-client` targets ESI compatibility date **`2025-12-16`** and forward.
+> Responses DTOs are sourced from [`seatplus/esi-schema`](https://github.com/seatplus/esi-schema) (`1.x`).
+> If CCP publishes a new breaking compatibility date, a new major version of both packages will be released.
+
 ## Installation
 
 You can install the package via composer:
@@ -21,10 +25,37 @@ composer require seatplus/esi-client
 
 ## Usage
 
-```php
-$esi = new Seatplus\EsiClient\EsiClient();
+### Typed SDK (recommended)
 
-$esi->setVersion('v5'); // if you do not set a version, esi-client is using '/latest'
+The SDK exposes typed resource methods. Single-object endpoints return the DTO directly (a subclass of `AbstractEsiDto`); paginated list endpoints return `EsiResult<array<T>>`.
+
+```php
+use Seatplus\EsiClient\EsiClient;
+
+$sdk = new EsiClient();
+
+// Single object — returns AllianceDetail directly
+$alliance = $sdk->alliance()->getAlliancesAllianceId(99000006);
+echo $alliance->name;          // typed readonly string
+echo $alliance->ticker;
+$alliance->isCachedLoad;       // bool — true if served from RFC 7234 cache
+
+// Authenticated endpoint — returns CharactersDetail directly
+$character = $sdk->withToken($accessToken)->characters()->getCharactersCharacterId(95725047);
+echo $character->name;
+
+// Paginated list — returns EsiResult (pages metadata needed)
+$result = $sdk->withToken($accessToken)->assets()->getCharactersCharacterIdAssets(95725047, page: 1);
+echo $result->pages;           // total pages from X-Pages header
+foreach ($result->data as $asset) {
+    echo $asset->item_id;      // typed readonly int
+}
+```
+
+### Low-level transport
+
+```php
+$esi = new EsiClient();
 
 // make a call — returns EsiResponse
 $response = $esi->invoke('get', '/characters/{character_id}/', [
@@ -34,23 +65,6 @@ $response = $esi->invoke('get', '/characters/{character_id}/', [
 // $response->data    — stdClass decoded from the JSON body
 // $response->pages   — total pages (from X-Pages header, or 1)
 // $response->isCachedLoad() — true if served from RFC 7234 cache
-```
-
-### Response shapes are the consumer's responsibility
-
-`esi-client` is a **pure transport layer**. It decodes the JSON body into a `stdClass` and
-returns it as `$response->data`. It has no knowledge of what fields each ESI endpoint returns.
-
-In `eveapi`, every job wraps `$response->data` in a typed `readonly class` DTO via a
-`from(object $data): self` factory before touching any properties:
-
-```php
-// eveapi example — consuming an EsiResponse with a typed DTO
-$data = CharacterInfoResponse::from($response->data);
-CharacterInfo::updateOrCreate(
-    ['character_id' => $this->character_id],
-    ['name' => $data->name, 'corporation_id' => $data->corporation_id],
-);
 ```
 
 ### Rate limiting

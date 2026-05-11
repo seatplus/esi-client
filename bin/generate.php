@@ -6,7 +6,9 @@
  *
  * Fetches the ESI OpenAPI YAML spec and generates:
  *   - src/Generated/Resources/{Tag}Resource.php  (one per tag)
- *   - src/Generated/Responses/{SchemaName}.php   (flat, one per schema)
+ *
+ * Response DTOs are NOT generated here — they live in seatplus/esi-schema.
+ * Resources import from Seatplus\EsiSchema\Responses\*.
  *
  * Usage:
  *   php bin/generate.php [--compatibility-date=2025-12-16] [--spec=/path/to/openapi.yaml] [--dry-run]
@@ -14,7 +16,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
 
@@ -38,7 +40,7 @@ $specFile = $args['spec'] ?? null;
 // ---------------------------------------------------------------------------
 
 $COMPAT_DATE_URL = 'https://esi.evetech.net/meta/compatibility-dates';
-$SPEC_BASE_URL   = 'https://esi.evetech.net/meta/openapi.yaml';
+$SPEC_BASE_URL = 'https://esi.evetech.net/meta/openapi.yaml';
 
 if (isset($args['compatibility-date'])) {
     $compatDate = $args['compatibility-date'];
@@ -61,7 +63,7 @@ if ($specFile) {
 
 $spec = Yaml::parse($rawSpec);
 $schemas = $spec['components']['schemas'] ?? [];
-$paths   = $spec['paths'] ?? [];
+$paths = $spec['paths'] ?? [];
 
 define('ESI_COMPATIBILITY_DATE', $compatDate);
 
@@ -69,7 +71,7 @@ define('ESI_COMPATIBILITY_DATE', $compatDate);
 // Output directories
 // ---------------------------------------------------------------------------
 
-$generatedDir = __DIR__ . '/../src/Generated';
+$generatedDir = __DIR__.'/../src/Generated';
 
 // ---------------------------------------------------------------------------
 // Helper: convert OAS3 type/format to PHP type
@@ -77,16 +79,16 @@ $generatedDir = __DIR__ . '/../src/Generated';
 
 function oas3TypeToPhp(array $prop): string
 {
-    $type   = $prop['type'] ?? 'mixed';
+    $type = $prop['type'] ?? 'mixed';
     $format = $prop['format'] ?? '';
 
     return match (true) {
-        $type === 'integer'                         => 'int',
-        $type === 'number'                          => 'float',
-        $type === 'boolean'                         => 'bool',
-        $type === 'string'                          => 'string',
-        $type === 'array'                           => 'array',
-        default                                     => 'mixed',
+        $type === 'integer' => 'int',
+        $type === 'number' => 'float',
+        $type === 'boolean' => 'bool',
+        $type === 'string' => 'string',
+        $type === 'array' => 'array',
+        default => 'mixed',
     };
 }
 
@@ -98,10 +100,10 @@ function oas3TypeToPhp(array $prop): string
 function phpTypeZeroValue(string $phpType): string
 {
     return match ($phpType) {
-        'int'   => '0',
+        'int' => '0',
         'float' => '0.0',
-        'bool'  => 'false',
-        'string'=> "''",
+        'bool' => 'false',
+        'string' => "''",
         'array' => '[]',
         default => 'null',
     };
@@ -111,7 +113,7 @@ function phpTypeZeroValue(string $phpType): string
 // Helper: resolve a $ref string to a PHP type (or class name if object)
 // ---------------------------------------------------------------------------
 
-/** @var array<string,string> $commonModelTypes  schemaName → 'int'|'string'|'float' */
+/** @var array<string,string> $commonModelTypes schemaName → 'int'|'string'|'float' */
 $commonModelTypes = [];
 
 foreach ($schemas as $name => $schema) {
@@ -123,6 +125,7 @@ foreach ($schemas as $name => $schema) {
 function resolveRef(string $ref, array $commonModelTypes): string
 {
     $name = basename(str_replace('#/components/schemas/', '', $ref));
+
     return $commonModelTypes[$name] ?? $name; // primitive or class name
 }
 
@@ -142,8 +145,10 @@ function propToPhpType(array $prop, array $commonModelTypes, array $schemas): st
         $items = $prop['items'] ?? [];
         if (isset($items['$ref'])) {
             $itemType = resolveRef($items['$ref'], $commonModelTypes);
-            return "array"; // @var array<{$itemType}> used in phpdoc
+
+            return 'array'; // @var array<{$itemType}> used in phpdoc
         }
+
         return 'array';
     }
 
@@ -156,7 +161,7 @@ function propToPhpType(array $prop, array $commonModelTypes, array $schemas): st
 
 function tagToResourceClass(string $tag): string
 {
-    return str_replace(' ', '', ucwords($tag)) . 'Resource';
+    return str_replace(' ', '', ucwords($tag)).'Resource';
 }
 
 // ---------------------------------------------------------------------------
@@ -184,14 +189,14 @@ function generateDtoClass(
         }
     }
 
-    $constructorLines  = [];
-    $fromLines         = [];
-    $useStatements     = [];
+    $constructorLines = [];
+    $fromLines = [];
+    $useStatements = [];
 
     foreach ($requiredProps as $propName => $prop) {
         $phpType = propToPhpType($prop, $commonModelTypes, $schemas);
         // Track class references for use statements
-        if (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+        if (! in_array($phpType, ['int', 'float', 'bool', 'string', 'array', 'mixed'], true)) {
             $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$phpType};";
         }
         $constructorLines[] = "        public readonly {$phpType} \${$propName},";
@@ -200,7 +205,7 @@ function generateDtoClass(
             $items = $prop['items'] ?? [];
             if (isset($items['$ref'])) {
                 $itemClass = resolveRef($items['$ref'], $commonModelTypes);
-                if (! in_array($itemClass, ['int','float','bool','string'], true)) {
+                if (! in_array($itemClass, ['int', 'float', 'bool', 'string'], true)) {
                     $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$itemClass};";
                     $fromLines[] = "            {$propName}: array_map(fn(object \$i) => {$itemClass}::from(\$i), (array) (\$data->{$propName} ?? [])),";
                 } else {
@@ -209,7 +214,7 @@ function generateDtoClass(
             } else {
                 $fromLines[] = "            {$propName}: (array) (\$data->{$propName} ?? []),";
             }
-        } elseif (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+        } elseif (! in_array($phpType, ['int', 'float', 'bool', 'string', 'array', 'mixed'], true)) {
             // Object DTO — defensive: fall back to empty object so ::from() still runs
             $fromLines[] = "            {$propName}: {$phpType}::from(\$data->{$propName} ?? new \\stdClass()),";
         } else {
@@ -222,13 +227,13 @@ function generateDtoClass(
 
     foreach ($optionalProps as $propName => $prop) {
         $phpType = propToPhpType($prop, $commonModelTypes, $schemas);
-        if (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+        if (! in_array($phpType, ['int', 'float', 'bool', 'string', 'array', 'mixed'], true)) {
             $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$phpType};";
         }
         if ($phpType === 'array') {
             $constructorLines[] = "        public readonly ?array \${$propName} = null,";
             $fromLines[] = "            {$propName}: isset(\$data->{$propName}) ? (array) \$data->{$propName} : null,";
-        } elseif (! in_array($phpType, ['int','float','bool','string','array','mixed'], true)) {
+        } elseif (! in_array($phpType, ['int', 'float', 'bool', 'string', 'array', 'mixed'], true)) {
             $constructorLines[] = "        public readonly ?{$phpType} \${$propName} = null,";
             $fromLines[] = "            {$propName}: isset(\$data->{$propName}) ? {$phpType}::from(\$data->{$propName}) : null,";
         } elseif ($phpType === 'mixed') {
@@ -241,12 +246,12 @@ function generateDtoClass(
     }
 
     $constructorBlock = implode("\n", $constructorLines);
-    $fromBlock        = implode("\n", $fromLines);
-    $useBlock         = empty($useStatements)
+    $fromBlock = implode("\n", $fromLines);
+    $useBlock = empty($useStatements)
         ? ''
-        : "\n" . implode("\n", array_unique($useStatements)) . "\n";
+        : "\n".implode("\n", array_unique($useStatements))."\n";
 
-    $fullName  = $className . $suffix;
+    $fullName = $className.$suffix;
     $compatDate = ESI_COMPATIBILITY_DATE;
 
     return <<<PHP
@@ -289,7 +294,7 @@ foreach ($paths as $path => $pathItem) {
             continue;
         }
 
-        $tag        = str_replace(' ', '', ucwords($op['tags'][0] ?? 'Unknown'));
+        $tag = str_replace(' ', '', ucwords($op['tags'][0] ?? 'Unknown'));
         $operationId = $op['operationId'];
         // method = camelCase(operationId)
         $methodName = lcfirst($operationId);
@@ -303,6 +308,7 @@ foreach ($paths as $path => $pathItem) {
                 if (in_array($paramName, $SKIP_PARAMS, true)) {
                     continue;
                 }
+
                 // We don't know details from ref — shouldn't happen for real params
                 continue;
             }
@@ -323,70 +329,70 @@ foreach ($paths as $path => $pathItem) {
         // Response schema
         $resp200 = $op['responses']['200'] ?? [];
         $respSchema = $resp200['content']['application/json']['schema'] ?? null;
-        $schemaRef  = $respSchema['$ref'] ?? null;
+        $schemaRef = $respSchema['$ref'] ?? null;
         $schemaName = $schemaRef ? basename(str_replace('#/components/schemas/', '', $schemaRef)) : null;
 
         // X-Pages header
         $xPages = isset($resp200['headers']['X-Pages']);
 
         // Determine response type
-        $schema        = $schemaName ? ($schemas[$schemaName] ?? []) : [];
-        $schemaType    = $schema['type'] ?? 'void';
-        $responseType  = 'void';
-        $dtoClass      = null;
-        $phpDocReturn  = 'EsiResult<null>';
+        $schema = $schemaName ? ($schemas[$schemaName] ?? []) : [];
+        $schemaType = $schema['type'] ?? 'void';
+        $responseType = 'void';
+        $dtoClass = null;
+        $phpDocReturn = 'EsiResult<null>';
         $primitiveType = null;
-        $primitivePhp  = null;
+        $primitivePhp = null;
 
         if ($schemaName) {
             if ($schemaType === 'object') {
                 $responseType = 'object';
-                $dtoClass     = $schemaName;
-                $phpDocReturn = "EsiResult<{$schemaName}>";
+                $dtoClass = $schemaName;
+                $phpDocReturn = $schemaName;  // returns DTO directly, no EsiResult wrapper
             } elseif ($schemaType === 'array') {
                 $items = $schema['items'] ?? [];
                 if (isset($items['$ref'])) {
                     // array<OtherSchema>
-                    $itemClass    = resolveRef($items['$ref'], $commonModelTypes);
+                    $itemClass = resolveRef($items['$ref'], $commonModelTypes);
                     $responseType = 'array_ref';
-                    $dtoClass     = $itemClass;
+                    $dtoClass = $itemClass;
                     $phpDocReturn = "EsiResult<array<{$itemClass}>>";
                 } elseif (($items['type'] ?? '') === 'object') {
                     // array<inline-object> → use SchemaNameItem DTO
                     $responseType = 'array_item';
-                    $dtoClass     = $schemaName . 'Item';
+                    $dtoClass = $schemaName.'Item';
                     $phpDocReturn = "EsiResult<array<{$schemaName}Item>>";
                 } else {
                     // array<primitive>
                     $primitiveType = oas3TypeToPhp($items);
-                    $responseType  = 'array_primitive';
-                    $dtoClass      = null;
-                    $phpDocReturn  = "EsiResult<array<{$primitiveType}>>";
+                    $responseType = 'array_primitive';
+                    $dtoClass = null;
+                    $phpDocReturn = "EsiResult<array<{$primitiveType}>>";
                 }
             } elseif ($schemaType !== 'void') {
                 // primitive (e.g. wallet balance → float)
                 $responseType = 'primitive';
                 $primitivePhp = oas3TypeToPhp($schema);
-                $dtoClass     = null;
+                $dtoClass = null;
                 $phpDocReturn = "EsiResult<{$primitivePhp}>";
             }
         }
 
         $tagOps[$tag][] = [
-            'path'             => $path,
-            'httpMethod'       => $httpMethod,
-            'methodName'       => $methodName,
-            'params'           => $params,
-            'requestBody'      => $requestBody,
-            'isAuth'           => $isAuth,
-            'scopes'           => $scopes,
-            'schemaName'       => $schemaName,
-            'responseType'     => $responseType,
-            'dtoClass'         => $dtoClass,
-            'phpDocReturn'     => $phpDocReturn,
-            'xPages'           => $xPages,
-            'primitiveType'    => $primitiveType ?? ($primitivePhp ?? null),
-            '_commonModelTypes'=> $commonModelTypes,
+            'path' => $path,
+            'httpMethod' => $httpMethod,
+            'methodName' => $methodName,
+            'params' => $params,
+            'requestBody' => $requestBody,
+            'isAuth' => $isAuth,
+            'scopes' => $scopes,
+            'schemaName' => $schemaName,
+            'responseType' => $responseType,
+            'dtoClass' => $dtoClass,
+            'phpDocReturn' => $phpDocReturn,
+            'xPages' => $xPages,
+            'primitiveType' => $primitiveType ?? ($primitivePhp ?? null),
+            '_commonModelTypes' => $commonModelTypes,
         ];
     }
 }
@@ -403,16 +409,17 @@ function buildMethodSig(array $op): string
     usort($op['params'], function ($a, $b) {
         $aReq = $a['required'] ?? false;
         $bReq = $b['required'] ?? false;
+
         return $bReq <=> $aReq;
     });
 
     foreach ($op['params'] as $param) {
-        $name     = lcfirst(str_replace('_', '', ucwords($param['name'], '_')));
+        $name = lcfirst(str_replace('_', '', ucwords($param['name'], '_')));
         $paramSchema = $param['schema'] ?? $param;
         // Resolve $ref in param schema (e.g., CharacterID → int)
         if (isset($paramSchema['$ref'])) {
             $phpType = resolveRef($paramSchema['$ref'], $op['_commonModelTypes'] ?? []);
-            if (!in_array($phpType, ['int', 'float', 'string', 'bool', 'array'], true)) {
+            if (! in_array($phpType, ['int', 'float', 'string', 'bool', 'array'], true)) {
                 $phpType = 'mixed'; // unexpected object ref in param — use mixed
             }
         } else {
@@ -421,7 +428,7 @@ function buildMethodSig(array $op): string
         $required = $param['required'] ?? false;
 
         if ($name === 'page') {
-            $args[] = "int \$page = 1";
+            $args[] = 'int $page = 1';
         } elseif ($required) {
             $args[] = "{$phpType} \${$name}";
         } else {
@@ -431,7 +438,7 @@ function buildMethodSig(array $op): string
 
     // requestBody
     if ($op['requestBody']) {
-        $args = array_merge(["mixed \$requestBody"], $args);
+        $args = array_merge(['mixed $requestBody'], $args);
     }
 
     return implode(', ', $args);
@@ -443,10 +450,10 @@ function buildMethodSig(array $op): string
 
 function buildInvoke(array $op): string
 {
-    $path   = $op['path'];
+    $path = $op['path'];
     $method = $op['httpMethod'];
 
-    $uriData   = [];
+    $uriData = [];
     $queryData = [];
 
     foreach ($op['params'] as $param) {
@@ -458,27 +465,31 @@ function buildInvoke(array $op): string
         }
     }
 
-    $uriStr   = empty($uriData)   ? '[]' : '[' . implode(', ', $uriData) . ']';
-    $queryStr = empty($queryData) ? '[]' : '[' . implode(', ', $queryData) . ']';
-    $bodyStr  = $op['requestBody'] ? '(array) $requestBody' : '[]';
+    $uriStr = empty($uriData) ? '[]' : '['.implode(', ', $uriData).']';
+    $queryStr = empty($queryData) ? '[]' : '['.implode(', ', $queryData).']';
+    $bodyStr = $op['requestBody'] ? '(array) $requestBody' : '[]';
 
     if ($op['requestBody'] || $method !== 'get') {
         return "\$this->client->invoke('{$method}', '{$path}', {$uriStr}, 'latest', {$queryStr}, {$bodyStr})";
     }
+
     return "\$this->client->invoke('{$method}', '{$path}', {$uriStr}, 'latest', {$queryStr})";
 }
 
 function buildReturn(array $op): string
 {
     $invoke = buildInvoke($op);
-    $type   = $op['responseType'];
-    $dto    = $op['dtoClass'];
-    $primT  = $op['primitiveType'] ?? 'int';
+    $type = $op['responseType'];
+    $dto = $op['dtoClass'];
+    $primT = $op['primitiveType'] ?? 'int';
 
     return match ($type) {
         'object' => <<<PHP
                 \$response = {$invoke};
-                return EsiResult::fromResponse(\$response, {$dto}::from(\$response->data));
+                \$dto = {$dto}::from(\$response->data);
+                \$dto->isCachedLoad = \$response->isCachedLoad();
+                \$dto->pages = \$response->pages ?? 1;
+                return \$dto;
         PHP,
 
         'array_item' => <<<PHP
@@ -525,37 +536,42 @@ function buildReturn(array $op): string
 function generateResourceFile(string $tag, array $ops, array $schemas, array $commonModelTypes): string
 {
     $resourceClass = tagToResourceClass($tag);
-    $compatDate    = ESI_COMPATIBILITY_DATE;
+    $compatDate = ESI_COMPATIBILITY_DATE;
 
     $useStatements = [];
-    $methods       = [];
+    $methods = [];
 
     foreach ($ops as $op) {
-        $sig    = buildMethodSig($op);
-        $body   = buildReturn($op);
-        $doc    = "     * @return {$op['phpDocReturn']}";
-        $auth   = $op['isAuth']  ? "\n     * @scope " . implode(', ', $op['scopes']) : '';
-        $paged  = $op['xPages'] ? "\n     * @paginated Use \$page param to iterate pages." : '';
+        $sig = buildMethodSig($op);
+        $body = buildReturn($op);
+        $doc = "     * @return {$op['phpDocReturn']}";
+        $auth = $op['isAuth'] ? "\n     * @scope ".implode(', ', $op['scopes']) : '';
+        $paged = $op['xPages'] ? "\n     * @paginated Use \$page param to iterate pages." : '';
 
-        // use statement for the DTO
-        if ($op['dtoClass'] && ! in_array($op['dtoClass'], ['int','float','bool','string'], true)) {
-            $useStatements[] = "use Seatplus\\EsiClient\\Generated\\Responses\\{$op['dtoClass']};";
+        // use statement for the DTO — all DTOs come from seatplus/esi-schema
+        if ($op['dtoClass'] && ! in_array($op['dtoClass'], ['int', 'float', 'bool', 'string'], true)) {
+            $useStatements[] = "use Seatplus\\EsiSchema\\Responses\\{$op['dtoClass']};";
         }
+
+        // Return type hint: object endpoints return DTO directly; others return EsiResult
+        $returnHint = $op['responseType'] === 'object'
+            ? ($op['dtoClass'] ?? 'mixed')
+            : 'EsiResult';
 
         $methods[] = <<<PHP
             /**
         {$doc}{$auth}{$paged}
              */
-            public function {$op['methodName']}({$sig}): EsiResult
+            public function {$op['methodName']}({$sig}): {$returnHint}
             {
         {$body}
             }
         PHP;
     }
 
-    $useBlock     = empty($useStatements)
+    $useBlock = empty($useStatements)
         ? ''
-        : implode("\n", array_unique($useStatements)) . "\n";
+        : implode("\n", array_unique($useStatements))."\n";
     $methodsBlock = implode("\n\n", $methods);
 
     return <<<PHP
@@ -579,76 +595,29 @@ function generateResourceFile(string $tag, array $ops, array $schemas, array $co
 }
 
 // ---------------------------------------------------------------------------
-// Collect all DTOs to generate
-// ---------------------------------------------------------------------------
-
-/** @var array<string, string> $dtoFiles  className → PHP source */
-$dtoFiles = [];
-
-foreach ($schemas as $name => $schema) {
-    // Skip ID aliases
-    if ($schema['x-common-model'] ?? false) {
-        continue;
-    }
-
-    $type = $schema['type'] ?? null;
-
-    if ($type === 'object') {
-        $props    = $schema['properties'] ?? [];
-        $required = $schema['required'] ?? [];
-        $dtoFiles[$name] = generateDtoClass($name, $props, $required, $commonModelTypes, $schemas);
-    } elseif ($type === 'array') {
-        $items = $schema['items'] ?? [];
-        if (($items['type'] ?? '') === 'object') {
-            // Generate an Item DTO
-            $itemClass = $name . 'Item';
-            $props    = $items['properties'] ?? [];
-            $required = $items['required'] ?? [];
-            $dtoFiles[$itemClass] = generateDtoClass($itemClass, $props, $required, $commonModelTypes, $schemas);
-        }
-        // primitive arrays need no DTO
-    }
-    // primitives need no DTO
-}
-
-// ---------------------------------------------------------------------------
-// Write files
+// Write resource files only (DTOs come from seatplus/esi-schema)
 // ---------------------------------------------------------------------------
 
 $writtenFiles = 0;
 
 if (! $dryRun) {
-    // Responses directory (flat)
-    $responsesDir = "{$generatedDir}/Responses";
-    if (! is_dir($responsesDir)) {
-        mkdir($responsesDir, 0755, true);
-    }
-
     // Resources directory
     $resourcesDir = "{$generatedDir}/Resources";
     if (! is_dir($resourcesDir)) {
         mkdir($resourcesDir, 0755, true);
     }
 
-    // Write DTO files
-    foreach ($dtoFiles as $className => $source) {
-        $file = "{$responsesDir}/{$className}.php";
-        file_put_contents($file, $source);
-        echo "  wrote: src/Generated/Responses/{$className}.php\n";
-        $writtenFiles++;
-    }
-
     // Write resource files
     foreach ($tagOps as $tag => $ops) {
         $source = generateResourceFile($tag, $ops, $schemas, $commonModelTypes);
-        $class  = tagToResourceClass($tag);
-        $file   = "{$resourcesDir}/{$class}.php";
+        $class = tagToResourceClass($tag);
+        $file = "{$resourcesDir}/{$class}.php";
         file_put_contents($file, $source);
         echo "  wrote: src/Generated/Resources/{$class}.php\n";
         $writtenFiles++;
     }
 }
 
-echo "\nDone. Wrote {$writtenFiles} files.\n";
-echo "Tags found: " . count($tagOps) . "\n";
-echo "DTOs generated: " . count($dtoFiles) . "\n";
+echo "\nDone. Wrote {$writtenFiles} resource files.\n";
+echo 'Tags found: '.count($tagOps)."\n";
+echo "Note: DTOs are sourced from seatplus/esi-schema — not generated here.\n";

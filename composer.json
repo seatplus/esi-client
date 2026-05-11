@@ -29,8 +29,15 @@
         "firebase/php-jwt": "^7.0",
         "kevinrob/guzzle-cache-middleware": "^4.0",
         "monolog/monolog": "^3.7",
-        "nesbot/carbon": "^2.53"
+        "nesbot/carbon": "^2.53",
+        "seatplus/esi-schema": "1.x-dev"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/seatplus/esi-schema"
+        }
+    ],
     "require-dev": {
         "ext-openssl": "*",
         "fzaninotto/faker": "^1.5",

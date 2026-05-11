@@ -12,9 +12,9 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 readonly class EsiResult
 {
     /**
-     * @param T    $data         The typed response body (DTO or array of DTOs).
-     * @param int  $pages        Total pages reported by X-Pages (1 when not paginated).
-     * @param bool $isCachedLoad Whether this response was served from the RFC 7234 cache.
+     * @param  T  $data  The typed response body (DTO or array of DTOs).
+     * @param  int  $pages  Total pages reported by X-Pages (1 when not paginated).
+     * @param  bool  $isCachedLoad  Whether this response was served from the RFC 7234 cache.
      */
     public function __construct(
         public mixed $data,
@@ -26,6 +26,7 @@ readonly class EsiResult
      * Build an EsiResult from a raw EsiResponse and already-typed data.
      *
      * @template TData
+     *
      * @param  TData  $typedData
      * @return EsiResult<TData>
      */

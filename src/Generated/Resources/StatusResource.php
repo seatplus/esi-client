@@ -2,8 +2,7 @@
 
 namespace Seatplus\EsiClient\Generated\Resources;
 
-use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\StatusGet;
+use Seatplus\EsiSchema\Responses\StatusGet;
 
 /**
  * ESI tag: Status
@@ -13,12 +12,13 @@ use Seatplus\EsiClient\Generated\Responses\StatusGet;
  */
 class StatusResource extends AbstractResource
 {
-    /**
-     * @return EsiResult<StatusGet>
-     */
-    public function getStatus(): EsiResult
+    public function getStatus(): StatusGet
     {
         $response = $this->client->invoke('get', '/status', [], 'latest', []);
-        return EsiResult::fromResponse($response, StatusGet::from($response->data));
+        $dto = StatusGet::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 }

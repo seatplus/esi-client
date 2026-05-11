@@ -3,9 +3,9 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\SovereigntyCampaignsGetItem;
-use Seatplus\EsiClient\Generated\Responses\SovereigntyMapGetItem;
-use Seatplus\EsiClient\Generated\Responses\SovereigntyStructuresGetItem;
+use Seatplus\EsiSchema\Responses\SovereigntyCampaignsGetItem;
+use Seatplus\EsiSchema\Responses\SovereigntyMapGetItem;
+use Seatplus\EsiSchema\Responses\SovereigntyStructuresGetItem;
 
 /**
  * ESI tag: Sovereignty
@@ -21,8 +21,9 @@ class SovereigntyResource extends AbstractResource
     public function getSovereigntyCampaigns(): EsiResult
     {
         $response = $this->client->invoke('get', '/sovereignty/campaigns', [], 'latest', []);
+
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => SovereigntyCampaignsGetItem::from($item),
+            fn (object $item) => SovereigntyCampaignsGetItem::from($item),
             (array) $response->data,
         ));
     }
@@ -33,8 +34,9 @@ class SovereigntyResource extends AbstractResource
     public function getSovereigntyMap(): EsiResult
     {
         $response = $this->client->invoke('get', '/sovereignty/map', [], 'latest', []);
+
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => SovereigntyMapGetItem::from($item),
+            fn (object $item) => SovereigntyMapGetItem::from($item),
             (array) $response->data,
         ));
     }
@@ -45,8 +47,9 @@ class SovereigntyResource extends AbstractResource
     public function getSovereigntyStructures(): EsiResult
     {
         $response = $this->client->invoke('get', '/sovereignty/structures', [], 'latest', []);
+
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => SovereigntyStructuresGetItem::from($item),
+            fn (object $item) => SovereigntyStructuresGetItem::from($item),
             (array) $response->data,
         ));
     }

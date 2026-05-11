@@ -11,9 +11,6 @@ use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
-use Seatplus\EsiClient\Generated\Resources\CorporationProjectsResource;
-use Seatplus\EsiClient\Generated\Resources\FreelanceJobsResource;
-use Seatplus\EsiClient\Generated\Resources\MetaResource;
 use Seatplus\EsiClient\Generated\Resources\AllianceResource;
 use Seatplus\EsiClient\Generated\Resources\AssetsResource;
 use Seatplus\EsiClient\Generated\Resources\CalendarResource;
@@ -21,11 +18,13 @@ use Seatplus\EsiClient\Generated\Resources\CharacterResource;
 use Seatplus\EsiClient\Generated\Resources\ClonesResource;
 use Seatplus\EsiClient\Generated\Resources\ContactsResource;
 use Seatplus\EsiClient\Generated\Resources\ContractsResource;
+use Seatplus\EsiClient\Generated\Resources\CorporationProjectsResource;
 use Seatplus\EsiClient\Generated\Resources\CorporationResource;
 use Seatplus\EsiClient\Generated\Resources\DogmaResource;
 use Seatplus\EsiClient\Generated\Resources\FactionWarfareResource;
 use Seatplus\EsiClient\Generated\Resources\FittingsResource;
 use Seatplus\EsiClient\Generated\Resources\FleetsResource;
+use Seatplus\EsiClient\Generated\Resources\FreelanceJobsResource;
 use Seatplus\EsiClient\Generated\Resources\IncursionsResource;
 use Seatplus\EsiClient\Generated\Resources\IndustryResource;
 use Seatplus\EsiClient\Generated\Resources\InsuranceResource;
@@ -34,6 +33,7 @@ use Seatplus\EsiClient\Generated\Resources\LocationResource;
 use Seatplus\EsiClient\Generated\Resources\LoyaltyResource;
 use Seatplus\EsiClient\Generated\Resources\MailResource;
 use Seatplus\EsiClient\Generated\Resources\MarketResource;
+use Seatplus\EsiClient\Generated\Resources\MetaResource;
 use Seatplus\EsiClient\Generated\Resources\PlanetaryInteractionResource;
 use Seatplus\EsiClient\Generated\Resources\RoutesResource;
 use Seatplus\EsiClient\Generated\Resources\SearchResource;
@@ -88,71 +88,170 @@ class EsiClient
     // Resource factory methods (one per ESI tag group)
     // -------------------------------------------------------------------------
 
-    public function alliance(): AllianceResource { return new AllianceResource($this); }
+    public function alliance(): AllianceResource
+    {
+        return new AllianceResource($this);
+    }
 
-    public function assets(): AssetsResource { return new AssetsResource($this); }
+    public function assets(): AssetsResource
+    {
+        return new AssetsResource($this);
+    }
 
-    public function calendar(): CalendarResource { return new CalendarResource($this); }
+    public function calendar(): CalendarResource
+    {
+        return new CalendarResource($this);
+    }
 
-    public function characters(): CharacterResource { return new CharacterResource($this); }
+    public function characters(): CharacterResource
+    {
+        return new CharacterResource($this);
+    }
 
-    public function clones(): ClonesResource { return new ClonesResource($this); }
+    public function clones(): ClonesResource
+    {
+        return new ClonesResource($this);
+    }
 
-    public function contacts(): ContactsResource { return new ContactsResource($this); }
+    public function contacts(): ContactsResource
+    {
+        return new ContactsResource($this);
+    }
 
-    public function contracts(): ContractsResource { return new ContractsResource($this); }
+    public function contracts(): ContractsResource
+    {
+        return new ContractsResource($this);
+    }
 
-    public function corporation(): CorporationResource { return new CorporationResource($this); }
+    public function corporation(): CorporationResource
+    {
+        return new CorporationResource($this);
+    }
 
-    public function dogma(): DogmaResource { return new DogmaResource($this); }
+    public function dogma(): DogmaResource
+    {
+        return new DogmaResource($this);
+    }
 
-    public function factionWarfare(): FactionWarfareResource { return new FactionWarfareResource($this); }
+    public function factionWarfare(): FactionWarfareResource
+    {
+        return new FactionWarfareResource($this);
+    }
 
-    public function fittings(): FittingsResource { return new FittingsResource($this); }
+    public function fittings(): FittingsResource
+    {
+        return new FittingsResource($this);
+    }
 
-    public function fleets(): FleetsResource { return new FleetsResource($this); }
+    public function fleets(): FleetsResource
+    {
+        return new FleetsResource($this);
+    }
 
-    public function incursions(): IncursionsResource { return new IncursionsResource($this); }
+    public function incursions(): IncursionsResource
+    {
+        return new IncursionsResource($this);
+    }
 
-    public function industry(): IndustryResource { return new IndustryResource($this); }
+    public function industry(): IndustryResource
+    {
+        return new IndustryResource($this);
+    }
 
-    public function insurance(): InsuranceResource { return new InsuranceResource($this); }
+    public function insurance(): InsuranceResource
+    {
+        return new InsuranceResource($this);
+    }
 
-    public function killmails(): KillmailsResource { return new KillmailsResource($this); }
+    public function killmails(): KillmailsResource
+    {
+        return new KillmailsResource($this);
+    }
 
-    public function location(): LocationResource { return new LocationResource($this); }
+    public function location(): LocationResource
+    {
+        return new LocationResource($this);
+    }
 
-    public function loyalty(): LoyaltyResource { return new LoyaltyResource($this); }
+    public function loyalty(): LoyaltyResource
+    {
+        return new LoyaltyResource($this);
+    }
 
-    public function mail(): MailResource { return new MailResource($this); }
+    public function mail(): MailResource
+    {
+        return new MailResource($this);
+    }
 
-    public function market(): MarketResource { return new MarketResource($this); }
+    public function market(): MarketResource
+    {
+        return new MarketResource($this);
+    }
 
-    public function planetaryInteraction(): PlanetaryInteractionResource { return new PlanetaryInteractionResource($this); }
+    public function planetaryInteraction(): PlanetaryInteractionResource
+    {
+        return new PlanetaryInteractionResource($this);
+    }
 
-    public function routes(): RoutesResource { return new RoutesResource($this); }
+    public function routes(): RoutesResource
+    {
+        return new RoutesResource($this);
+    }
 
-    public function search(): SearchResource { return new SearchResource($this); }
+    public function search(): SearchResource
+    {
+        return new SearchResource($this);
+    }
 
-    public function skills(): SkillsResource { return new SkillsResource($this); }
+    public function skills(): SkillsResource
+    {
+        return new SkillsResource($this);
+    }
 
-    public function sovereignty(): SovereigntyResource { return new SovereigntyResource($this); }
+    public function sovereignty(): SovereigntyResource
+    {
+        return new SovereigntyResource($this);
+    }
 
-    public function status(): StatusResource { return new StatusResource($this); }
+    public function status(): StatusResource
+    {
+        return new StatusResource($this);
+    }
 
-    public function universe(): UniverseResource { return new UniverseResource($this); }
+    public function universe(): UniverseResource
+    {
+        return new UniverseResource($this);
+    }
 
-    public function userInterface(): UserInterfaceResource { return new UserInterfaceResource($this); }
+    public function userInterface(): UserInterfaceResource
+    {
+        return new UserInterfaceResource($this);
+    }
 
-    public function wallet(): WalletResource { return new WalletResource($this); }
+    public function wallet(): WalletResource
+    {
+        return new WalletResource($this);
+    }
 
-    public function wars(): WarsResource { return new WarsResource($this); }
+    public function wars(): WarsResource
+    {
+        return new WarsResource($this);
+    }
 
-    public function corporationProjects(): CorporationProjectsResource { return new CorporationProjectsResource($this); }
+    public function corporationProjects(): CorporationProjectsResource
+    {
+        return new CorporationProjectsResource($this);
+    }
 
-    public function freelanceJobs(): FreelanceJobsResource { return new FreelanceJobsResource($this); }
+    public function freelanceJobs(): FreelanceJobsResource
+    {
+        return new FreelanceJobsResource($this);
+    }
 
-    public function meta(): MetaResource { return new MetaResource($this); }
+    public function meta(): MetaResource
+    {
+        return new MetaResource($this);
+    }
 
     private function createFetcher(): GuzzleFetcher
     {

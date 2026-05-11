@@ -3,8 +3,8 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\CharactersCharacterIdLoyaltyPointsGetItem;
-use Seatplus\EsiClient\Generated\Responses\LoyaltyStoresCorporationIdOffersGetItem;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdLoyaltyPointsGetItem;
+use Seatplus\EsiSchema\Responses\LoyaltyStoresCorporationIdOffersGetItem;
 
 /**
  * ESI tag: Loyalty
@@ -16,13 +16,15 @@ class LoyaltyResource extends AbstractResource
 {
     /**
      * @return EsiResult<array<CharactersCharacterIdLoyaltyPointsGetItem>>
+     *
      * @scope esi-characters.read_loyalty.v1
      */
     public function getCharactersCharacterIdLoyaltyPoints(int $characterId): EsiResult
     {
         $response = $this->client->invoke('get', '/characters/{character_id}/loyalty/points', ['character_id' => $characterId], 'latest', []);
+
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => CharactersCharacterIdLoyaltyPointsGetItem::from($item),
+            fn (object $item) => CharactersCharacterIdLoyaltyPointsGetItem::from($item),
             (array) $response->data,
         ));
     }
@@ -33,8 +35,9 @@ class LoyaltyResource extends AbstractResource
     public function getLoyaltyStoresCorporationIdOffers(int $corporationId): EsiResult
     {
         $response = $this->client->invoke('get', '/loyalty/stores/{corporation_id}/offers', ['corporation_id' => $corporationId], 'latest', []);
+
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => LoyaltyStoresCorporationIdOffersGetItem::from($item),
+            fn (object $item) => LoyaltyStoresCorporationIdOffersGetItem::from($item),
             (array) $response->data,
         ));
     }

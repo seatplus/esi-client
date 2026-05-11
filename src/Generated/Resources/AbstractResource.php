@@ -3,7 +3,6 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiClient;
-use Seatplus\EsiClient\EsiResult;
 
 /**
  * Base class for all generated ESI resource classes.

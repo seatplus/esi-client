@@ -3,7 +3,7 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\InsurancePricesGetItem;
+use Seatplus\EsiSchema\Responses\InsurancePricesGetItem;
 
 /**
  * ESI tag: Insurance
@@ -19,8 +19,9 @@ class InsuranceResource extends AbstractResource
     public function getInsurancePrices(): EsiResult
     {
         $response = $this->client->invoke('get', '/insurance/prices', [], 'latest', []);
+
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => InsurancePricesGetItem::from($item),
+            fn (object $item) => InsurancePricesGetItem::from($item),
             (array) $response->data,
         ));
     }

@@ -3,7 +3,7 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\IncursionsGetItem;
+use Seatplus\EsiSchema\Responses\IncursionsGetItem;
 
 /**
  * ESI tag: Incursions
@@ -19,8 +19,9 @@ class IncursionsResource extends AbstractResource
     public function getIncursions(): EsiResult
     {
         $response = $this->client->invoke('get', '/incursions', [], 'latest', []);
+
         return EsiResult::fromResponse($response, array_map(
-            fn(object $item) => IncursionsGetItem::from($item),
+            fn (object $item) => IncursionsGetItem::from($item),
             (array) $response->data,
         ));
     }

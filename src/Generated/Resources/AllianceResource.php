@@ -3,8 +3,8 @@
 namespace Seatplus\EsiClient\Generated\Resources;
 
 use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\AllianceDetail;
-use Seatplus\EsiClient\Generated\Responses\AlliancesAllianceIdIconsGet;
+use Seatplus\EsiSchema\Responses\AllianceDetail;
+use Seatplus\EsiSchema\Responses\AlliancesAllianceIdIconsGet;
 
 /**
  * ESI tag: Alliance
@@ -21,17 +21,19 @@ class AllianceResource extends AbstractResource
     {
         $response = $this->client->invoke('get', '/alliances', [], 'latest', []);
         /** @var array<int> $data */
-        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
+        $data = array_map(fn (mixed $i) => (int) $i, (array) $response->data);
+
         return EsiResult::fromResponse($response, $data);
     }
 
-    /**
-     * @return EsiResult<AllianceDetail>
-     */
-    public function getAlliancesAllianceId(int $allianceId): EsiResult
+    public function getAlliancesAllianceId(int $allianceId): AllianceDetail
     {
         $response = $this->client->invoke('get', '/alliances/{alliance_id}', ['alliance_id' => $allianceId], 'latest', []);
-        return EsiResult::fromResponse($response, AllianceDetail::from($response->data));
+        $dto = AllianceDetail::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
     /**
@@ -41,16 +43,18 @@ class AllianceResource extends AbstractResource
     {
         $response = $this->client->invoke('get', '/alliances/{alliance_id}/corporations', ['alliance_id' => $allianceId], 'latest', []);
         /** @var array<int> $data */
-        $data = array_map(fn(mixed $i) => (int) $i, (array) $response->data);
+        $data = array_map(fn (mixed $i) => (int) $i, (array) $response->data);
+
         return EsiResult::fromResponse($response, $data);
     }
 
-    /**
-     * @return EsiResult<AlliancesAllianceIdIconsGet>
-     */
-    public function getAlliancesAllianceIdIcons(int $allianceId): EsiResult
+    public function getAlliancesAllianceIdIcons(int $allianceId): AlliancesAllianceIdIconsGet
     {
         $response = $this->client->invoke('get', '/alliances/{alliance_id}/icons', ['alliance_id' => $allianceId], 'latest', []);
-        return EsiResult::fromResponse($response, AlliancesAllianceIdIconsGet::from($response->data));
+        $dto = AlliancesAllianceIdIconsGet::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 }

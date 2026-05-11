@@ -2,11 +2,10 @@
 
 namespace Seatplus\EsiClient\Generated\Resources;
 
-use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\CorporationsProjectsListing;
-use Seatplus\EsiClient\Generated\Responses\CorporationsProjectsDetail;
-use Seatplus\EsiClient\Generated\Responses\CorporationsProjectsContribution;
-use Seatplus\EsiClient\Generated\Responses\CorporationsProjectsContributors;
+use Seatplus\EsiSchema\Responses\CorporationsProjectsContribution;
+use Seatplus\EsiSchema\Responses\CorporationsProjectsContributors;
+use Seatplus\EsiSchema\Responses\CorporationsProjectsDetail;
+use Seatplus\EsiSchema\Responses\CorporationsProjectsListing;
 
 /**
  * ESI tag: CorporationProjects
@@ -17,42 +16,54 @@ use Seatplus\EsiClient\Generated\Responses\CorporationsProjectsContributors;
 class CorporationProjectsResource extends AbstractResource
 {
     /**
-     * @return EsiResult<CorporationsProjectsListing>
      * @scope esi-corporations.read_projects.v1
      */
-    public function getCorporationsProjectsListing(int $corporationId, ?string $after = null, ?string $before = null, ?int $limit = null, ?string $state = null): EsiResult
+    public function getCorporationsProjectsListing(int $corporationId, ?string $after = null, ?string $before = null, ?int $limit = null, ?string $state = null): CorporationsProjectsListing
     {
         $response = $this->client->invoke('get', '/corporations/{corporation_id}/projects', ['corporation_id' => $corporationId], 'latest', ['after' => $after, 'before' => $before, 'limit' => $limit, 'state' => $state]);
-        return EsiResult::fromResponse($response, CorporationsProjectsListing::from($response->data));
+        $dto = CorporationsProjectsListing::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
     /**
-     * @return EsiResult<CorporationsProjectsDetail>
      * @scope esi-corporations.read_projects.v1
      */
-    public function getCorporationsProjectsDetail(int $corporationId, string $projectId): EsiResult
+    public function getCorporationsProjectsDetail(int $corporationId, string $projectId): CorporationsProjectsDetail
     {
         $response = $this->client->invoke('get', '/corporations/{corporation_id}/projects/{project_id}', ['corporation_id' => $corporationId, 'project_id' => $projectId], 'latest', []);
-        return EsiResult::fromResponse($response, CorporationsProjectsDetail::from($response->data));
+        $dto = CorporationsProjectsDetail::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
     /**
-     * @return EsiResult<CorporationsProjectsContribution>
      * @scope esi-corporations.read_projects.v1
      */
-    public function getCorporationsProjectsContribution(int $corporationId, string $projectId, int $characterId): EsiResult
+    public function getCorporationsProjectsContribution(int $corporationId, string $projectId, int $characterId): CorporationsProjectsContribution
     {
         $response = $this->client->invoke('get', '/corporations/{corporation_id}/projects/{project_id}/contribution/{character_id}', ['corporation_id' => $corporationId, 'project_id' => $projectId, 'character_id' => $characterId], 'latest', []);
-        return EsiResult::fromResponse($response, CorporationsProjectsContribution::from($response->data));
+        $dto = CorporationsProjectsContribution::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 
     /**
-     * @return EsiResult<CorporationsProjectsContributors>
      * @scope esi-corporations.read_projects.v1
      */
-    public function getCorporationsProjectsContributors(int $corporationId, string $projectId, ?string $after = null, ?string $before = null, ?int $limit = null): EsiResult
+    public function getCorporationsProjectsContributors(int $corporationId, string $projectId, ?string $after = null, ?string $before = null, ?int $limit = null): CorporationsProjectsContributors
     {
         $response = $this->client->invoke('get', '/corporations/{corporation_id}/projects/{project_id}/contributors', ['corporation_id' => $corporationId, 'project_id' => $projectId], 'latest', ['after' => $after, 'before' => $before, 'limit' => $limit]);
-        return EsiResult::fromResponse($response, CorporationsProjectsContributors::from($response->data));
+        $dto = CorporationsProjectsContributors::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 }

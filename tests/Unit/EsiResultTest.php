@@ -45,7 +45,7 @@ it('extracts pages from X-Pages header', function () {
 it('reports cached load from X-Kevinrob-Cache HIT header', function () {
     $response = makeResponse('{}', ['X-Kevinrob-Cache' => ['HIT']]);
 
-    $result = EsiResult::fromResponse($response, new stdClass());
+    $result = EsiResult::fromResponse($response, new stdClass);
 
     expect($result->isCachedLoad)->toBeTrue();
 });
@@ -53,7 +53,7 @@ it('reports cached load from X-Kevinrob-Cache HIT header', function () {
 it('reports non-cached load when cache header is MISS', function () {
     $response = makeResponse('{}', ['X-Kevinrob-Cache' => ['MISS']]);
 
-    $result = EsiResult::fromResponse($response, new stdClass());
+    $result = EsiResult::fromResponse($response, new stdClass);
 
     expect($result->isCachedLoad)->toBeFalse();
 });

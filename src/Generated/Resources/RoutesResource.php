@@ -2,8 +2,7 @@
 
 namespace Seatplus\EsiClient\Generated\Resources;
 
-use Seatplus\EsiClient\EsiResult;
-use Seatplus\EsiClient\Generated\Responses\Route;
+use Seatplus\EsiSchema\Responses\Route;
 
 /**
  * ESI tag: Routes
@@ -13,12 +12,13 @@ use Seatplus\EsiClient\Generated\Responses\Route;
  */
 class RoutesResource extends AbstractResource
 {
-    /**
-     * @return EsiResult<Route>
-     */
-    public function postRoute(mixed $requestBody, int $originSystemId, int $destinationSystemId): EsiResult
+    public function postRoute(mixed $requestBody, int $originSystemId, int $destinationSystemId): Route
     {
         $response = $this->client->invoke('post', '/route/{origin_system_id}/{destination_system_id}', ['origin_system_id' => $originSystemId, 'destination_system_id' => $destinationSystemId], 'latest', [], (array) $requestBody);
-        return EsiResult::fromResponse($response, Route::from($response->data));
+        $dto = Route::from($response->data);
+        $dto->isCachedLoad = $response->isCachedLoad();
+        $dto->pages = $response->pages ?? 1;
+
+        return $dto;
     }
 }
