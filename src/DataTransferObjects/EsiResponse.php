@@ -2,11 +2,18 @@
 
 namespace Seatplus\EsiClient\DataTransferObjects;
 
+/**
+ * @template TData of object
+ */
 class EsiResponse
 {
     public array $parsed_headers;
 
-    /** The decoded JSON body of the ESI response. */
+    /**
+     * The decoded JSON body of the ESI response.
+     *
+     * @var TData
+     */
     public object $data;
 
     public ?int $error_limit_remain;

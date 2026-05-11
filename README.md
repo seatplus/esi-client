@@ -26,13 +26,42 @@ $esi = new Seatplus\EsiClient\EsiClient();
 
 $esi->setVersion('v5'); // if you do not set a version, esi-client is using '/latest'
 
-// make a call
-$character_info = $esi->invoke('get', '/characters/{character_id}/', [
+// make a call — returns EsiResponse
+$response = $esi->invoke('get', '/characters/{character_id}/', [
     'character_id' => 95725047,
 ]);
 
-echo $character_info;
+// $response->data    — stdClass decoded from the JSON body
+// $response->pages   — total pages (from X-Pages header, or 1)
+// $response->isCachedLoad() — true if served from RFC 7234 cache
 ```
+
+### Response shapes are the consumer's responsibility
+
+`esi-client` is a **pure transport layer**. It decodes the JSON body into a `stdClass` and
+returns it as `$response->data`. It has no knowledge of what fields each ESI endpoint returns.
+
+In `eveapi`, every job wraps `$response->data` in a typed `readonly class` DTO via a
+`from(object $data): self` factory before touching any properties:
+
+```php
+// eveapi example — consuming an EsiResponse with a typed DTO
+$data = CharacterInfoResponse::from($response->data);
+CharacterInfo::updateOrCreate(
+    ['character_id' => $this->character_id],
+    ['name' => $data->name, 'corporation_id' => $data->corporation_id],
+);
+```
+
+### Rate limiting
+
+ESI enforces a **1800-token / 15-minute** rolling window (one token consumed per request,
+irrespective of response code). `esi-client` itself does not throttle — rate limiting is
+handled by the consumer layer (`eveapi`) using Laravel Horizon throttle middleware on each
+queued job.
+
+If the HTTP client receives a `420 Error Limited` response, the request is retried with
+exponential backoff as configured on the job.
 
 ## Testing
 
