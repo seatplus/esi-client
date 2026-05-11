@@ -7,13 +7,12 @@ use Rector\Set\ValueObject\SetList;
 
 return RectorConfig::configure()
     ->withSets([
-        SetList::PHP_83,
-        // \Rector\Set\ValueObject\LevelSetList::UP_TO_PHP_83,
+        SetList::PHP_85,
     ])
     ->withPaths([
         __DIR__.'/src',
         __DIR__.'/tests',
-        __DIR__.'/tools',
+        __DIR__.'/bin',
     ]);
 // uncomment to reach your current PHP version
 // ->withPhpSets()
