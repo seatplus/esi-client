@@ -78,9 +78,9 @@ it('invoke populates rate-limit fields from response headers', function () {
         '{"name":"Test"}',
         [
             'X-Ratelimit-Remaining' => ['42'],
-            'X-Ratelimit-Used'      => ['8'],
-            'X-Ratelimit-Limit'     => ['1800/15m'],
-            'X-Ratelimit-Group'     => ['char-asset'],
+            'X-Ratelimit-Used' => ['8'],
+            'X-Ratelimit-Limit' => ['1800/15m'],
+            'X-Ratelimit-Group' => ['char-asset'],
         ],
         'now',
         200,
@@ -97,7 +97,7 @@ it('invoke populates rate-limit fields from response headers', function () {
 
 it('invoke extracts cursor from response body', function () {
     $body = json_encode([
-        'cursor'         => ['before' => 'tok_abc', 'after' => 'tok_xyz'],
+        'cursor' => ['before' => 'tok_abc', 'after' => 'tok_xyz'],
         'freelance_jobs' => [],
     ]);
 
