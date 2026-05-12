@@ -24,12 +24,12 @@
         }
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "ext-json": "*",
         "firebase/php-jwt": "^7.0",
         "kevinrob/guzzle-cache-middleware": "^4.0",
         "monolog/monolog": "^3.7",
-        "nesbot/carbon": "^2.53",
+        "nesbot/carbon": "^3.0",
         "seatplus/esi-schema": "dev-fix/ci-phpunit-config as 1.x-dev"
     },
     "repositories": [
