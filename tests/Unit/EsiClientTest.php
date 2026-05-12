@@ -73,6 +73,44 @@ it('throws exception for missing data', function () {
     expect(fn () => $method->invokeArgs($this->client, [$uri, $data]))->toThrow(UriDataMissingException::class);
 });
 
+it('invoke populates rate-limit fields from response headers', function () {
+    $esiResponse = new EsiResponse(
+        '{"name":"Test"}',
+        [
+            'X-Ratelimit-Remaining' => ['42'],
+            'X-Ratelimit-Used'      => ['8'],
+            'X-Ratelimit-Limit'     => ['1800/15m'],
+            'X-Ratelimit-Group'     => ['char-asset'],
+        ],
+        'now',
+        200,
+    );
+
+    $this->fetcherMock->shouldReceive('call')->once()->andReturn($esiResponse);
+
+    $response = $this->client->invoke('GET', '/alliances/{alliance_id}/', ['alliance_id' => 123]);
+
+    expect($response->rateLimitRemaining)->toBe(42)
+        ->and($response->rateLimitUsed)->toBe(8)
+        ->and($response->retryAfter)->toBeNull();
+});
+
+it('invoke extracts cursor from response body', function () {
+    $body = json_encode([
+        'cursor'         => ['before' => 'tok_abc', 'after' => 'tok_xyz'],
+        'freelance_jobs' => [],
+    ]);
+
+    $esiResponse = new EsiResponse($body, [], 'now', 200);
+    $this->fetcherMock->shouldReceive('call')->once()->andReturn($esiResponse);
+
+    $response = $this->client->invoke('GET', '/freelance-jobs', []);
+
+    expect($response->cursor)->not->toBeNull()
+        ->and($response->cursor->before)->toBe('tok_abc')
+        ->and($response->cursor->after)->toBe('tok_xyz');
+});
+
 it('creates fetcher instance', function () {
     $reflection = new ReflectionClass($this->client);
     $method = $reflection->getMethod('createFetcher');
@@ -81,4 +119,13 @@ it('creates fetcher instance', function () {
     $fetcher = $method->invoke($this->client);
 
     expect($fetcher)->toBeInstanceOf(GuzzleFetcher::class);
+});
+
+it('invoke sets cursor to null when not in response body', function () {
+    $esiResponse = new EsiResponse('{"name":"Test"}', [], 'now', 200);
+    $this->fetcherMock->shouldReceive('call')->once()->andReturn($esiResponse);
+
+    $response = $this->client->invoke('GET', '/alliances/{alliance_id}/', ['alliance_id' => 123]);
+
+    expect($response->cursor)->toBeNull();
 });

@@ -12,6 +12,7 @@ use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\LogInterface;
 use Seatplus\EsiClient\Services\CheckAccess;
+use Seatplus\EsiSchema\Contracts\EsiCursor;
 use Seatplus\EsiSchema\Contracts\EsiRawResponse;
 use Seatplus\EsiSchema\Contracts\EsiTransportInterface;
 use Seatplus\EsiSchema\Resources\AllianceResource;
@@ -289,10 +290,25 @@ class EsiClient implements EsiTransportInterface
         // Fetcher will take care of caching
         $response = $this->fetcher->call($method, $uri, $requestBody);
 
+        // Extract cursor tokens if the response body contains a `cursor` object.
+        // Cursor routes (x-pagination: cursor) embed {before, after} in the body.
+        $cursor = null;
+        if (isset($response->data->cursor) && is_object($response->data->cursor)) {
+            $c = $response->data->cursor;
+            $cursor = new EsiCursor(
+                before: isset($c->before) ? (string) $c->before : null,
+                after: isset($c->after) ? (string) $c->after : null,
+            );
+        }
+
         return new EsiRawResponse(
             data: $response->data,
             isCachedLoad: $response->isCachedLoad(),
             pages: $response->pages ?? 1,
+            cursor: $cursor,
+            rateLimitRemaining: $response->ratelimitRemaining,
+            rateLimitUsed: $response->ratelimitUsed,
+            retryAfter: $response->retryAfter,
         );
     }
 
