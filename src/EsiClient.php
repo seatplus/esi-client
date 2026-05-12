@@ -273,12 +273,11 @@ class EsiClient implements EsiTransportInterface
         string $method,
         string $path,
         array $pathValues = [],
-        string $version = 'latest',
         array $queryParams = [],
         array $requestBody = [],
     ): EsiRawResponse {
         // Enrich the uri
-        $uri = $this->buildDataUri($path, $pathValues, $version, $queryParams);
+        $uri = $this->buildDataUri($path, $pathValues, $queryParams);
 
         // First check if access requirements are met
         if (! $this->hasAccess($method, $path)) {
@@ -310,15 +309,14 @@ class EsiClient implements EsiTransportInterface
     /**
      * @throws UriDataMissingException
      */
-    private function buildDataUri(string $uri, array $data, string $version, array $query_parameters): UriInterface
+    private function buildDataUri(string $uri, array $data, array $query_parameters): UriInterface
     {
         // Create a query string for the URI. We automatically
         // include the datasource value from the configuration.
         $query_params = array_merge(['datasource' => $this->getConfiguration('datasource')], $query_parameters);
 
         $path = sprintf(
-            '/%s/%s/',
-            rtrim($version, '/'), // remove a potential tailing slash,
+            '/latest/%s/',
             trim($this->mapDataToUri($uri, $data), '/')
         );
 

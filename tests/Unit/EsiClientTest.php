@@ -55,10 +55,10 @@ it('builds correct data URI', function () {
     $reflection = new ReflectionClass($this->client);
     $method = $reflection->getMethod('buildDataUri');
 
-    $uri = $method->invokeArgs($this->client, ['/test/uri/{id}', ['id' => 123], 'v1', ['param' => 'value']]);
+    $uri = $method->invokeArgs($this->client, ['/test/uri/{id}', ['id' => 123], ['param' => 'value']]);
 
     expect($uri)->toBeInstanceOf(Uri::class)
-        ->and((string) $uri)->toBe('https://esi.evetech.net/v1/test/uri/123/?datasource=tranquility&param=value');
+        ->and((string) $uri)->toBe('https://esi.evetech.net/latest/test/uri/123/?datasource=tranquility&param=value');
 });
 
 it('throws exception for missing data', function () {
