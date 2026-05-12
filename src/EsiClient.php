@@ -5,49 +5,50 @@ namespace Seatplus\EsiClient;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
-use Seatplus\EsiClient\Generated\Resources\AllianceResource;
-use Seatplus\EsiClient\Generated\Resources\AssetsResource;
-use Seatplus\EsiClient\Generated\Resources\CalendarResource;
-use Seatplus\EsiClient\Generated\Resources\CharacterResource;
-use Seatplus\EsiClient\Generated\Resources\ClonesResource;
-use Seatplus\EsiClient\Generated\Resources\ContactsResource;
-use Seatplus\EsiClient\Generated\Resources\ContractsResource;
-use Seatplus\EsiClient\Generated\Resources\CorporationProjectsResource;
-use Seatplus\EsiClient\Generated\Resources\CorporationResource;
-use Seatplus\EsiClient\Generated\Resources\DogmaResource;
-use Seatplus\EsiClient\Generated\Resources\FactionWarfareResource;
-use Seatplus\EsiClient\Generated\Resources\FittingsResource;
-use Seatplus\EsiClient\Generated\Resources\FleetsResource;
-use Seatplus\EsiClient\Generated\Resources\FreelanceJobsResource;
-use Seatplus\EsiClient\Generated\Resources\IncursionsResource;
-use Seatplus\EsiClient\Generated\Resources\IndustryResource;
-use Seatplus\EsiClient\Generated\Resources\InsuranceResource;
-use Seatplus\EsiClient\Generated\Resources\KillmailsResource;
-use Seatplus\EsiClient\Generated\Resources\LocationResource;
-use Seatplus\EsiClient\Generated\Resources\LoyaltyResource;
-use Seatplus\EsiClient\Generated\Resources\MailResource;
-use Seatplus\EsiClient\Generated\Resources\MarketResource;
-use Seatplus\EsiClient\Generated\Resources\MetaResource;
-use Seatplus\EsiClient\Generated\Resources\PlanetaryInteractionResource;
-use Seatplus\EsiClient\Generated\Resources\RoutesResource;
-use Seatplus\EsiClient\Generated\Resources\SearchResource;
-use Seatplus\EsiClient\Generated\Resources\SkillsResource;
-use Seatplus\EsiClient\Generated\Resources\SovereigntyResource;
-use Seatplus\EsiClient\Generated\Resources\StatusResource;
-use Seatplus\EsiClient\Generated\Resources\UniverseResource;
-use Seatplus\EsiClient\Generated\Resources\UserInterfaceResource;
-use Seatplus\EsiClient\Generated\Resources\WalletResource;
-use Seatplus\EsiClient\Generated\Resources\WarsResource;
 use Seatplus\EsiClient\Log\LogInterface;
 use Seatplus\EsiClient\Services\CheckAccess;
+use Seatplus\EsiSchema\Contracts\EsiRawResponse;
+use Seatplus\EsiSchema\Contracts\EsiTransportInterface;
+use Seatplus\EsiSchema\Resources\AllianceResource;
+use Seatplus\EsiSchema\Resources\AssetsResource;
+use Seatplus\EsiSchema\Resources\CalendarResource;
+use Seatplus\EsiSchema\Resources\CharacterResource;
+use Seatplus\EsiSchema\Resources\ClonesResource;
+use Seatplus\EsiSchema\Resources\ContactsResource;
+use Seatplus\EsiSchema\Resources\ContractsResource;
+use Seatplus\EsiSchema\Resources\CorporationProjectsResource;
+use Seatplus\EsiSchema\Resources\CorporationResource;
+use Seatplus\EsiSchema\Resources\DogmaResource;
+use Seatplus\EsiSchema\Resources\FactionWarfareResource;
+use Seatplus\EsiSchema\Resources\FittingsResource;
+use Seatplus\EsiSchema\Resources\FleetsResource;
+use Seatplus\EsiSchema\Resources\FreelanceJobsResource;
+use Seatplus\EsiSchema\Resources\IncursionsResource;
+use Seatplus\EsiSchema\Resources\IndustryResource;
+use Seatplus\EsiSchema\Resources\InsuranceResource;
+use Seatplus\EsiSchema\Resources\KillmailsResource;
+use Seatplus\EsiSchema\Resources\LocationResource;
+use Seatplus\EsiSchema\Resources\LoyaltyResource;
+use Seatplus\EsiSchema\Resources\MailResource;
+use Seatplus\EsiSchema\Resources\MarketResource;
+use Seatplus\EsiSchema\Resources\MetaResource;
+use Seatplus\EsiSchema\Resources\PlanetaryInteractionResource;
+use Seatplus\EsiSchema\Resources\RoutesResource;
+use Seatplus\EsiSchema\Resources\SearchResource;
+use Seatplus\EsiSchema\Resources\SkillsResource;
+use Seatplus\EsiSchema\Resources\SovereigntyResource;
+use Seatplus\EsiSchema\Resources\StatusResource;
+use Seatplus\EsiSchema\Resources\UniverseResource;
+use Seatplus\EsiSchema\Resources\UserInterfaceResource;
+use Seatplus\EsiSchema\Resources\WalletResource;
+use Seatplus\EsiSchema\Resources\WarsResource;
 
-class EsiClient
+class EsiClient implements EsiTransportInterface
 {
     protected array $query_parameters = [];
 
@@ -270,24 +271,30 @@ class EsiClient
      */
     public function invoke(
         string $method,
-        string $uri_original,
-        array $uri_data = [],
+        string $path,
+        array $pathValues = [],
         string $version = 'latest',
-        array $query_parameters = [],
-        array $request_body = []
-    ): EsiResponse {
+        array $queryParams = [],
+        array $requestBody = [],
+    ): EsiRawResponse {
         // Enrich the uri
-        $uri = $this->buildDataUri($uri_original, $uri_data, $version, $query_parameters);
+        $uri = $this->buildDataUri($path, $pathValues, $version, $queryParams);
 
         // First check if access requirements are met
-        if (! $this->hasAccess($method, $uri_original)) {
+        if (! $this->hasAccess($method, $path)) {
             // Log the deny.
             $this->logger->warning("Access denied to {$uri} due to missing scopes.");
             throw new EsiScopeAccessDeniedException("Access denied to {$uri}");
         }
 
         // Fetcher will take care of caching
-        return $this->fetcher->call($method, $uri, $request_body);
+        $response = $this->fetcher->call($method, $uri, $requestBody);
+
+        return new EsiRawResponse(
+            data: $response->data,
+            isCachedLoad: $response->isCachedLoad(),
+            pages: $response->pages ?? 1,
+        );
     }
 
     private function createLogger(): LogInterface

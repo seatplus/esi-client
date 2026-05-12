@@ -3,12 +3,12 @@
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
-use Seatplus\EsiClient\EsiResult;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
-use Seatplus\EsiClient\Generated\Resources\AllianceResource;
-use Seatplus\EsiClient\Generated\Resources\CharacterResource;
-use Seatplus\EsiClient\Generated\Resources\UniverseResource;
 use Seatplus\EsiClient\Services\CheckAccess;
+use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\AllianceResource;
+use Seatplus\EsiSchema\Resources\CharacterResource;
+use Seatplus\EsiSchema\Resources\UniverseResource;
 use Seatplus\EsiSchema\Responses\AllianceDetail;
 use Seatplus\EsiSchema\Responses\CharactersDetail;
 use Seatplus\EsiSchema\Responses\UniverseTypesTypeIdGet;

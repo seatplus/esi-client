@@ -9,6 +9,7 @@ use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Services\CheckAccess;
+use Seatplus\EsiSchema\Contracts\EsiRawResponse;
 
 beforeEach(function () {
     $this->fetcherMock = mock(GuzzleFetcher::class);
@@ -23,11 +24,11 @@ afterEach(function () {
 it('invokes API call successfully', function () {
     $this->fetcherMock->shouldReceive('call')
         ->once()
-        ->andReturn(mock(EsiResponse::class));
+        ->andReturn(new EsiResponse('{}', [], 'now', 200));
 
     $response = $this->client->invoke('GET', '/alliances/{alliance_id}/', ['alliance_id' => 123]);
 
-    expect($response)->toBeInstanceOf(EsiResponse::class);
+    expect($response)->toBeInstanceOf(EsiRawResponse::class);
 });
 
 it('throws exception for missing URI data', function () {

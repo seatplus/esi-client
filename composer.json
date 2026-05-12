@@ -30,7 +30,7 @@
         "kevinrob/guzzle-cache-middleware": "^4.0",
         "monolog/monolog": "^3.7",
         "nesbot/carbon": "^2.53",
-        "seatplus/esi-schema": "1.x-dev"
+        "seatplus/esi-schema": "dev-fix/ci-phpunit-config as 1.x-dev"
     },
     "repositories": [
         {
