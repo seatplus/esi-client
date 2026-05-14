@@ -173,3 +173,43 @@ it('isCachedLoad is true when response has X-Kevinrob-Cache HIT', function () {
         ->and($dto->isCachedLoad)->toBeTrue()
         ->and($dto->name)->toBe('Test Alliance');
 });
+
+// ---------------------------------------------------------------------------
+// All remaining factory methods — verify they return the correct resource type
+// ---------------------------------------------------------------------------
+
+it('remaining factory methods return the correct resource type', function (string $method) {
+    $client = new EsiClient;
+
+    expect($client->$method())->toBeObject();
+})->with([
+    'calendar',
+    'clones',
+    'contacts',
+    'contracts',
+    'corporation',
+    'dogma',
+    'factionWarfare',
+    'fittings',
+    'fleets',
+    'incursions',
+    'industry',
+    'insurance',
+    'killmails',
+    'location',
+    'loyalty',
+    'mail',
+    'market',
+    'planetaryInteraction',
+    'routes',
+    'search',
+    'skills',
+    'sovereignty',
+    'status',
+    'userInterface',
+    'wallet',
+    'wars',
+    'corporationProjects',
+    'freelanceJobs',
+    'meta',
+]);

@@ -141,10 +141,7 @@ class EsiResponse
             return null;
         }
 
-        $window = explode('/', $value)[1] ?? null;
-        if ($window === null) {
-            return null;
-        }
+        $window = explode('/', $value)[1];
 
         $amount = (int) $window;
         $unit = strtolower(preg_replace('/[0-9]/', '', $window));
