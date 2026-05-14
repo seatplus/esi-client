@@ -1,6 +1,5 @@
 {
     "name": "seatplus/esi-client",
-    "version": "4.0.0",
     "description": "A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-cache-middleware",
     "keywords": [
         "seatplus",
