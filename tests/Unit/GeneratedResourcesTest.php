@@ -4,7 +4,6 @@ use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
-use Seatplus\EsiClient\Services\CheckAccess;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\AllianceResource;
 use Seatplus\EsiSchema\Resources\CharacterResource;
@@ -18,13 +17,18 @@ function makeEsiResponse(string $raw, array $headers = []): EsiResponse
     return new EsiResponse($raw, $headers, 'now', 200);
 }
 
-/** Build a client whose CheckAccess always returns true (no JWT decode needed). */
-function makeAuthedClient(GuzzleFetcher $fetcher): EsiClient
+/**
+ * Build a client with a real JWT token that includes the given scopes.
+ * Scope enforcement now happens in assertScope() — no more CheckAccess mock needed.
+ */
+function makeAuthedClient(GuzzleFetcher $fetcher, array $scopes = ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1', 'esi-characters.read_characters.v1']): EsiClient
 {
-    $checkAccess = mock(CheckAccess::class);
-    $checkAccess->shouldReceive('can')->andReturn(true);
+    $token = buildJWT(json_encode(['scp' => $scopes]));
 
-    return new EsiClient(new EsiAuthentication('tok', ''), $fetcher, $checkAccess);
+    return new EsiClient(
+        new EsiAuthentication($token, ''),
+        $fetcher,
+    );
 }
 
 // ---------------------------------------------------------------------------

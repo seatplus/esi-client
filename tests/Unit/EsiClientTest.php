@@ -1,15 +1,13 @@
 <?php
 
 use GuzzleHttp\Psr7\Uri;
-use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
-use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
-use Seatplus\EsiClient\Services\CheckAccess;
 use Seatplus\EsiSchema\Contracts\EsiRawResponse;
+use Seatplus\EsiSchema\Contracts\ScopeAccessDeniedException;
 
 beforeEach(function () {
     $this->fetcherMock = mock(GuzzleFetcher::class);
@@ -37,18 +35,38 @@ it('throws exception for missing URI data', function () {
     expect(fn () => $this->client->invoke('GET', $uri))->toThrow(UriDataMissingException::class);
 });
 
-it('throws exception for access denied', function () {
-    $authentication = new EsiAuthentication('token', 'refresh_token');
+it('assertScope passes for null (public endpoint)', function () {
+    $client = new EsiClient;
 
-    $checkAccess = mock(CheckAccess::class, function (MockInterface $mock) {
-        $mock->shouldReceive('can')
-            ->once()
-            ->andReturnFalse();
-    });
+    // Should not throw for public endpoints
+    $client->assertScope(null);
+    expect(true)->toBeTrue();
+});
 
-    $client = new EsiClient($authentication, $this->fetcherMock, $checkAccess);
+it('assertScope throws when scope is missing from token', function () {
+    $token = buildJWT(json_encode(['scp' => ['esi-assets.read_assets.v1']]));
+    $authentication = new EsiAuthentication($token, '');
+    $client = new EsiClient($authentication, $this->fetcherMock);
 
-    expect(fn () => $client->invoke('GET', '/test/uri'))->toThrow(EsiScopeAccessDeniedException::class);
+    expect(fn () => $client->assertScope('esi-mail.read_mail.v1'))
+        ->toThrow(ScopeAccessDeniedException::class);
+});
+
+it('assertScope passes when scope is present in token', function () {
+    $token = buildJWT(json_encode(['scp' => ['esi-assets.read_assets.v1']]));
+    $authentication = new EsiAuthentication($token, '');
+    $client = new EsiClient($authentication, $this->fetcherMock);
+
+    // Should not throw
+    $client->assertScope('esi-assets.read_assets.v1');
+    expect(true)->toBeTrue();
+});
+
+it('assertScope throws when authentication is null', function () {
+    $client = new EsiClient(null, $this->fetcherMock);
+
+    expect(fn () => $client->assertScope('esi-assets.read_assets.v1'))
+        ->toThrow(ScopeAccessDeniedException::class);
 });
 
 it('builds correct data URI', function () {
