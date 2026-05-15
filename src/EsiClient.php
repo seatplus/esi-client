@@ -5,16 +5,15 @@ namespace Seatplus\EsiClient;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
-use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\LogInterface;
-use Seatplus\EsiClient\Services\CheckAccess;
 use Seatplus\EsiSchema\Contracts\EsiCursor;
 use Seatplus\EsiSchema\Contracts\EsiRawResponse;
 use Seatplus\EsiSchema\Contracts\EsiTransportInterface;
+use Seatplus\EsiSchema\Contracts\ScopeAccessDeniedException;
 use Seatplus\EsiSchema\Resources\AllianceResource;
 use Seatplus\EsiSchema\Resources\AssetsResource;
 use Seatplus\EsiSchema\Resources\CalendarResource;
@@ -60,11 +59,9 @@ class EsiClient implements EsiTransportInterface
     public function __construct(
         private ?EsiAuthentication $authentication = null,
         private ?GuzzleFetcher $fetcher = null,
-        private ?CheckAccess $checkAccess = null
     ) {
         $this->fetcher ??= $this->createFetcher();
         $this->logger = $this->createLogger();
-        $this->checkAccess ??= new CheckAccess($this->authentication);
     }
 
     /**
@@ -81,7 +78,6 @@ class EsiClient implements EsiTransportInterface
             refresh_token: '',
         );
         $clone->fetcher = $clone->createFetcher();
-        $clone->checkAccess = new CheckAccess($clone->authentication);
 
         return $clone;
     }
@@ -268,7 +264,7 @@ class EsiClient implements EsiTransportInterface
      * @throws \Throwable
      * @throws UriDataMissingException
      * @throws InvalidAuthenticationException
-     * @throws EsiScopeAccessDeniedException
+     * @throws ScopeAccessDeniedException
      */
     public function invoke(
         string $method,
@@ -279,15 +275,6 @@ class EsiClient implements EsiTransportInterface
     ): EsiRawResponse {
         // Enrich the uri
         $uri = $this->buildDataUri($path, $pathValues, $queryParams);
-
-        // First check if access requirements are met
-        if (! $this->hasAccess($method, $path)) {
-            // Log the deny.
-            $this->logger->warning("Access denied to {$uri} due to missing scopes.");
-            throw new EsiScopeAccessDeniedException("Access denied to {$uri}");
-        }
-
-        // Fetcher will take care of caching
         $response = $this->fetcher->call($method, $uri, $requestBody);
 
         // Extract cursor tokens if the response body contains a `cursor` object.
@@ -310,6 +297,26 @@ class EsiClient implements EsiTransportInterface
             rateLimitUsed: $response->ratelimitUsed,
             retryAfter: $response->retryAfter,
         );
+    }
+
+    /**
+     * Assert that the current token possesses the required OAuth2 scope.
+     * Null = public endpoint — no-op.
+     *
+     * @throws ScopeAccessDeniedException
+     */
+    public function assertScope(?string $scope): void
+    {
+        if ($scope === null) {
+            return;
+        }
+
+        $scopes = $this->authentication?->getScopes() ?? [];
+
+        if (! in_array($scope, $scopes, true)) {
+            $this->logger->warning("Scope check failed: {$scope} not in token.");
+            throw new ScopeAccessDeniedException($scope);
+        }
     }
 
     private function createLogger(): LogInterface
@@ -366,10 +373,5 @@ class EsiClient implements EsiTransportInterface
         }
 
         return $uri;
-    }
-
-    private function hasAccess(string $method, string $uri_original): bool
-    {
-        return $this->checkAccess->can($method, $uri_original);
     }
 }
