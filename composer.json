@@ -29,7 +29,7 @@
         "kevinrob/guzzle-cache-middleware": "^4.0",
         "monolog/monolog": "^3.7",
         "nesbot/carbon": "^3.0",
-        "seatplus/esi-schema": "^1.1"
+        "seatplus/esi-schema": "dev-feat/assert-scope as 1.1.0"
     },
     "require-dev": {
         "ext-openssl": "*",
@@ -74,5 +74,7 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
