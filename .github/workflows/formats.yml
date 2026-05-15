@@ -4,8 +4,9 @@ on:
   push:
     paths:
       - '**.php'
+      - 'composer.json'
   pull_request:
-    branches: [ 3.x, 4.x ]
+    branches: [ 3.x, 4.x, feat/esi-rate-limit-overhaul ]
 
 jobs:
   ci:

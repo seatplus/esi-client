@@ -305,6 +305,12 @@ class EsiClient implements EsiTransportInterface
      *
      * @throws ScopeAccessDeniedException
      */
+    /**
+     * Verify the authenticated token contains the required scope.
+     *
+     * Null means a public endpoint — always passes.
+     * Non-null throws ScopeAccessDeniedException if the scope is absent from the JWT.
+     */
     public function assertScope(?string $scope): void
     {
         if ($scope === null) {
