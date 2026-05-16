@@ -76,7 +76,7 @@ it('builds correct data URI', function () {
     $uri = $method->invokeArgs($this->client, ['/test/uri/{id}', ['id' => 123], ['param' => 'value']]);
 
     expect($uri)->toBeInstanceOf(Uri::class)
-        ->and((string) $uri)->toBe('https://esi.evetech.net/latest/test/uri/123/?datasource=tranquility&param=value');
+        ->and((string) $uri)->toBe('https://esi.evetech.net/test/uri/123/?datasource=tranquility&param=value');
 });
 
 it('throws exception for missing data', function () {
