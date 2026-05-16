@@ -46,9 +46,9 @@ class EsiConfiguration
         public string $fetcher = GuzzleFetcher::class,
 
         // Versioning — X-Compatibility-Date header value (YYYY-MM-DD).
-        // Only needed for new-style ESI endpoints without a URL version prefix.
-        // Leave null for all existing versioned endpoints (/v5/...).
-        public ?string $compatibility_date = null,
+        // Sent on every request. Matches the ESI OpenAPI spec compatibility date
+        // used to generate seatplus/esi-schema. Update when regenerating the schema.
+        public ?string $compatibility_date = '2025-12-16',
     ) {}
 
     public static function getInstance(...$args): self

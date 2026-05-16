@@ -186,8 +186,11 @@ it('sends X-Compatibility-Date header when configured', function () {
     EsiConfiguration::resetInstance();
 });
 
-it('does not send X-Compatibility-Date header when not configured', function () {
+it('does not send X-Compatibility-Date header when compatibility_date is null', function () {
     $sentHeaders = [];
+
+    EsiConfiguration::resetInstance();
+    EsiConfiguration::getInstance(compatibility_date: null);
 
     $mock = new MockHandler([
         new Response(200, [], json_encode(['foo' => 'bar'])),

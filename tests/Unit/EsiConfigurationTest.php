@@ -22,7 +22,7 @@ it('initializes with default values', function () {
         ->and($config->log_max_files)->toBe(10)
         ->and($config->cache_middleware)->toBe(NullCacheMiddleware::class)
         ->and($config->fetcher)->toBe(GuzzleFetcher::class)
-        ->and($config->compatibility_date)->toBeNull();
+        ->and($config->compatibility_date)->toBe('2025-12-16');
 });
 
 it('singleton instance is consistent', function () {
@@ -62,11 +62,11 @@ it('compatibility_date can be set via constructor', function () {
     expect($config->compatibility_date)->toBe('2025-10-01');
 });
 
-it('compatibility_date defaults to null', function () {
+it('compatibility_date defaults to 2025-12-16', function () {
     EsiConfiguration::resetInstance();
     $config = EsiConfiguration::getInstance();
 
-    expect($config->compatibility_date)->toBeNull();
+    expect($config->compatibility_date)->toBe('2025-12-16');
 
     EsiConfiguration::resetInstance();
 });

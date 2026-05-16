@@ -345,7 +345,7 @@ class EsiClient implements EsiTransportInterface
         $query_params = array_merge(['datasource' => $this->getConfiguration('datasource')], $query_parameters);
 
         $path = sprintf(
-            '/latest/%s/',
+            '/%s/',
             trim($this->mapDataToUri($uri, $data), '/')
         );
 
