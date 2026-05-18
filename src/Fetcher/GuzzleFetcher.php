@@ -42,8 +42,9 @@ class GuzzleFetcher
     public function call(string $method, string $uri, array $body = [], array $headers = []): EsiResponse
     {
         if ($this->authentication) {
+            $token = $this->getToken();
             $headers = array_merge($headers, [
-                'Authorization' => 'Bearer '.$this->getToken(),
+                'Authorization' => "Bearer {$token}",
             ]);
         }
 
@@ -55,10 +56,8 @@ class GuzzleFetcher
      */
     private function getToken(): string
     {
-        // Check the expiry date.
         $expires = $this->carbon($this->authentication->token_expires);
 
-        // If the token expires in the next minute, refresh it.
         throw_if($expires->lte($this->carbon('now')->addMinute()), new ExpiredRefreshTokenException);
 
         return $this->authentication->access_token;
@@ -72,17 +71,17 @@ class GuzzleFetcher
      */
     public function httpRequest(string $method, string $uri, array $headers = [], array $body = []): EsiResponse
     {
-        // Add some debug logging and start measuring how long the request took.
-        $this->logger->debug('Making '.$method.' request to '.$uri);
+        $this->logger->debug("Making {$method} request to {$uri}");
         $start = microtime(true);
 
-        // json encode the body if present, else null it
         $body = count($body) > 0 ? json_encode($body) : null;
 
+        $version = InstalledVersions::getPrettyVersion('seatplus/esi-client');
+        $userAgent = EsiConfiguration::getInstance()->http_user_agent;
         $requestHeaders = array_merge($headers, [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'User-Agent' => 'Seatplus Esi Client /'.InstalledVersions::getPrettyVersion('seatplus/esi-client').'/'.EsiConfiguration::getInstance()->http_user_agent,
+            'User-Agent' => "Seatplus Esi Client /{$version}/{$userAgent}",
         ]);
 
         if (EsiConfiguration::getInstance()->compatibility_date !== null) {
@@ -98,12 +97,8 @@ class GuzzleFetcher
             $statusCode = $e->getResponse()->getStatusCode();
             $this->logFetcherActivity('error', $e->getResponse(), $method, $uri, $start);
 
-            $this->logger->debug(sprintf(
-                'Request for %s -> %s -> failed body was: %s',
-                $method,
-                $uri,
-                $e->getResponse()->getBody()->getContents()
-            ));
+            $body = $e->getResponse()->getBody()->getContents();
+            $this->logger->debug("Request for {$method} -> {$uri} -> failed body was: {$body}");
 
             if ($statusCode === 429) {
                 $retryAfter = (int) ($e->getResponse()->getHeader('Retry-After')[0] ?? 60);
@@ -115,7 +110,6 @@ class GuzzleFetcher
                 throw new EsiErrorLimitedException;
             }
 
-            // Raise the exception that should be handled by the caller
             throw new RequestFailedException(
                 $e,
                 new EsiResponse(
@@ -144,20 +138,18 @@ class GuzzleFetcher
 
     private function logFetcherActivity(string $level, ResponseInterface $response, string $method, string $uri, float|string $start): void
     {
-        $is_cache_loaded = implode(';', $response->getHeader('X-Kevinrob-Cache')) === 'HIT';
+        $isCacheLoaded = implode(';', $response->getHeader('X-Kevinrob-Cache')) === 'HIT';
+        $elapsed = number_format(microtime(true) - $start, 2);
 
-        $message = $is_cache_loaded
-            ? sprintf('Cache loaded for %s, [t: %s]', $uri, number_format(microtime(true) - $start, 2))
-            : sprintf(
-                '[http %d, %s] %s -> %s [t/e: %Fs/%s ratelimit-remaining: %s]',
-                $response->getStatusCode(),
-                strtolower($response->getReasonPhrase()),
-                $method,
-                $uri,
-                number_format(microtime(true) - $start, 2),
-                implode(' ', $response->getHeader('X-Esi-Error-Limit-Remain')),
-                implode(' ', $response->getHeader('X-Ratelimit-Remaining'))
-            );
+        if ($isCacheLoaded) {
+            $message = "Cache loaded for {$uri}, [t: {$elapsed}]";
+        } else {
+            $status = $response->getStatusCode();
+            $reason = strtolower($response->getReasonPhrase());
+            $errorLimitRemain = implode(' ', $response->getHeader('X-Esi-Error-Limit-Remain'));
+            $ratelimitRemaining = implode(' ', $response->getHeader('X-Ratelimit-Remaining'));
+            $message = "[http {$status}, {$reason}] {$method} -> {$uri} [t/e: {$elapsed}s/{$errorLimitRemain} ratelimit-remaining: {$ratelimitRemaining}]";
+        }
 
         match ($level) {
             'error' => $this->logger->error($message),

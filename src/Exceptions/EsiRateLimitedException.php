@@ -7,7 +7,7 @@ class EsiRateLimitedException extends \RuntimeException
     public function __construct(public readonly int $retryAfter = 60)
     {
         parent::__construct(
-            sprintf('ESI rate limited (429). Retry after %d seconds.', $retryAfter),
+            "ESI rate limited (429). Retry after {$retryAfter} seconds.",
             429
         );
     }

@@ -32,18 +32,16 @@ class RotatingFileLogger implements LogInterface
     protected Logger $logger;
 
     /**
-     * FileLogger constructor.
-     *
      * @throws \Exception
      */
     public function __construct()
     {
-        // Get the configuration values
         $configuration = EsiConfiguration::getInstance();
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
+        $logDir = rtrim($configuration->logfile_location, '/');
         $stream = new RotatingFileHandler(
-            rtrim($configuration->logfile_location, '/').'/esi-client.log',
+            "{$logDir}/esi-client.log",
             $configuration->log_max_files,
             (int) $configuration->logger_level
         );

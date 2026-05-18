@@ -15,7 +15,10 @@ class UpdateRefreshTokenService
 {
     const string TOKEN_URL = 'https://login.eveonline.com/v2/oauth/token';
 
-    public function __construct(private readonly Client $client = new Client, private readonly VerifyAccessToken $verifyAccessToken = new VerifyAccessToken) {}
+    public function __construct(
+        private readonly Client $client = new Client,
+        private readonly VerifyAccessToken $verifyAccessToken = new VerifyAccessToken,
+    ) {}
 
     /**
      * @throws RequestFailedException
@@ -23,7 +26,8 @@ class UpdateRefreshTokenService
      */
     public function getRefreshTokenResponse(EsiAuthentication $authentication): array
     {
-        $authorization = 'Basic '.base64_encode($authentication->client_id.':'.$authentication->secret);
+        $credentials = base64_encode("{$authentication->client_id}:{$authentication->secret}");
+        $authorization = "Basic {$credentials}";
 
         try {
             $response = $this->client->post(self::TOKEN_URL, [
@@ -48,7 +52,6 @@ class UpdateRefreshTokenService
             );
         }
 
-        // Values are access_token // expires_in // token_type // refresh_token
         $payload = json_decode((string) $response->getBody(), true);
 
         $this->verifyAccessToken->verify($payload['access_token']);

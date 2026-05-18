@@ -273,7 +273,6 @@ class EsiClient implements EsiTransportInterface
         array $queryParams = [],
         array $requestBody = [],
     ): EsiRawResponse {
-        // Enrich the uri
         $uri = $this->buildDataUri($path, $pathValues, $queryParams);
         $response = $this->fetcher->call($method, $uri, $requestBody);
 
@@ -305,12 +304,6 @@ class EsiClient implements EsiTransportInterface
      *
      * @throws ScopeAccessDeniedException
      */
-    /**
-     * Verify the authenticated token contains the required scope.
-     *
-     * Null means a public endpoint — always passes.
-     * Non-null throws ScopeAccessDeniedException if the scope is absent from the JWT.
-     */
     public function assertScope(?string $scope): void
     {
         if ($scope === null) {
@@ -340,14 +333,10 @@ class EsiClient implements EsiTransportInterface
      */
     private function buildDataUri(string $uri, array $data, array $query_parameters): UriInterface
     {
-        // Create a query string for the URI. We automatically
-        // include the datasource value from the configuration.
         $query_params = array_merge(['datasource' => $this->getConfiguration('datasource')], $query_parameters);
 
-        $path = sprintf(
-            '/%s/',
-            trim($this->mapDataToUri($uri, $data), '/')
-        );
+        $trimmed = trim($this->mapDataToUri($uri, $data), '/');
+        $path = "/{$trimmed}/";
 
         return Uri::fromParts([
             'scheme' => $this->getConfiguration('esi_scheme'),
@@ -363,8 +352,6 @@ class EsiClient implements EsiTransportInterface
      */
     private function mapDataToUri(string $uri, array $data): string
     {
-        // Extract fields in curly braces. If there are fields,
-        // replace the data with those in the URI
         if (preg_match_all('/{+(.*?)}/', $uri, $matches)) {
             if (empty($data)) {
                 throw new UriDataMissingException("The data array for the uri {$uri} is empty. Please provide data to use.");

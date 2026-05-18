@@ -36,11 +36,11 @@ class EsiResponse
     /** Seconds to wait before retrying; present on 429 responses. */
     public ?int $retryAfter;
 
-    protected string $expires_at;
+    protected string $expiresAt;
 
-    protected ?string $error_message;
+    protected ?string $errorMessage;
 
-    protected bool $cache_loaded = false;
+    protected bool $cacheLoaded = false;
 
     public function __construct(
         public string $raw,
@@ -48,7 +48,7 @@ class EsiResponse
         string $expires,
         protected int $response_code
     ) {
-        $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
+        $this->expiresAt = strlen($expires) > 2 ? $expires : 'now';
 
         $parsed_headers = $this->parseHeaders($raw_headers);
         $this->parsed_headers = $parsed_headers;
@@ -61,15 +61,15 @@ class EsiResponse
         $this->ratelimitUsed = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Used');
         $this->retryAfter = $this->getIntHeader($parsed_headers, 'Retry-After');
 
-        $this->error_message = $this->parseErrorMessage($raw);
-        $this->cache_loaded = $this->isCachedLoad();
+        $this->errorMessage = $this->parseErrorMessage($raw);
+        $this->cacheLoaded = $this->isCachedLoad();
 
         $this->data = (object) json_decode($raw);
     }
 
     public function isCachedLoad(): bool
     {
-        return $this->get_data($this->parsed_headers, 'X-Kevinrob-Cache', false) === 'HIT';
+        return $this->getData($this->parsed_headers, 'X-Kevinrob-Cache', false) === 'HIT';
     }
 
     /**
@@ -87,7 +87,7 @@ class EsiResponse
 
     public function getErrorMessage(): mixed
     {
-        return $this->error_message;
+        return $this->errorMessage;
     }
 
     private function parseHeaders(array $headers): array
@@ -107,7 +107,7 @@ class EsiResponse
         return $key_map[strtolower($name)] ?? null;
     }
 
-    private function get_data(array $stack, string $needle, mixed $default = null): mixed
+    private function getData(array $stack, string $needle, mixed $default = null): mixed
     {
         return $this->hasHeader($stack, $needle) ? $this->getHeader($stack, $needle) : $default;
     }
@@ -156,11 +156,12 @@ class EsiResponse
     private function parseErrorMessage(string $data): string
     {
         $data = (object) json_decode($data);
-        $error_message = $data->error ?? '';
+        $errorMessage = $data->error ?? '';
+
         if (property_exists($data, 'error_description')) {
-            $error_message .= ': '.$data->error_description;
+            $errorMessage .= ": {$data->error_description}";
         }
 
-        return $error_message;
+        return $errorMessage;
     }
 }
