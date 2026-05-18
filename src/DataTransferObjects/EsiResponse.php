@@ -2,129 +2,166 @@
 
 namespace Seatplus\EsiClient\DataTransferObjects;
 
-use ArrayObject;
-
-class EsiResponse extends ArrayObject
+/**
+ * @template TData of object
+ */
+class EsiResponse
 {
-    public string $raw;
-    public array $headers;
-    public array $raw_headers;
+    public array $parsed_headers;
 
+    /**
+     * The decoded JSON body of the ESI response.
+     *
+     * @var TData
+     */
     public object $data;
 
     public ?int $error_limit_remain;
+
     public ?int $pages;
 
-    protected string $expires_at;
-    protected string $response_code;
+    // Rate-limit headers (floating-window system, live as of 2025)
+    public ?string $ratelimitGroup;
 
-    protected ?string $error_message;
+    /** The token count from X-Ratelimit-Limit, e.g. 1800 from "1800/15m". */
+    public ?int $ratelimitLimit;
 
-    protected bool $cache_loaded = false;
+    /** The window duration in seconds from X-Ratelimit-Limit, e.g. 900 from "1800/15m". */
+    public ?int $ratelimitWindowSeconds;
 
-    public function __construct(string $data, array $headers, string $expires, int $response_code)
-    {
-        $this->raw = $data;
-        $this->raw_headers = $headers;
-        $this->expires_at = strlen($expires) > 2 ? $expires : 'now';
-        $this->response_code = $response_code;
+    public ?int $ratelimitRemaining;
 
-        $parsed_headers = $this->parseHeaders($headers);
-        $this->headers = $parsed_headers;
-        $this->error_limit_remain = $this->getErrorLimitRemain($parsed_headers);
-        $this->pages = $this->getPages($parsed_headers);
+    public ?int $ratelimitUsed;
 
-        $this->error_message = $this->parseErrorMessage($data);
-        $this->cache_loaded = $this->isCachedLoad();
+    /** Seconds to wait before retrying; present on 429 responses. */
+    public ?int $retryAfter;
 
-        parent::__construct((object) json_decode($data), ArrayObject::ARRAY_AS_PROPS);
+    protected string $expiresAt;
+
+    protected ?string $errorMessage;
+
+    protected bool $cacheLoaded = false;
+
+    public function __construct(
+        public string $raw,
+        public array $raw_headers,
+        string $expires,
+        protected int $response_code
+    ) {
+        $this->expiresAt = strlen($expires) > 2 ? $expires : 'now';
+
+        $parsed_headers = $this->parseHeaders($raw_headers);
+        $this->parsed_headers = $parsed_headers;
+        $this->error_limit_remain = $this->getIntHeader($parsed_headers, 'X-Esi-Error-Limit-Remain');
+        $this->pages = $this->getIntHeader($parsed_headers, 'X-Pages');
+        $this->ratelimitGroup = $this->getHeader($parsed_headers, 'X-Ratelimit-Group');
+        $this->ratelimitLimit = $this->parseRatelimitLimit($parsed_headers);
+        $this->ratelimitWindowSeconds = $this->parseRatelimitWindowSeconds($parsed_headers);
+        $this->ratelimitRemaining = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Remaining');
+        $this->ratelimitUsed = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Used');
+        $this->retryAfter = $this->getIntHeader($parsed_headers, 'Retry-After');
+
+        $this->errorMessage = $this->parseErrorMessage($raw);
+        $this->cacheLoaded = $this->isCachedLoad();
+
+        $this->data = (object) json_decode($raw);
     }
 
     public function isCachedLoad(): bool
     {
-        return $this->get_data($this->headers, 'X-Kevinrob-Cache', false) === 'HIT';
+        return $this->getData($this->parsed_headers, 'X-Kevinrob-Cache', false) === 'HIT';
+    }
+
+    /**
+     * Returns true when the floating-window rate limit bucket is running low (< 10% remaining).
+     * Only meaningful once ESI starts returning X-Ratelimit-* headers for the endpoint.
+     */
+    public function isRateLimitLow(): bool
+    {
+        if ($this->ratelimitRemaining === null || $this->ratelimitLimit === null || $this->ratelimitLimit === 0) {
+            return false;
+        }
+
+        return ($this->ratelimitRemaining / $this->ratelimitLimit) < 0.10;
+    }
+
+    public function getErrorMessage(): mixed
+    {
+        return $this->errorMessage;
     }
 
     private function parseHeaders(array $headers): array
     {
-        // flatten the headers array so that values are not arrays themselves
-        // but rather simple key value pairs.
-        return array_map(function ($value) {
-            if (! is_array($value)) {
-                return $value;
-            }
-
-            return implode(';', $value);
-        }, $headers);
+        return array_map(fn (mixed $value) => is_array($value) ? implode(';', $value) : $value, $headers);
     }
 
     private function hasHeader(array $headers, string $name): bool
     {
-        // turn headers into case insensitive array
-        $key_map = array_change_key_case($headers, CASE_LOWER);
-
-        // track for the requested header name
-        return array_key_exists(strtolower($name), $key_map);
+        return array_key_exists(strtolower($name), array_change_key_case($headers, CASE_LOWER));
     }
 
     private function getHeader(array $headers, string $name): ?string
     {
-        // turn header name into case insensitive
-        $insensitive_key = strtolower($name);
-
-        // turn headers into case insensitive array
         $key_map = array_change_key_case($headers, CASE_LOWER);
 
-        // track for the requested header name and return its value if exists
-        if (array_key_exists($insensitive_key, $key_map)) {
-            return $key_map[$insensitive_key];
+        return $key_map[strtolower($name)] ?? null;
+    }
+
+    private function getData(array $stack, string $needle, mixed $default = null): mixed
+    {
+        return $this->hasHeader($stack, $needle) ? $this->getHeader($stack, $needle) : $default;
+    }
+
+    private function getIntHeader(array $headers, string $name): ?int
+    {
+        $value = $this->getHeader($headers, $name);
+
+        return $value !== null ? (int) $value : null;
+    }
+
+    /** Parse "1800/15m" format — returns only the numeric token count. */
+    private function parseRatelimitLimit(array $headers): ?int
+    {
+        $value = $this->getHeader($headers, 'X-Ratelimit-Limit');
+        if ($value === null) {
+            return null;
         }
 
-        return null;
-    }
-
-    private function get_data(array $stack, string $needle, mixed $default = null): mixed
-    {
-        return $this->hasHeader($stack, $needle) ? $this->getHeader($stack, $needle): $default;
-    }
-
-    private function getErrorLimitRemain(array $parsed_headers): ?int
-    {
-        return $this->get_data($parsed_headers, 'X-Esi-Error-Limit-Remain');
-    }
-
-    private function getPages(array $parsed_headers)
-    {
-        return $this->get_data($parsed_headers, 'X-Pages');
-    }
-
-    private function parseErrorMessage(string $data): ?string
-    {
-        $error_message = '';
-        $data = (object) json_decode($data);
-
-        // If there is an error, set that.
-        if (property_exists($data, 'error')) {
-            $error_message = $data->error;
-        }
-
-        // If there is an error description, set that.
-        if (property_exists($data, 'error_description')) {
-            $error_message .= ': ' . $data->error_description;
-        }
-
-        return $error_message;
+        return (int) explode('/', $value)[0];
     }
 
     /**
-     * @return mixed
+     * Parse "1800/15m" format — returns the window duration in seconds.
+     * Supports units: s (seconds), m (minutes), h (hours).
      */
-    public function getErrorMessage(): mixed
+    private function parseRatelimitWindowSeconds(array $headers): ?int
     {
-        if (! isset($this->error_message)) {
-            $this->error_message = '';
+        $value = $this->getHeader($headers, 'X-Ratelimit-Limit');
+        if ($value === null || ! str_contains($value, '/')) {
+            return null;
         }
 
-        return $this->error_message;
+        $window = explode('/', $value)[1];
+
+        $amount = (int) $window;
+        $unit = strtolower(preg_replace('/[0-9]/', '', $window));
+
+        return match ($unit) {
+            'm' => $amount * 60,
+            'h' => $amount * 3600,
+            default => $amount, // 's' or bare number
+        };
+    }
+
+    private function parseErrorMessage(string $data): string
+    {
+        $data = (object) json_decode($data);
+        $errorMessage = $data->error ?? '';
+
+        if (property_exists($data, 'error_description')) {
+            $errorMessage .= ": {$data->error_description}";
+        }
+
+        return $errorMessage;
     }
 }

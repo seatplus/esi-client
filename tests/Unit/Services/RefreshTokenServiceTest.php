@@ -1,31 +1,36 @@
 <?php
 
+use Carbon\Carbon;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
+use Seatplus\EsiClient\Services\VerifyAccessToken;
 
 /** @runInSeparateProcess  */
 it('updates access token with refresh token', function () {
     // create a private key for signing the JWT Token
     $privKey = openssl_pkey_new(['digest_alg' => 'sha256',
-        'private_key_bits' => 1024,
+        'private_key_bits' => 2048,
         'private_key_type' => OPENSSL_KEYTYPE_RSA, ]);
 
     // define the payload
     $payload = [
-        "scp" => [
-            "esi-skills.read_skills.v1",
-            "esi-skills.read_skillqueue.v1",
+        'scp' => [
+            'esi-skills.read_skills.v1',
+            'esi-skills.read_skillqueue.v1',
         ],
-        "jti" => "998e12c7-3241-43c5-8355-2c48822e0a1b",
-        "kid" => "JWT-Signature-Key",
-        "sub" => "CHARACTER:EVE:123123",
-        "azp" => "my3rdpartyclientid",
-        "name" => "Some Bloke",
-        "owner" => "8PmzCeTKb4VFUDrHLc/AeZXDSWM=",
-        "exp" => now()->addHour()->timestamp,
-        "iss" => "login.eveonline.com",
+        'jti' => '998e12c7-3241-43c5-8355-2c48822e0a1b',
+        'kid' => 'JWT-Signature-Key',
+        'sub' => 'CHARACTER:EVE:123123',
+        'azp' => 'my3rdpartyclientid',
+        'name' => 'Some Bloke',
+        'owner' => '8PmzCeTKb4VFUDrHLc/AeZXDSWM=',
+        'exp' => Carbon::now()->addHour()->timestamp,
+        'iss' => 'login.eveonline.com',
     ];
 
     // encode the jwt token
@@ -37,7 +42,7 @@ it('updates access token with refresh token', function () {
     ]);
 
     // create the client mock and responses from said client
-    $mock = new \GuzzleHttp\Handler\MockHandler([
+    $mock = new MockHandler([
         new Response(200, [], json_encode(['access_token' => $jwt_token, 'foo' => 'bar'])),
         new Response(200, [], json_encode(['jwks' => ['one', 'two', 'three']])),
     ]);
@@ -46,19 +51,13 @@ it('updates access token with refresh token', function () {
         'handler' => HandlerStack::create($mock),
     ]);
 
-    // get the public key which we need to decode the jwt token
-    $pubKey = openssl_pkey_get_details($privKey);
-    $pubKey = $pubKey['key'];
-
-    // mock the JWK static method and return the pub key
-    $jwk_mock = Mockery::mock('overload:' . \Firebase\JWT\JWK::class);
-    $jwk_mock->shouldReceive('parseKeySet')->once()->andReturn($pubKey);
+    // mock the verifyAccessToken service
+    $verifyAccessToken = mock(VerifyAccessToken::class, function ($mock) use ($jwt_token) {
+        $mock->shouldReceive('verify')->once()->with($jwt_token);
+    });
 
     // construct the service
-    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService();
-
-    // set the client
-    $service->setClient($client);
+    $service = new UpdateRefreshTokenService($client, $verifyAccessToken);
 
     // use service to get the refresh Token
     $response = $service->getRefreshTokenResponse($authentication);
@@ -72,7 +71,7 @@ it('updates access token with refresh token', function () {
 
 it('throws RequestFailedException if an exception occurs', function () {
     // create the client mock and responses from said client
-    $mock = new \GuzzleHttp\Handler\MockHandler([
+    $mock = new MockHandler([
         new Response(400, [], 'Error'),
     ]);
 
@@ -81,10 +80,7 @@ it('throws RequestFailedException if an exception occurs', function () {
     ]);
 
     // construct the service
-    $service = new \Seatplus\EsiClient\Services\UpdateRefreshTokenService();
-
-    // set the client
-    $service->setClient($client);
+    $service = new UpdateRefreshTokenService($client);
 
     $service->getRefreshTokenResponse(buildEsiAuthentication());
-})->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
+})->throws(RequestFailedException::class);

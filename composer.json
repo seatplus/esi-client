@@ -23,21 +23,26 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.3",
         "ext-json": "*",
-        "firebase/php-jwt": "^5.4",
+        "firebase/php-jwt": "^7.0",
         "kevinrob/guzzle-cache-middleware": "^4.0",
-        "nesbot/carbon": "^2.53",
-        "spatie/data-transfer-object": "^3.7"
+        "monolog/monolog": "^3.7",
+        "nesbot/carbon": "^3.0",
+        "seatplus/esi-schema": "^1.1"
     },
     "require-dev": {
+        "ext-openssl": "*",
         "fzaninotto/faker": "^1.5",
-        "illuminate/cache": "^8.60",
-        "mockery/mockery": "^1.4",
-        "nunomaduro/collision": "^5.3",
-        "pestphp/pest-plugin-laravel": "^1.1",
+        "illuminate/cache": "^11.23",
+        "laravel/pint": "^1.17",
         "mikey179/vfsstream": "^1",
-        "ext-openssl": "*"
+        "mockery/mockery": "^1.4",
+        "nunomaduro/collision": "^8.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-type-coverage": "^4.0",
+        "phpstan/phpstan": "^2.1.46",
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -51,15 +56,23 @@
         }
     },
     "scripts": {
-      "test": "./vendor/bin/pest",
-      "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage"
+        "lint": "vendor/bin/pint",
+        "test:lint": "vendor/bin/pint --test",
+        "test:types": "vendor/bin/phpstan --ansi",
+        "test:type-coverage": "vendor/bin/pest --type-coverage --min=100",
+        "test:unit": "vendor/bin/pest --colors=always",
+        "test:unit-coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html=build/coverage --coverage-clover=build/logs/clover.xml --colors=always",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:type-coverage",
+            "@test:unit"
+        ]
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }

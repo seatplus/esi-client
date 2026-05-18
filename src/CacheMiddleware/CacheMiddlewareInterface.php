@@ -6,5 +6,5 @@ use Kevinrob\GuzzleCache\CacheMiddleware;
 
 interface CacheMiddlewareInterface
 {
-    public function getCacheMiddleware() : CacheMiddleware;
+    public function getCacheMiddleware(): CacheMiddleware;
 }

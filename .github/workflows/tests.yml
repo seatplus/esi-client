@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  push:
+    branches: [ 2.x, 3.x, 4.x ]
+  pull_request:
+    branches: [ 2.x, 3.x, 4.x ]
+
+jobs:
+  ci:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+      with:
+        php-version: '8.3'
+        coverage: xdebug
+    - name: Install Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Run tests with coverage
+      run: vendor/bin/pest --coverage --ci --min=100

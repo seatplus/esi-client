@@ -25,27 +25,23 @@ namespace Seatplus\EsiClient\Log;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
-use Seatplus\EsiClient\Configuration;
+use Seatplus\EsiClient\EsiConfiguration;
 
 class RotatingFileLogger implements LogInterface
 {
-    /**
-     * @var \Monolog\Logger
-     */
-    protected $logger;
+    protected Logger $logger;
 
     /**
-     * FileLogger constructor.
      * @throws \Exception
      */
     public function __construct()
     {
-        // Get the configuration values
-        $configuration = Configuration::getInstance();
+        $configuration = EsiConfiguration::getInstance();
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
+        $logDir = rtrim($configuration->logfile_location, '/');
         $stream = new RotatingFileHandler(
-            rtrim($configuration->logfile_location, '/') . '/esi-client.log',
+            "{$logDir}/esi-client.log",
             $configuration->log_max_files,
             (int) $configuration->logger_level
         );
@@ -55,41 +51,25 @@ class RotatingFileLogger implements LogInterface
         $this->logger->pushHandler($stream);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return mixed|void
-     */
-    public function log(string $message) : void
+    #[\Override]
+    public function log(string $message): void
     {
         $this->logger->info($message);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return mixed|void
-     */
-    public function debug(string $message) : void
+    #[\Override]
+    public function debug(string $message): void
     {
         $this->logger->debug($message);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return mixed|void
-     */
+    #[\Override]
     public function warning(string $message): void
     {
         $this->logger->warning($message);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return mixed|void
-     */
+    #[\Override]
     public function error(string $message): void
     {
         $this->logger->error($message);

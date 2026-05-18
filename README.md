@@ -1,11 +1,18 @@
 # Esi-Client
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/seatplus/esi-client.svg?style=flat-square)](https://packagist.org/packages/seatplus/esi-client)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/seatplus/esi-client/run-tests?label=tests)](https://github.com/seatplus/esi-client/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/seatplus/esi-client/Check%20&%20fix%20styling?label=code%20style)](https://github.com/seatplus/esi-client/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/seatplus/esi-client.svg?style=flat-square)](https://packagist.org/packages/seatplus/esi-client)
+[![Latest Stable Version](https://poser.pugx.org/seatplus/esi-client/v/stable)](https://packagist.org/packages/seatplus/esi-client)
+[![Tests](https://github.com/seatplus/esi-client/actions/workflows/tests.yml/badge.svg)](https://github.com/seatplus/esi-client/actions/workflows/tests.yml)
+[![Formats](https://github.com/seatplus/esi-client/actions/workflows/formats.yml/badge.svg)](https://github.com/seatplus/esi-client/actions/workflows/formats.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/642d3b3ca41e7cc3cd4f/maintainability)](https://codeclimate.com/github/seatplus/esi-client/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/642d3b3ca41e7cc3cd4f/test_coverage)](https://codeclimate.com/github/seatplus/esi-client/test_coverage)
+[![Total Downloads](https://poser.pugx.org/seatplus/esi-client/downloads)](https://packagist.org/packages/seatplus/esi-client)
+[![License](https://poser.pugx.org/seatplus/esi-client/license)](https://packagist.org/packages/seatplus/esi-client)
 
 A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-cache-middleware.
+
+> **ESI compatibility date:** This branch of `esi-client` targets ESI compatibility date **`2025-12-16`** and forward.
+> Responses DTOs are sourced from [`seatplus/esi-schema`](https://github.com/seatplus/esi-schema) (`1.x`).
+> If CCP publishes a new breaking compatibility date, a new major version of both packages will be released.
 
 ## Installation
 
@@ -18,18 +25,57 @@ composer require seatplus/esi-client
 
 ## Usage
 
+### Typed SDK (recommended)
+
+The SDK exposes typed resource methods. Single-object endpoints return the DTO directly (a subclass of `AbstractEsiDto`); paginated list endpoints return `EsiResult<array<T>>`.
+
 ```php
-$esi = new Seatplus\EsiClient\EsiClient();
+use Seatplus\EsiClient\EsiClient;
 
-$esi->setVersion('v5'); // if you do not set a version, esi-client is using '/latest'
+$sdk = new EsiClient();
 
-// make a call
-$character_info = $esi->invoke('get', '/characters/{character_id}/', [
+// Single object — returns AllianceDetail directly
+$alliance = $sdk->alliance()->getAlliancesAllianceId(99000006);
+echo $alliance->name;          // typed readonly string
+echo $alliance->ticker;
+$alliance->isCachedLoad;       // bool — true if served from RFC 7234 cache
+
+// Authenticated endpoint — returns CharactersDetail directly
+$character = $sdk->withToken($accessToken)->characters()->getCharactersCharacterId(95725047);
+echo $character->name;
+
+// Paginated list — returns EsiResult (pages metadata needed)
+$result = $sdk->withToken($accessToken)->assets()->getCharactersCharacterIdAssets(95725047, page: 1);
+echo $result->pages;           // total pages from X-Pages header
+foreach ($result->data as $asset) {
+    echo $asset->item_id;      // typed readonly int
+}
+```
+
+### Low-level transport
+
+```php
+$esi = new EsiClient();
+
+// make a call — returns EsiResponse
+$response = $esi->invoke('get', '/characters/{character_id}/', [
     'character_id' => 95725047,
 ]);
 
-echo $character_info;
+// $response->data    — stdClass decoded from the JSON body
+// $response->pages   — total pages (from X-Pages header, or 1)
+// $response->isCachedLoad() — true if served from RFC 7234 cache
 ```
+
+### Rate limiting
+
+ESI enforces a **1800-token / 15-minute** rolling window (one token consumed per request,
+irrespective of response code). `esi-client` itself does not throttle — rate limiting is
+handled by the consumer layer (`eveapi`) using Laravel Horizon throttle middleware on each
+queued job.
+
+If the HTTP client receives a `420 Error Limited` response, the request is retried with
+exponential backoff as configured on the job.
 
 ## Testing
 

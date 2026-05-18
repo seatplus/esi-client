@@ -11,9 +11,11 @@
 |
 */
 
-
+use Faker\Factory;
+use Faker\Generator;
 use Firebase\JWT\JWT;
 use PHPUnit\Framework\TestCase;
+use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 
 uses(TestCase::class)
     ->group('integration')
@@ -22,21 +24,6 @@ uses(TestCase::class)
 uses(TestCase::class)
     ->group('unit')
     ->in('Unit');
-
-/*
-|--------------------------------------------------------------------------
-| Expectations
-|--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
-*/
-
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -49,12 +36,12 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function getFaker()
+function getFaker(): Generator
 {
-    return \Faker\Factory::create();
+    return Factory::create();
 }
 
-function buildEsiAuthentication(array $params = [])
+function buildEsiAuthentication(array $params = []): EsiAuthentication
 {
     $faker = getFaker();
 
@@ -71,18 +58,23 @@ function buildEsiAuthentication(array $params = [])
         $factory_array[$key] = $key === 'access_token' ? buildJWT($value) : $value;
     }
 
-    return new \Seatplus\EsiClient\DataTransferObjects\EsiAuthentication($factory_array);
+    return new EsiAuthentication(
+        access_token: $factory_array['access_token'],
+        refresh_token: $factory_array['refresh_token'],
+        client_id: $factory_array['client_id'],
+        secret: $factory_array['secret'],
+    );
 }
 
 function buildJWT(string $payload): string
 {
     $jwt_header = json_encode([
-        "alg" => "RS256",
-        "kid" => "JWT-Signature-Key",
-        "typ" => "JWT",
+        'alg' => 'RS256',
+        'kid' => 'JWT-Signature-Key',
+        'typ' => 'JWT',
     ]);
 
-    $data = JWT::urlsafeB64Encode($jwt_header) . "." . JWT::urlsafeB64Encode($payload);
+    $data = JWT::urlsafeB64Encode($jwt_header).'.'.JWT::urlsafeB64Encode($payload);
 
     $signature = hash_hmac(
         'sha256',
@@ -90,5 +82,5 @@ function buildJWT(string $payload): string
         'test'
     );
 
-    return "${data}.${signature}";
+    return "{$data}.{$signature}";
 }
