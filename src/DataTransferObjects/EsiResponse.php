@@ -18,6 +18,8 @@ class EsiResponse
 
     public ?int $error_limit_remain;
 
+    public ?int $error_limit_reset;
+
     public ?int $pages;
 
     // Rate-limit headers (floating-window system, live as of 2025)
@@ -53,6 +55,7 @@ class EsiResponse
         $parsed_headers = $this->parseHeaders($raw_headers);
         $this->parsed_headers = $parsed_headers;
         $this->error_limit_remain = $this->getIntHeader($parsed_headers, 'X-Esi-Error-Limit-Remain');
+        $this->error_limit_reset = $this->getIntHeader($parsed_headers, 'X-Esi-Error-Limit-Reset');
         $this->pages = $this->getIntHeader($parsed_headers, 'X-Pages');
         $this->ratelimitGroup = $this->getHeader($parsed_headers, 'X-Ratelimit-Group');
         $this->ratelimitLimit = $this->parseRatelimitLimit($parsed_headers);

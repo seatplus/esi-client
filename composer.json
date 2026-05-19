@@ -29,7 +29,7 @@
         "kevinrob/guzzle-cache-middleware": "^4.0",
         "monolog/monolog": "^3.7",
         "nesbot/carbon": "^3.0",
-        "seatplus/esi-schema": "^1.1"
+        "seatplus/esi-schema": "^1.2 || dev-feat/error-limit-tracking"
     },
     "require-dev": {
         "ext-openssl": "*",
@@ -74,5 +74,15 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../esi-schema",
+            "options": {
+                "symlink": true,
+                "canonical": false
+            }
+        }
+    ]
 }
