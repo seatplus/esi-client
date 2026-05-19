@@ -11,9 +11,4 @@ class EsiRateLimitedException extends \RuntimeException
             429
         );
     }
-
-    public function report(): false
-    {
-        return false;
-    }
 }
