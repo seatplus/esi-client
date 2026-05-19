@@ -295,6 +295,8 @@ class EsiClient implements EsiTransportInterface
             rateLimitRemaining: $response->ratelimitRemaining,
             rateLimitUsed: $response->ratelimitUsed,
             retryAfter: $response->retryAfter,
+            errorLimitRemaining: $response->error_limit_remain,
+            errorLimitReset: $response->error_limit_reset,
         );
     }
 
