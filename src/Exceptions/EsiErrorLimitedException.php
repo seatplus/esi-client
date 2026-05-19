@@ -11,4 +11,9 @@ class EsiErrorLimitedException extends \RuntimeException
             420
         );
     }
+
+    public function report(): false
+    {
+        return false;
+    }
 }
