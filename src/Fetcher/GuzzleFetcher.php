@@ -107,7 +107,9 @@ class GuzzleFetcher
             }
 
             if ($statusCode === 420) {
-                throw new EsiErrorLimitedException;
+                $retryAfter = (int) ($e->getResponse()->getHeader('X-Esi-Error-Limit-Reset')[0] ?? 60);
+
+                throw new EsiErrorLimitedException($retryAfter);
             }
 
             throw new RequestFailedException(
