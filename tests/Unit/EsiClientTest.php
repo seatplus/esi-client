@@ -147,3 +147,24 @@ it('invoke sets cursor to null when not in response body', function () {
 
     expect($response->cursor)->toBeNull();
 });
+
+it('withToken returns a new instance with the token set', function () {
+    $authentication = new EsiAuthentication('old-token', 'refresh');
+    $fetcher = mock(GuzzleFetcher::class);
+    $client = new EsiClient($authentication, $fetcher);
+
+    $tokenClient = $client->withToken('new-token');
+
+    expect($tokenClient)->not->toBe($client)
+        ->and($tokenClient)->toBeInstanceOf(EsiClient::class);
+});
+
+it('withToken does not mutate the original client', function () {
+    $authentication = new EsiAuthentication('original-token', 'refresh');
+    $fetcher = mock(GuzzleFetcher::class);
+    $client = new EsiClient($authentication, $fetcher);
+
+    $client->withToken('new-token');
+
+    expect($client)->toBeInstanceOf(EsiClient::class);
+});
