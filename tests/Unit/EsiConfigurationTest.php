@@ -10,7 +10,7 @@ use Seatplus\EsiClient\Log\NullLogger;
 it('initializes with default values', function () {
     $config = new EsiConfiguration;
 
-    expect($config->http_user_agent)->toBe('Seatplus Esi Client Default Library')
+    expect($config->http_user_agent)->toBe('')
         ->and($config->datasource)->toBe('tranquility')
         ->and($config->esi_scheme)->toBe('https')
         ->and($config->esi_host)->toBe('esi.evetech.net')

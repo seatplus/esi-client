@@ -18,7 +18,7 @@ class EsiConfiguration
     private ?CacheMiddleware $cache_implementation = null;
 
     public function __construct(
-        public string $http_user_agent = 'Seatplus Esi Client Default Library',
+        public string $http_user_agent = '',
 
         // Esi
         public string $datasource = 'tranquility',
