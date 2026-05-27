@@ -3,7 +3,6 @@
 namespace Seatplus\EsiClient\Fetcher;
 
 use Carbon\Carbon;
-use Composer\InstalledVersions;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -76,18 +75,10 @@ class GuzzleFetcher
 
         $body = count($body) > 0 ? json_encode($body) : null;
 
-        $version = InstalledVersions::getPrettyVersion('seatplus/esi-client');
-        $userAgent = EsiConfiguration::getInstance()->http_user_agent;
-        $userAgentHeader = "seatplus/esi-client/{$version} +https://github.com/seatplus/esi-client";
-
-        if ($userAgent !== '') {
-            $userAgentHeader .= " {$userAgent}";
-        }
-
         $requestHeaders = array_merge($headers, [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'User-Agent' => $userAgentHeader,
+            'User-Agent' => EsiConfiguration::getInstance()->http_user_agent,
         ]);
 
         if (EsiConfiguration::getInstance()->compatibility_date !== null) {

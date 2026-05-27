@@ -2,6 +2,7 @@
 
 namespace Seatplus\EsiClient;
 
+use Composer\InstalledVersions;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Monolog\Level;
 use Seatplus\EsiClient\CacheMiddleware\NullCacheMiddleware;
@@ -49,7 +50,12 @@ class EsiConfiguration
         // Sent on every request. Matches the ESI OpenAPI spec compatibility date
         // used to generate seatplus/esi-schema. Update when regenerating the schema.
         public ?string $compatibility_date = '2025-12-16',
-    ) {}
+    ) {
+        if ($this->http_user_agent === '') {
+            $version = InstalledVersions::getPrettyVersion('seatplus/esi-client') ?? 'dev';
+            $this->http_user_agent = "seatplus/esi-client/{$version} +https://github.com/seatplus/esi-client";
+        }
+    }
 
     public static function getInstance(...$args): self
     {
