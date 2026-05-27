@@ -78,7 +78,7 @@ class GuzzleFetcher
 
         $version = InstalledVersions::getPrettyVersion('seatplus/esi-client');
         $userAgent = EsiConfiguration::getInstance()->http_user_agent;
-        $userAgentHeader = "seatplus/esi-client/{$version}";
+        $userAgentHeader = "seatplus/esi-client/{$version} +https://github.com/seatplus/esi-client";
 
         if ($userAgent !== '') {
             $userAgentHeader .= " {$userAgent}";
