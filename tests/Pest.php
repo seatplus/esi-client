@@ -46,12 +46,12 @@ function buildEsiAuthentication(array $params = []): EsiAuthentication
     $faker = getFaker();
 
     $factory_array = [
-        'client_id' => $faker->randomNumber,
-        'secret' => $faker->md5,
+        'client_id' => $faker->randomNumber(),
+        'secret' => $faker->md5(),
         'access_token' => buildJWT(json_encode([
             'scp' => [],
         ])),
-        'refresh_token' => $faker->sha1,
+        'refresh_token' => $faker->sha1(),
     ];
 
     foreach ($params as $key => $value) {
