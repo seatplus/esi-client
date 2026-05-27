@@ -132,7 +132,6 @@ it('invoke extracts cursor from response body', function () {
 it('creates fetcher instance', function () {
     $reflection = new ReflectionClass($this->client);
     $method = $reflection->getMethod('createFetcher');
-    $method->setAccessible(true);
 
     $fetcher = $method->invoke($this->client);
 
