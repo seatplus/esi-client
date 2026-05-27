@@ -61,7 +61,7 @@
         "test:types": "vendor/bin/phpstan --ansi",
         "test:type-coverage": "vendor/bin/pest --type-coverage --min=100",
         "test:unit": "vendor/bin/pest --colors=always",
-        "test:unit-coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html=build/coverage --coverage-clover=build/logs/clover.xml --colors=always",
+        "test:unit-coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html=build/coverage --coverage-clover=build/logs/clover.xml --min=100 --colors=always",
         "test": [
             "@test:lint",
             "@test:types",
