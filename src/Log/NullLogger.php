@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\EsiClient\Log;
 
 class NullLogger implements LogInterface

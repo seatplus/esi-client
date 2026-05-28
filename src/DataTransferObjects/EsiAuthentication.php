@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\EsiClient\DataTransferObjects;
 
 use Firebase\JWT\JWT;

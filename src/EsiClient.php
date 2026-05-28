@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\EsiClient;
 
 use GuzzleHttp\Psr7\Uri;
@@ -274,7 +276,7 @@ class EsiClient implements EsiTransportInterface
         array $requestBody = [],
     ): EsiRawResponse {
         $uri = $this->buildDataUri($path, $pathValues, $queryParams);
-        $response = $this->fetcher->call($method, $uri, $requestBody);
+        $response = $this->fetcher->call($method, (string) $uri, $requestBody);
 
         // Extract cursor tokens if the response body contains a `cursor` object.
         // Cursor routes (x-pagination: cursor) embed {before, after} in the body.
@@ -325,7 +327,7 @@ class EsiClient implements EsiTransportInterface
         return $this->getConfiguration()->getLogger();
     }
 
-    private function getConfiguration(?string $property = null): EsiConfiguration|string
+    private function getConfiguration(?string $property = null): EsiConfiguration|string|int|null
     {
         return $property ? EsiConfiguration::getInstance()->$property : EsiConfiguration::getInstance();
     }
@@ -363,7 +365,7 @@ class EsiClient implements EsiTransportInterface
                 if (! array_key_exists($match, $data)) {
                     throw new UriDataMissingException("Data for {$match} is missing. Please provide this by setting a value for {$match}.");
                 }
-                $uri = str_replace("{{$match}}", $data[$match], $uri);
+                $uri = str_replace("{{$match}}", (string) $data[$match], $uri);
             }
         }
 
