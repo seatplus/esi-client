@@ -78,6 +78,7 @@ class EsiClient implements EsiTransportInterface
         $clone->authentication = new EsiAuthentication(
             access_token: $accessToken,
             refresh_token: '',
+            token_expires: EsiAuthentication::expiresFromToken($accessToken),
         );
         $clone->fetcher = $clone->createFetcher();
 
