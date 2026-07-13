@@ -246,3 +246,51 @@ it('logs fetcher activity with cache hit', function (string $log_level) {
     // Invoke the method
     $method->invokeArgs($fetcher, [$log_level, $response, 'GET', '/test/uri', microtime(true)]);
 })->with(['error', 'info', 'debug', 'warning']);
+
+it('logs rate-limit metrics only when ESI returns those headers', function () {
+    $response = mock(ResponseInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('getHeader')->with('X-Kevinrob-Cache')->andReturn([]);
+        $mock->shouldReceive('getHeader')->with('X-Esi-Error-Limit-Remain')->andReturn(['95']);
+        $mock->shouldReceive('getHeader')->with('X-Ratelimit-Remaining')->andReturn(['80']);
+        $mock->shouldReceive('getStatusCode')->andReturn(200);
+        $mock->shouldReceive('getReasonPhrase')->andReturn('OK');
+    });
+
+    $logger = mock(LogInterface::class, function (MockInterface $logger) {
+        $logger->shouldReceive('log')
+            ->once()
+            ->with(Mockery::on(fn (string $message): bool => str_contains($message, 'error-limit: 95')
+                && str_contains($message, 'ratelimit-remaining: 80')));
+    });
+
+    $fetcher = new GuzzleFetcher(logger: $logger);
+
+    $reflection = new ReflectionClass($fetcher);
+    $method = $reflection->getMethod('logFetcherActivity');
+
+    $method->invokeArgs($fetcher, ['info', $response, 'GET', '/test/uri', microtime(true)]);
+});
+
+it('omits rate-limit metrics when ESI does not return those headers', function () {
+    $response = mock(ResponseInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('getHeader')->with('X-Kevinrob-Cache')->andReturn([]);
+        $mock->shouldReceive('getHeader')->with('X-Esi-Error-Limit-Remain')->andReturn([]);
+        $mock->shouldReceive('getHeader')->with('X-Ratelimit-Remaining')->andReturn([]);
+        $mock->shouldReceive('getStatusCode')->andReturn(200);
+        $mock->shouldReceive('getReasonPhrase')->andReturn('OK');
+    });
+
+    $logger = mock(LogInterface::class, function (MockInterface $logger) {
+        $logger->shouldReceive('log')
+            ->once()
+            ->with(Mockery::on(fn (string $message): bool => ! str_contains($message, 'error-limit:')
+                && ! str_contains($message, 'ratelimit-remaining:')));
+    });
+
+    $fetcher = new GuzzleFetcher(logger: $logger);
+
+    $reflection = new ReflectionClass($fetcher);
+    $method = $reflection->getMethod('logFetcherActivity');
+
+    $method->invokeArgs($fetcher, ['info', $response, 'GET', '/test/uri', microtime(true)]);
+});

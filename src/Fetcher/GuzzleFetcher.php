@@ -149,7 +149,20 @@ class GuzzleFetcher
             $reason = strtolower($response->getReasonPhrase());
             $errorLimitRemain = implode(' ', $response->getHeader('X-Esi-Error-Limit-Remain'));
             $ratelimitRemaining = implode(' ', $response->getHeader('X-Ratelimit-Remaining'));
-            $message = "[http {$status}, {$reason}] {$method} -> {$uri} [t/e: {$elapsed}s/{$errorLimitRemain} ratelimit-remaining: {$ratelimitRemaining}]";
+
+            // Only include a metric when ESI actually returned its header. X-Ratelimit-Remaining
+            // is sent solely by token-bucket endpoints (e.g. assets) and X-Esi-Error-Limit-Remain
+            // isn't returned by all of them either — so print each only when present instead of
+            // emitting an empty "ratelimit-remaining: " that reads as a bug.
+            $meta = ["t: {$elapsed}s"];
+            if ($errorLimitRemain !== '') {
+                $meta[] = "error-limit: {$errorLimitRemain}";
+            }
+            if ($ratelimitRemaining !== '') {
+                $meta[] = "ratelimit-remaining: {$ratelimitRemaining}";
+            }
+
+            $message = "[http {$status}, {$reason}] {$method} -> {$uri} [".implode(', ', $meta).']';
         }
 
         match ($level) {
