@@ -17,9 +17,13 @@ use Firebase\JWT\JWT;
 use PHPUnit\Framework\TestCase;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 
-pest()->extend(TestCase::class)->group('integration')->in('Integration');
+uses(TestCase::class)
+    ->group('integration')
+    ->in('Integration');
 
-pest()->extend(TestCase::class)->group('unit')->in('Unit');
+uses(TestCase::class)
+    ->group('unit')
+    ->in('Unit');
 
 /*
 |--------------------------------------------------------------------------
