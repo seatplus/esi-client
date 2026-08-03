@@ -1,15 +1,27 @@
 includes:
     # Pest-aware static analysis (understands it()/expect()/$this).
-    # `tests` is intentionally NOT yet in `paths` below — pointing PHPStan at the
-    # suite surfaces a batch of Mockery false-positives + redundant-expectation
-    # findings that are handled in a dedicated follow-up, not this tooling bump.
     - vendor/pestphp/pest-plugin-phpstan/extension.neon
+    # Understands Mockery's dynamic API (shouldReceive(), etc.).
+    - vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
     editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
     level: 4
     paths:
         - src
+        - tests
     tmpDir: build/phpstan
+    ignoreErrors:
+        # pest.expectation.redundant flags assertions a strict return type already
+        # guarantees (e.g. toBeInstanceOf() on a typed return). With failOnRisky=true
+        # the sole-assertion tests can't just drop them, so silence this style rule —
+        # pest.expectation.impossible (real, unsatisfiable assertions) stays active.
+        -
+            identifier: pest.expectation.redundant
+        # vfsStream's getChild() returns the base vfsStreamContent; getContent() lives
+        # on the vfsStreamFile subclass. A third-party typing gap, not a code issue.
+        -
+            message: '#Call to an undefined method org\\bovigo\\vfs\\vfsStreamContent::getContent\(\)#'
+            path: tests/Unit/Logger/RotatingFileLoggerTest.php
 
 
