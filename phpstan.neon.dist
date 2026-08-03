@@ -1,3 +1,10 @@
+includes:
+    # Pest-aware static analysis (understands it()/expect()/$this).
+    # `tests` is intentionally NOT yet in `paths` below — pointing PHPStan at the
+    # suite surfaces a batch of Mockery false-positives + redundant-expectation
+    # findings that are handled in a dedicated follow-up, not this tooling bump.
+    - vendor/pestphp/pest-plugin-phpstan/extension.neon
+
 parameters:
     editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
     level: 4

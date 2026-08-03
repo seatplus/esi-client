@@ -1,0 +1,19 @@
+{
+    "timings": {
+        "Tests\\Unit\\CacheMiddleware\\LaravelFileCacheMiddlewareTest": 0.0131,
+        "Tests\\Unit\\DataTransferObject\\EsiResponseTest": 0.0112,
+        "Tests\\Unit\\EsiAuthenticationTest": 0.0056,
+        "Tests\\Unit\\EsiClientTest": 0.0107,
+        "Tests\\Unit\\EsiConfigurationTest": 0.0263,
+        "Tests\\Unit\\Fetcher\\GuzzleFetcherTest": 0.1648,
+        "Tests\\Unit\\GeneratedResourcesTest": 0.0422,
+        "Tests\\Unit\\Logger\\NullLoggerTest": 0.0034,
+        "Tests\\Unit\\Logger\\RotatingFileLoggerTest": 0.0274,
+        "Tests\\Unit\\Services\\JwtServiceTest": 0.0045,
+        "Tests\\Unit\\Services\\RefreshTokenServiceTest": 0.1984,
+        "Tests\\Unit\\Services\\UpdateRefreshToklenServiceTest": 0.0083,
+        "Tests\\Unit\\Services\\VerifyAccessTokenTest": 0.0066
+    },
+    "checksum": "a6536df9f90f65cc973d8b673f672534",
+    "updated_at": "2026-07-30T15:09:38+00:00"
+}
