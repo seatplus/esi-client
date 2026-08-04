@@ -30,7 +30,7 @@
         "kevinrob/guzzle-cache-middleware": "^7.0",
         "monolog/monolog": "^3.7",
         "nesbot/carbon": "^3.0",
-        "seatplus/esi-schema": "^3.0"
+        "seatplus/esi-schema": "^4.0"
     },
     "require-dev": {
         "ext-openssl": "*",
