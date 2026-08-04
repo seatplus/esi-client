@@ -70,7 +70,7 @@ class EsiClient implements EsiTransportInterface
      * Return a new client instance with the given OAuth access token set.
      * Use this for authenticated ESI endpoints.
      *
-     * @example $esi->withToken($accessToken)->characters()->getCharactersCharacterId($id)
+     * @example $esi->withToken($accessToken)->characters()->getCharactersDetail($id)
      */
     public function withToken(string $accessToken): static
     {

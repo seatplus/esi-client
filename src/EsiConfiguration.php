@@ -11,6 +11,7 @@ use Seatplus\EsiClient\CacheMiddleware\NullCacheMiddleware;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\LogInterface;
 use Seatplus\EsiClient\Log\RotatingFileLogger;
+use Seatplus\EsiSchema\GeneratedSpec;
 
 class EsiConfiguration
 {
@@ -49,9 +50,10 @@ class EsiConfiguration
         public string $fetcher = GuzzleFetcher::class,
 
         // Versioning — X-Compatibility-Date header value (YYYY-MM-DD).
-        // Sent on every request. Matches the ESI OpenAPI spec compatibility date
-        // used to generate seatplus/esi-schema. Update when regenerating the schema.
-        public ?string $compatibility_date = '2025-12-16',
+        // Sent on every request. Sourced from seatplus/esi-schema, which is generated
+        // against exactly this spec date, so the DTOs and the wire contract cannot drift
+        // apart. Pass null to omit the header and let ESI apply its own default.
+        public ?string $compatibility_date = GeneratedSpec::COMPATIBILITY_DATE,
     ) {
         if ($this->http_user_agent === '') {
             $version = InstalledVersions::getPrettyVersion('seatplus/esi-client') ?? 'dev';

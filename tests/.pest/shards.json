@@ -1,19 +1,20 @@
 {
     "timings": {
-        "Tests\\Unit\\CacheMiddleware\\LaravelFileCacheMiddlewareTest": 0.0131,
-        "Tests\\Unit\\DataTransferObject\\EsiResponseTest": 0.0112,
-        "Tests\\Unit\\EsiAuthenticationTest": 0.0056,
-        "Tests\\Unit\\EsiClientTest": 0.0107,
-        "Tests\\Unit\\EsiConfigurationTest": 0.0263,
-        "Tests\\Unit\\Fetcher\\GuzzleFetcherTest": 0.1648,
-        "Tests\\Unit\\GeneratedResourcesTest": 0.0422,
-        "Tests\\Unit\\Logger\\NullLoggerTest": 0.0034,
-        "Tests\\Unit\\Logger\\RotatingFileLoggerTest": 0.0274,
-        "Tests\\Unit\\Services\\JwtServiceTest": 0.0045,
-        "Tests\\Unit\\Services\\RefreshTokenServiceTest": 0.1984,
-        "Tests\\Unit\\Services\\UpdateRefreshToklenServiceTest": 0.0083,
-        "Tests\\Unit\\Services\\VerifyAccessTokenTest": 0.0066
+        "Tests\\Unit\\CacheMiddleware\\LaravelFileCacheMiddlewareTest": 0.0104,
+        "Tests\\Unit\\CacheMiddleware\\Strategy\\EsiPrivateCacheStrategyTest": 0.0677,
+        "Tests\\Unit\\DataTransferObject\\EsiResponseTest": 0.0216,
+        "Tests\\Unit\\EsiAuthenticationTest": 0.0405,
+        "Tests\\Unit\\EsiClientTest": 0.0201,
+        "Tests\\Unit\\EsiConfigurationTest": 0.0124,
+        "Tests\\Unit\\Fetcher\\GuzzleFetcherTest": 0.0696,
+        "Tests\\Unit\\GeneratedResourcesTest": 0.1453,
+        "Tests\\Unit\\Logger\\NullLoggerTest": 0.0404,
+        "Tests\\Unit\\Logger\\RotatingFileLoggerTest": 0.1385,
+        "Tests\\Unit\\Services\\JwtServiceTest": 0.0295,
+        "Tests\\Unit\\Services\\RefreshTokenServiceTest": 0.4442,
+        "Tests\\Unit\\Services\\UpdateRefreshToklenServiceTest": 0.3653,
+        "Tests\\Unit\\Services\\VerifyAccessTokenTest": 0.0301
     },
-    "checksum": "a6536df9f90f65cc973d8b673f672534",
-    "updated_at": "2026-07-30T15:09:38+00:00"
+    "checksum": "4e048f04f9a1439443f06278bda34d44",
+    "updated_at": "2026-08-04T12:53:31+00:00"
 }

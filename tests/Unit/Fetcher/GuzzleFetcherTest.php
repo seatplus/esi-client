@@ -210,6 +210,8 @@ it('does not send X-Compatibility-Date header when compatibility_date is null', 
     $fetcher->call('get', '/foo');
 
     expect($sentHeaders)->not->toHaveKey('X-Compatibility-Date');
+
+    EsiConfiguration::resetInstance();
 });
 
 it('logs fetcher activity with cache hit', function (string $log_level) {

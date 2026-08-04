@@ -82,7 +82,7 @@ it('universe() returns a UniverseResource', function () {
 // Object response — returns DTO directly (no EsiResult wrapper)
 // ---------------------------------------------------------------------------
 
-it('getCharactersCharacterId returns CharactersDetail DTO directly', function () {
+it('getCharactersDetail returns CharactersDetail DTO directly', function () {
     $raw = json_encode([
         'name' => 'Test Pilot',
         'corporation_id' => 98000001,
@@ -97,7 +97,7 @@ it('getCharactersCharacterId returns CharactersDetail DTO directly', function ()
     $fetcher->shouldReceive('call')->once()->andReturn(makeEsiResponse($raw));
 
     $client = new EsiClient(new EsiAuthentication('tok', ''), $fetcher);
-    $dto = $client->characters()->getCharactersCharacterId(123);
+    $dto = $client->characters()->getCharactersDetail(123);
 
     expect($dto)->toBeInstanceOf(CharactersDetail::class)
         ->and($dto->name)->toBe('Test Pilot')

@@ -6,6 +6,7 @@ use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\LogInterface;
 use Seatplus\EsiClient\Log\NullLogger;
+use Seatplus\EsiSchema\GeneratedSpec;
 
 it('initializes with default values', function () {
     $config = new EsiConfiguration;
@@ -23,7 +24,7 @@ it('initializes with default values', function () {
         ->and($config->log_max_files)->toBe(10)
         ->and($config->cache_middleware)->toBe(NullCacheMiddleware::class)
         ->and($config->fetcher)->toBe(GuzzleFetcher::class)
-        ->and($config->compatibility_date)->toBe('2025-12-16');
+        ->and($config->compatibility_date)->toBe(GeneratedSpec::COMPATIBILITY_DATE);
 });
 
 it('singleton instance is consistent', function () {
@@ -63,11 +64,11 @@ it('compatibility_date can be set via constructor', function () {
     expect($config->compatibility_date)->toBe('2025-10-01');
 });
 
-it('compatibility_date defaults to 2025-12-16', function () {
+it('compatibility_date defaults to the date esi-schema was generated for', function () {
     EsiConfiguration::resetInstance();
     $config = EsiConfiguration::getInstance();
 
-    expect($config->compatibility_date)->toBe('2025-12-16');
+    expect($config->compatibility_date)->toBe(GeneratedSpec::COMPATIBILITY_DATE);
 
     EsiConfiguration::resetInstance();
 });
