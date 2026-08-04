@@ -22,6 +22,7 @@ use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Log\LogInterface;
 use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
+use Seatplus\EsiSchema\GeneratedSpec;
 
 class GuzzleFetcher
 {
@@ -83,8 +84,10 @@ class GuzzleFetcher
             'User-Agent' => EsiConfiguration::getInstance()->http_user_agent,
         ]);
 
-        if (EsiConfiguration::getInstance()->compatibility_date !== null) {
-            $requestHeaders['X-Compatibility-Date'] = EsiConfiguration::getInstance()->compatibility_date;
+        $compatibility_date = EsiConfiguration::getInstance()->compatibility_date;
+
+        if ($compatibility_date !== null) {
+            $requestHeaders[GeneratedSpec::COMPATIBILITY_DATE_HEADER] = $compatibility_date;
         }
 
         try {

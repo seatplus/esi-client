@@ -2,11 +2,15 @@ name: Formats
 
 on:
   push:
+    # Branch-filtered deliberately: without this the job ran on every branch and published a
+    # check named `ci` — the same context branch protection requires — so a PR whose base was
+    # not covered by tests.yml showed a single green tick that looked like a validated build.
+    branches: [ 2.x, 3.x, 4.x, 5.x ]
     paths:
       - '**.php'
       - 'composer.json'
   pull_request:
-    branches: [ 3.x, 4.x ]
+    branches: [ 3.x, 4.x, 5.x ]
 
 jobs:
   ci:

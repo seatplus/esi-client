@@ -7,7 +7,7 @@ namespace Seatplus\EsiClient\CacheMiddleware;
 use Illuminate\Support\Facades\Cache;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\LaravelCacheStorage;
-use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
+use Seatplus\EsiClient\CacheMiddleware\Strategy\EsiPrivateCacheStrategy;
 
 class LaravelFileCacheMiddleware implements CacheMiddlewareInterface
 {
@@ -15,7 +15,7 @@ class LaravelFileCacheMiddleware implements CacheMiddlewareInterface
     public function getCacheMiddleware(): CacheMiddleware
     {
         return new CacheMiddleware(
-            new PrivateCacheStrategy(
+            new EsiPrivateCacheStrategy(
                 new LaravelCacheStorage(
                     Cache::store('file')
                 )

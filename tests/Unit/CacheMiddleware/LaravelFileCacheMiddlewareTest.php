@@ -3,6 +3,7 @@
 use Illuminate\Contracts\Cache\Repository;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Seatplus\EsiClient\CacheMiddleware\LaravelFileCacheMiddleware;
+use Seatplus\EsiClient\CacheMiddleware\Strategy\EsiPrivateCacheStrategy;
 
 it('returns a CacheMiddleware instance', function () {
     // Mock the Cache facade
@@ -16,7 +17,10 @@ it('returns a CacheMiddleware instance', function () {
     $middleware = new LaravelFileCacheMiddleware;
     $result = $middleware->getCacheMiddleware();
 
-    expect($result)->toBeInstanceOf(CacheMiddleware::class);
+    // getCacheStorage() returns the strategy, despite the name. Asserting it pins the wiring:
+    // without this the test would pass just as happily on the unscoped PrivateCacheStrategy.
+    expect($result)->toBeInstanceOf(CacheMiddleware::class)
+        ->and($result->getCacheStorage())->toBeInstanceOf(EsiPrivateCacheStrategy::class);
 
     Mockery::close();
 });
