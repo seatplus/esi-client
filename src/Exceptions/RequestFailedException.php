@@ -6,7 +6,7 @@ namespace Seatplus\EsiClient\Exceptions;
 
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 
-class RequestFailedException extends \Exception
+class RequestFailedException extends \Exception implements EsiClientException
 {
     public function __construct(private readonly \Exception $original_exception, private readonly EsiResponse $esiResponse)
     {

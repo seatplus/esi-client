@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Seatplus\EsiClient\Exceptions;
 
-class EsiErrorLimitedException extends \RuntimeException
+class EsiErrorLimitedException extends \RuntimeException implements EsiClientException
 {
     public function __construct(public readonly int $retryAfter = 60)
     {

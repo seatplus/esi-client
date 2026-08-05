@@ -2,10 +2,12 @@
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
 use Seatplus\EsiClient\Services\VerifyAccessToken;
@@ -55,6 +57,26 @@ it('throws RequestFailedException on client error', function () {
 
     expect(fn () => $this->service->getRefreshTokenResponse($authentication))
         ->toThrow(RequestFailedException::class);
+});
+
+it('throws EsiTransportException when the token endpoint is unreachable', function () {
+    $authentication = new EsiAuthentication('client_id', 'secret', 'refresh_token');
+
+    $connectException = new ConnectException(
+        'cURL error 7: Connection refused',
+        new Request('POST', UpdateRefreshTokenService::TOKEN_URL)
+    );
+
+    $this->clientMock->shouldReceive('post')
+        ->once()
+        ->andThrow($connectException);
+
+    try {
+        $this->service->getRefreshTokenResponse($authentication);
+    } catch (EsiTransportException $e) {
+        expect($e->getPrevious())->toBe($connectException)
+            ->and($e->getMessage())->toContain(UpdateRefreshTokenService::TOKEN_URL);
+    }
 });
 
 it('throws RequestFailedException on server error', function () {
