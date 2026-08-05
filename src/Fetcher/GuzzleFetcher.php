@@ -73,6 +73,11 @@ class GuzzleFetcher
      */
     public function httpRequest(string $method, string $uri, array $headers = [], array $body = []): EsiResponse
     {
+        // RFC 9110 method tokens are case-sensitive and the registered names are uppercase.
+        // esi-schema's generated resources call invoke('get', …); Guzzle 7 still uppercases
+        // for us but deprecated it, and Guzzle 8 sends the verb verbatim.
+        $method = strtoupper($method);
+
         $this->logger->debug("Making {$method} request to {$uri}");
         $start = microtime(true);
 

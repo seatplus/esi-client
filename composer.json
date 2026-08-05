@@ -27,7 +27,7 @@
         "ext-json": "*",
         "firebase/php-jwt": "^7.0",
         "guzzlehttp/guzzle": "^7.9.2",
-        "kevinrob/guzzle-cache-middleware": "^7.0",
+        "kevinrob/guzzle-cache-middleware": "^8.0",
         "monolog/monolog": "^3.7",
         "nesbot/carbon": "^3.0",
         "seatplus/esi-schema": "^4.0"
