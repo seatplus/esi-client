@@ -52,9 +52,9 @@ use Seatplus\EsiSchema\Resources\WarsResource;
 
 class EsiClient implements EsiTransportInterface
 {
-    protected array $query_parameters = [];
+    protected array $queryParameters = [];
 
-    protected array $request_body = [];
+    protected array $requestBody = [];
 
     private readonly LogInterface $logger;
 
@@ -76,9 +76,9 @@ class EsiClient implements EsiTransportInterface
     {
         $clone = clone $this;
         $clone->authentication = new EsiAuthentication(
-            access_token: $accessToken,
-            refresh_token: '',
-            token_expires: EsiAuthentication::expiresFromToken($accessToken),
+            accessToken: $accessToken,
+            refreshToken: '',
+            tokenExpires: EsiAuthentication::expiresFromToken($accessToken),
         );
         $clone->fetcher = $clone->createFetcher();
 
@@ -256,10 +256,10 @@ class EsiClient implements EsiTransportInterface
 
     private function createFetcher(): GuzzleFetcher
     {
-        /** @var string $fetcher_class */
-        $fetcher_class = $this->getConfiguration('fetcher');
+        /** @var string $fetcherClass */
+        $fetcherClass = $this->getConfiguration('fetcher');
 
-        return new $fetcher_class($this->authentication);
+        return new $fetcherClass($this->authentication);
     }
 
     /**
@@ -298,8 +298,8 @@ class EsiClient implements EsiTransportInterface
             rateLimitRemaining: $response->ratelimitRemaining,
             rateLimitUsed: $response->ratelimitUsed,
             retryAfter: $response->retryAfter,
-            errorLimitRemaining: $response->error_limit_remain,
-            errorLimitReset: $response->error_limit_reset,
+            errorLimitRemaining: $response->errorLimitRemain,
+            errorLimitReset: $response->errorLimitReset,
         );
     }
 
@@ -336,9 +336,9 @@ class EsiClient implements EsiTransportInterface
     /**
      * @throws UriDataMissingException
      */
-    private function buildDataUri(string $uri, array $data, array $query_parameters): UriInterface
+    private function buildDataUri(string $uri, array $data, array $queryParameters): UriInterface
     {
-        $query_params = array_merge(['datasource' => $this->getConfiguration('datasource')], $query_parameters);
+        $queryParams = array_merge(['datasource' => $this->getConfiguration('datasource')], $queryParameters);
 
         $trimmed = trim($this->mapDataToUri($uri, $data), '/');
         $path = "/{$trimmed}/";
@@ -348,7 +348,7 @@ class EsiClient implements EsiTransportInterface
             'host' => $this->getConfiguration('esi_host'),
             'port' => $this->getConfiguration('esi_port'),
             'path' => $path,
-            'query' => http_build_query($query_params),
+            'query' => http_build_query($queryParams),
         ]);
     }
 

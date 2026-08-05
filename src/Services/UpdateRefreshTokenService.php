@@ -28,7 +28,7 @@ class UpdateRefreshTokenService
      */
     public function getRefreshTokenResponse(EsiAuthentication $authentication): array
     {
-        $credentials = base64_encode("{$authentication->client_id}:{$authentication->secret}");
+        $credentials = base64_encode("{$authentication->clientId}:{$authentication->secret}");
         $authorization = "Basic {$credentials}";
 
         try {
@@ -38,7 +38,7 @@ class UpdateRefreshTokenService
                 ],
                 RequestOptions::FORM_PARAMS => [
                     'grant_type' => 'refresh_token',
-                    'refresh_token' => $authentication->refresh_token,
+                    'refresh_token' => $authentication->refreshToken,
                 ],
             ]);
         } catch (ClientException|ServerException $exception) {

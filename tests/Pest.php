@@ -45,36 +45,36 @@ function buildEsiAuthentication(array $params = []): EsiAuthentication
 {
     $faker = getFaker();
 
-    $factory_array = [
-        'client_id' => $faker->randomNumber(),
+    $factoryArray = [
+        'clientId' => $faker->randomNumber(),
         'secret' => $faker->md5(),
-        'access_token' => buildJWT(json_encode([
+        'accessToken' => buildJWT(json_encode([
             'scp' => [],
         ])),
-        'refresh_token' => $faker->sha1(),
+        'refreshToken' => $faker->sha1(),
     ];
 
     foreach ($params as $key => $value) {
-        $factory_array[$key] = $key === 'access_token' ? buildJWT($value) : $value;
+        $factoryArray[$key] = $key === 'accessToken' ? buildJWT($value) : $value;
     }
 
     return new EsiAuthentication(
-        access_token: $factory_array['access_token'],
-        refresh_token: $factory_array['refresh_token'],
-        client_id: $factory_array['client_id'],
-        secret: $factory_array['secret'],
+        accessToken: $factoryArray['accessToken'],
+        refreshToken: $factoryArray['refreshToken'],
+        clientId: $factoryArray['clientId'],
+        secret: $factoryArray['secret'],
     );
 }
 
 function buildJWT(string $payload): string
 {
-    $jwt_header = json_encode([
+    $jwtHeader = json_encode([
         'alg' => 'RS256',
         'kid' => 'JWT-Signature-Key',
         'typ' => 'JWT',
     ]);
 
-    $data = JWT::urlsafeB64Encode($jwt_header).'.'.JWT::urlsafeB64Encode($payload);
+    $data = JWT::urlsafeB64Encode($jwtHeader).'.'.JWT::urlsafeB64Encode($payload);
 
     $signature = hash_hmac(
         'sha256',

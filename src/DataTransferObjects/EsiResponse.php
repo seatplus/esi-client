@@ -9,7 +9,7 @@ namespace Seatplus\EsiClient\DataTransferObjects;
  */
 class EsiResponse
 {
-    public array $parsed_headers;
+    public array $parsedHeaders;
 
     /**
      * The decoded JSON body of the ESI response.
@@ -18,9 +18,9 @@ class EsiResponse
      */
     public object $data;
 
-    public ?int $error_limit_remain;
+    public ?int $errorLimitRemain;
 
-    public ?int $error_limit_reset;
+    public ?int $errorLimitReset;
 
     public ?int $pages;
 
@@ -48,23 +48,23 @@ class EsiResponse
 
     public function __construct(
         public string $raw,
-        public array $raw_headers,
+        public array $rawHeaders,
         string $expires,
-        protected int $response_code
+        protected int $responseCode
     ) {
         $this->expiresAt = strlen($expires) > 2 ? $expires : 'now';
 
-        $parsed_headers = $this->parseHeaders($raw_headers);
-        $this->parsed_headers = $parsed_headers;
-        $this->error_limit_remain = $this->getIntHeader($parsed_headers, 'X-Esi-Error-Limit-Remain');
-        $this->error_limit_reset = $this->getIntHeader($parsed_headers, 'X-Esi-Error-Limit-Reset');
-        $this->pages = $this->getIntHeader($parsed_headers, 'X-Pages');
-        $this->ratelimitGroup = $this->getHeader($parsed_headers, 'X-Ratelimit-Group');
-        $this->ratelimitLimit = $this->parseRatelimitLimit($parsed_headers);
-        $this->ratelimitWindowSeconds = $this->parseRatelimitWindowSeconds($parsed_headers);
-        $this->ratelimitRemaining = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Remaining');
-        $this->ratelimitUsed = $this->getIntHeader($parsed_headers, 'X-Ratelimit-Used');
-        $this->retryAfter = $this->getIntHeader($parsed_headers, 'Retry-After');
+        $parsedHeaders = $this->parseHeaders($rawHeaders);
+        $this->parsedHeaders = $parsedHeaders;
+        $this->errorLimitRemain = $this->getIntHeader($parsedHeaders, 'X-Esi-Error-Limit-Remain');
+        $this->errorLimitReset = $this->getIntHeader($parsedHeaders, 'X-Esi-Error-Limit-Reset');
+        $this->pages = $this->getIntHeader($parsedHeaders, 'X-Pages');
+        $this->ratelimitGroup = $this->getHeader($parsedHeaders, 'X-Ratelimit-Group');
+        $this->ratelimitLimit = $this->parseRatelimitLimit($parsedHeaders);
+        $this->ratelimitWindowSeconds = $this->parseRatelimitWindowSeconds($parsedHeaders);
+        $this->ratelimitRemaining = $this->getIntHeader($parsedHeaders, 'X-Ratelimit-Remaining');
+        $this->ratelimitUsed = $this->getIntHeader($parsedHeaders, 'X-Ratelimit-Used');
+        $this->retryAfter = $this->getIntHeader($parsedHeaders, 'Retry-After');
 
         $this->errorMessage = $this->parseErrorMessage($raw);
         $this->cacheLoaded = $this->isCachedLoad();
@@ -74,7 +74,7 @@ class EsiResponse
 
     public function isCachedLoad(): bool
     {
-        return $this->getData($this->parsed_headers, 'X-Kevinrob-Cache', false) === 'HIT';
+        return $this->getData($this->parsedHeaders, 'X-Kevinrob-Cache', false) === 'HIT';
     }
 
     /**
@@ -107,9 +107,9 @@ class EsiResponse
 
     private function getHeader(array $headers, string $name): ?string
     {
-        $key_map = array_change_key_case($headers, CASE_LOWER);
+        $keyMap = array_change_key_case($headers, CASE_LOWER);
 
-        return $key_map[strtolower($name)] ?? null;
+        return $keyMap[strtolower($name)] ?? null;
     }
 
     private function getData(array $stack, string $needle, mixed $default = null): mixed

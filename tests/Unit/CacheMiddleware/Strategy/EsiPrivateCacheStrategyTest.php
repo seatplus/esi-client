@@ -14,12 +14,12 @@ use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
 use Seatplus\EsiClient\Log\NullLogger;
 use Seatplus\EsiSchema\GeneratedSpec;
 
-function esiCacheRequest(?string $compatibility_date = null, ?string $token = null): Request
+function esiCacheRequest(?string $compatibilityDate = null, ?string $token = null): Request
 {
     $headers = [];
 
-    if ($compatibility_date !== null) {
-        $headers[GeneratedSpec::COMPATIBILITY_DATE_HEADER] = $compatibility_date;
+    if ($compatibilityDate !== null) {
+        $headers[GeneratedSpec::COMPATIBILITY_DATE_HEADER] = $compatibilityDate;
     }
 
     if ($token !== null) {

@@ -16,13 +16,13 @@ class VerifyAccessToken
 
     public function __construct(private readonly Client $client = new Client, private readonly JwtService $jwtService = new JwtService) {}
 
-    public function verify(string $access_token): void
+    public function verify(string $accessToken): void
     {
         $response = $this->client->get(self::JWKS_URL);
         $decodedJson = json_decode((string) $response->getBody(), true);
         $parsedKeySet = $this->jwtService->parseJWKS($decodedJson);
 
-        $decodedArray = (array) $this->jwtService->decodeJWT($access_token, $parsedKeySet);
+        $decodedArray = (array) $this->jwtService->decodeJWT($accessToken, $parsedKeySet);
 
         if ($decodedArray['iss'] !== 'login.eveonline.com' && $decodedArray['iss'] !== self::TRANQUILITY_ENDPOINT) {
             throw new UnexpectedValueException('Access token issuer mismatch');

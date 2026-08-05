@@ -34,11 +34,11 @@ class EsiPrivateCacheStrategy extends PrivateCacheStrategy
     #[\Override]
     protected function getCacheKey(RequestInterface $request, ?KeyValueHttpHeader $varyHeaders = null): string
     {
-        $compatibility_date = $request->getHeaderLine(GeneratedSpec::COMPATIBILITY_DATE_HEADER);
+        $compatibilityDate = $request->getHeaderLine(GeneratedSpec::COMPATIBILITY_DATE_HEADER);
 
         return hash(
             'sha256',
-            $compatibility_date.'|'.$this->tokenIdentity($request).'|'.parent::getCacheKey($request, $varyHeaders),
+            $compatibilityDate.'|'.$this->tokenIdentity($request).'|'.parent::getCacheKey($request, $varyHeaders),
         );
     }
 

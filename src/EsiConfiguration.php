@@ -17,10 +17,17 @@ class EsiConfiguration
 {
     private static ?EsiConfiguration $instance = null;
 
-    private ?LogInterface $logger_implementation = null;
+    private ?LogInterface $loggerImplementation = null;
 
-    private ?CacheMiddleware $cache_implementation = null;
+    private ?CacheMiddleware $cacheImplementation = null;
 
+    /**
+     * The promoted properties below stay snake_case on purpose: they are config keys, not
+     * ordinary properties. Consumers map them 1:1 onto Laravel config entries
+     * (`config('eveapi.config.esi-client.logfile_location')`) and EsiClient reads several of
+     * them dynamically by name (`getConfiguration('esi_scheme')`). Per Spatie/Laravel
+     * guidelines config keys remain snake_case — see seatplus/core#235.
+     */
     public function __construct(
         public string $http_user_agent = '',
 
@@ -73,11 +80,11 @@ class EsiConfiguration
 
     public function getLogger(): LogInterface
     {
-        return $this->logger_implementation ??= new $this->logger;
+        return $this->loggerImplementation ??= new $this->logger;
     }
 
     public function getCacheMiddleware(): CacheMiddleware
     {
-        return $this->cache_implementation ??= (new $this->cache_middleware)->getCacheMiddleware();
+        return $this->cacheImplementation ??= (new $this->cache_middleware)->getCacheMiddleware();
     }
 }
