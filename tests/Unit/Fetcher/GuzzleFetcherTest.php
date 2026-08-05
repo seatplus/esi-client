@@ -296,3 +296,28 @@ it('omits rate-limit metrics when ESI does not return those headers', function (
 
     $method->invokeArgs($fetcher, ['info', $response, 'GET', '/test/uri', microtime(true)]);
 });
+
+it('uppercases the HTTP method before it reaches Guzzle', function () {
+    $sentMethod = null;
+
+    $mock = new MockHandler([
+        new Response(200, [], json_encode(['foo' => 'bar'])),
+    ]);
+
+    $handlerStack = HandlerStack::create($mock);
+    $handlerStack->push(function (callable $handler) use (&$sentMethod) {
+        return function ($request, array $options) use ($handler, &$sentMethod) {
+            $sentMethod = $request->getMethod();
+
+            return $handler($request, $options);
+        };
+    });
+
+    $client = new Client(['handler' => $handlerStack]);
+    $fetcher = new GuzzleFetcher(client: $client);
+
+    // esi-schema's generated resources call invoke('get', …) — Guzzle 8 sends the verb verbatim.
+    $fetcher->call('get', '/foo');
+
+    expect($sentMethod)->toBe('GET');
+});
