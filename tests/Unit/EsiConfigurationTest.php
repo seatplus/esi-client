@@ -13,7 +13,6 @@ it('initializes with default values', function () {
 
     expect($config->httpUserAgent)->toContain('seatplus/esi-client/')
         ->toContain('+https://github.com/seatplus/esi-client')
-        ->and($config->datasource)->toBe('tranquility')
         ->and($config->esiScheme)->toBe('https')
         ->and($config->esiHost)->toBe('esi.evetech.net')
         ->and($config->esiPort)->toBe(443)

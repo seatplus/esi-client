@@ -76,7 +76,18 @@ it('builds correct data URI', function () {
     $uri = $method->invokeArgs($this->client, ['/test/uri/{id}', ['id' => 123], ['param' => 'value']]);
 
     expect($uri)->toBeInstanceOf(Uri::class)
-        ->and((string) $uri)->toBe('https://esi.evetech.net/test/uri/123/?datasource=tranquility&param=value');
+        ->and((string) $uri)->toBe('https://esi.evetech.net/test/uri/123/?param=value');
+});
+
+it('builds a data URI without a trailing question mark when there are no query params', function () {
+    // Every URI used to carry ?datasource=tranquility, so the no-query case never occurred
+    // until that legacy parameter was dropped. A bare '?' would change every cache key.
+    $reflection = new ReflectionClass($this->client);
+    $method = $reflection->getMethod('buildDataUri');
+
+    $uri = $method->invokeArgs($this->client, ['/test/uri/{id}', ['id' => 123], []]);
+
+    expect((string) $uri)->toBe('https://esi.evetech.net/test/uri/123/');
 });
 
 it('throws exception for missing data', function () {

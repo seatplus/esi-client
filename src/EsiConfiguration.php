@@ -25,7 +25,6 @@ class EsiConfiguration
         public string $httpUserAgent = '',
 
         // Esi
-        public string $datasource = 'tranquility',
         public string $esiScheme = 'https',
         public string $esiHost = 'esi.evetech.net',
         public int $esiPort = 443,

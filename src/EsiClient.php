@@ -338,8 +338,6 @@ class EsiClient implements EsiTransportInterface
      */
     private function buildDataUri(string $uri, array $data, array $queryParameters): UriInterface
     {
-        $queryParams = array_merge(['datasource' => $this->getConfiguration('datasource')], $queryParameters);
-
         $trimmed = trim($this->mapDataToUri($uri, $data), '/');
         $path = "/{$trimmed}/";
 
@@ -348,7 +346,7 @@ class EsiClient implements EsiTransportInterface
             'host' => $this->getConfiguration('esiHost'),
             'port' => $this->getConfiguration('esiPort'),
             'path' => $path,
-            'query' => http_build_query($queryParams),
+            'query' => http_build_query($queryParameters),
         ]);
     }
 
