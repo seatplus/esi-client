@@ -30,11 +30,6 @@ class EsiConfiguration
         public string $esiHost = 'esi.evetech.net',
         public int $esiPort = 443,
 
-        // Eve SSO v2
-        public string $ssoScheme = 'https',
-        public string $ssoHost = 'login.eveonline.com',
-        public int $ssoPort = 443,
-
         // Logging
         public string $logger = RotatingFileLogger::class,
         public int $loggerLevel = Level::Info->value,
