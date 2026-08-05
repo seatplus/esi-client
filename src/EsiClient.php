@@ -7,6 +7,7 @@ namespace Seatplus\EsiClient;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
@@ -268,6 +269,7 @@ class EsiClient implements EsiTransportInterface
      * @throws UriDataMissingException
      * @throws InvalidAuthenticationException
      * @throws ScopeAccessDeniedException
+     * @throws EsiTransportException
      */
     public function invoke(
         string $method,

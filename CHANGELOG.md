@@ -36,6 +36,26 @@ receives bug fixes only.
   cached by `4.x` are unreachable from 5.0.0, so expect one cold-fetch cycle per endpoint after
   upgrading and budget for it against ESI's 1800-request / 15-minute window. Old entries are not
   deleted; `php artisan cache:clear` reclaims the space.
+- **No `GuzzleHttp\Exception\*` type escapes this package any more.** Transport failures that never
+  produced a response — DNS failure, refused connection, TLS error, timeout, redirect loop — used to
+  propagate as raw Guzzle types from `GuzzleFetcher::httpRequest()` and
+  `UpdateRefreshTokenService::getRefreshTokenResponse()`, and (undocumented) from
+  `VerifyAccessToken::verify()`. All three now throw
+  `Seatplus\EsiClient\Exceptions\EsiTransportException` with the original exception kept as
+  `getPrevious()`, and the `@throws GuzzleException` docblocks are gone. Response-bearing failures are
+  unaffected: `429` still throws `EsiRateLimitedException`, `420` `EsiErrorLimitedException`, and
+  everything else `RequestFailedException`. Any consumer that catches `GuzzleException` around an
+  esi-client call must catch `EsiTransportException` instead — no such runtime catch site exists in
+  `eveapi`, `auth`, `web`, or `core`, so in practice this only removes the stale `@throws` line in
+  eveapi.
+
+### Added
+
+- **`Seatplus\EsiClient\Exceptions\EsiClientException`**, a marker interface implemented by every
+  exception this package throws, so consumers can `catch (EsiClientException $e)` for "any esi-client
+  failure" instead of enumerating six concrete types. Purely additive — the existing parent classes
+  (`\Exception` / `\RuntimeException`) are unchanged, so current catch sites keep working.
+  `ScopeAccessDeniedException` is deliberately excluded: it belongs to `esi-schema`.
 
 ### Fixed
 

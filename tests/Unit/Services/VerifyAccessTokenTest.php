@@ -2,7 +2,10 @@
 
 use Firebase\JWT\ExpiredException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use Seatplus\EsiClient\Services\JwtService;
 use Seatplus\EsiClient\Services\VerifyAccessToken;
 
@@ -37,6 +40,25 @@ it('verifies access token successfully', function () {
         ->andReturn($decodedToken);
 
     $this->service->verify($accessToken);
+});
+
+it('throws EsiTransportException when the JWKS endpoint is unreachable', function () {
+    $connectException = new ConnectException(
+        'cURL error 6: Could not resolve host: login.eveonline.com',
+        new Request('GET', VerifyAccessToken::JWKS_URL)
+    );
+
+    $this->clientMock->shouldReceive('get')
+        ->once()
+        ->with(VerifyAccessToken::JWKS_URL)
+        ->andThrow($connectException);
+
+    try {
+        $this->service->verify('any_access_token');
+    } catch (EsiTransportException $e) {
+        expect($e->getPrevious())->toBe($connectException)
+            ->and($e->getMessage())->toContain(VerifyAccessToken::JWKS_URL);
+    }
 });
 
 it('throws UnexpectedValueException on access token issuer mismatch', function () {

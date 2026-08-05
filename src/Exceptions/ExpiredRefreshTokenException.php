@@ -6,7 +6,7 @@ namespace Seatplus\EsiClient\Exceptions;
 
 use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
 
-class ExpiredRefreshTokenException extends \Exception
+class ExpiredRefreshTokenException extends \Exception implements EsiClientException
 {
     public function __construct()
     {
