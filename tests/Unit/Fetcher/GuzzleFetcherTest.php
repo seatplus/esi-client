@@ -2,16 +2,22 @@
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiConfiguration;
+use Seatplus\EsiClient\Exceptions\EsiClientException;
 use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
 use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Fetcher\GuzzleFetcher;
@@ -89,6 +95,70 @@ it('trows RequestFailedException', function () {
 
     $fetcher->call('get', '/foo');
 })->throws(RequestFailedException::class);
+
+it('translates transport failures into EsiTransportException', function (GuzzleException $transportFailure) {
+    $mock = new MockHandler([$transportFailure]);
+
+    $client = new Client(['handler' => HandlerStack::create($mock)]);
+    $fetcher = new GuzzleFetcher(client: $client);
+
+    $fetcher->call('get', '/foo');
+})->with([
+    'connect' => fn () => new ConnectException('cURL error 6: Could not resolve host', new Request('GET', '/foo')),
+    'redirects' => fn () => new TooManyRedirectsException('Will not follow more than 5 redirects', new Request('GET', '/foo')),
+])->throws(EsiTransportException::class);
+
+it('keeps the original transport exception as previous and names the uri', function () {
+    $connectException = new ConnectException('cURL error 28: Operation timed out', new Request('GET', '/foo'));
+
+    $mock = new MockHandler([$connectException]);
+
+    $client = new Client(['handler' => HandlerStack::create($mock)]);
+    $fetcher = new GuzzleFetcher(client: $client);
+
+    try {
+        $fetcher->call('get', '/foo');
+    } catch (EsiTransportException $e) {
+        expect($e->getPrevious())->toBe($connectException)
+            ->and($e->getMessage())->toContain('/foo')
+            ->and($e->getMessage())->toContain('Operation timed out')
+            ->and($e)->toBeInstanceOf(EsiClientException::class);
+    }
+});
+
+it('logs the transport failure as an error', function () {
+    $mock = new MockHandler([
+        new ConnectException('cURL error 7: Connection refused', new Request('GET', '/foo')),
+    ]);
+
+    $logger = mock(LogInterface::class, function (MockInterface $logger) {
+        $logger->shouldReceive('debug')->with(Mockery::type('string'));
+        $logger->shouldReceive('error')
+            ->once()
+            ->with(Mockery::on(fn (string $message): bool => str_contains($message, 'Connection refused')));
+    });
+
+    $client = new Client(['handler' => HandlerStack::create($mock)]);
+    $fetcher = new GuzzleFetcher(client: $client, logger: $logger);
+
+    expect(fn () => $fetcher->call('get', '/foo'))->toThrow(EsiTransportException::class);
+});
+
+it('still throws the response-bearing exceptions rather than EsiTransportException', function (int $status, string $expected) {
+    $mock = new MockHandler([
+        new Response($status, [], json_encode(['error' => 'nope'])),
+    ]);
+
+    $client = new Client(['handler' => HandlerStack::create($mock)]);
+    $fetcher = new GuzzleFetcher(client: $client);
+
+    expect(fn () => $fetcher->call('get', '/foo'))->toThrow($expected);
+})->with([
+    [429, EsiRateLimitedException::class],
+    [420, EsiErrorLimitedException::class],
+    [401, RequestFailedException::class],
+    [500, RequestFailedException::class],
+]);
 
 it('throws EsiRateLimitedException on 429 with Retry-After header', function () {
     $mock = new MockHandler([

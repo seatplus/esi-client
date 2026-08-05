@@ -17,6 +17,7 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
 use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use Seatplus\EsiClient\Exceptions\ExpiredRefreshTokenException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -40,6 +41,7 @@ class GuzzleFetcher
      * @throws InvalidAuthenticationException
      * @throws \Throwable
      * @throws RequestFailedException
+     * @throws EsiTransportException
      */
     public function call(string $method, string $uri, array $body = [], array $headers = []): EsiResponse
     {
@@ -66,10 +68,10 @@ class GuzzleFetcher
     }
 
     /**
-     * @throws GuzzleException
      * @throws EsiRateLimitedException
      * @throws EsiErrorLimitedException
      * @throws RequestFailedException
+     * @throws EsiTransportException
      */
     public function httpRequest(string $method, string $uri, array $headers = [], array $body = []): EsiResponse
     {
@@ -128,6 +130,12 @@ class GuzzleFetcher
                     $statusCode
                 )
             );
+        } catch (GuzzleException $e) {
+            // No response ever arrived (DNS, refused connection, TLS, timeout, redirect loop).
+            // Must stay below the response-bearing catch above — those are GuzzleExceptions too.
+            $this->logger->error("Request for {$method} -> {$uri} -> never reached the ESI: {$e->getMessage()}");
+
+            throw new EsiTransportException("Request to {$uri} failed: {$e->getMessage()}", previous: $e);
         }
 
         $this->logFetcherActivity('log', $response, $method, $uri, $start);

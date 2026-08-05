@@ -11,6 +11,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\RequestOptions;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 
 class UpdateRefreshTokenService
@@ -24,7 +25,7 @@ class UpdateRefreshTokenService
 
     /**
      * @throws RequestFailedException
-     * @throws GuzzleException
+     * @throws EsiTransportException
      */
     public function getRefreshTokenResponse(EsiAuthentication $authentication): array
     {
@@ -51,6 +52,13 @@ class UpdateRefreshTokenService
                     'now',
                     $exception->getResponse()->getStatusCode()
                 )
+            );
+        } catch (GuzzleException $exception) {
+            // The SSO token endpoint was unreachable. Must stay below the
+            // response-bearing catch above — those are GuzzleExceptions too.
+            throw new EsiTransportException(
+                'Request to '.self::TOKEN_URL." failed: {$exception->getMessage()}",
+                previous: $exception
             );
         }
 

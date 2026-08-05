@@ -118,6 +118,38 @@ queued job.
 If the HTTP client receives a `420 Error Limited` response, the request is retried with
 exponential backoff as configured on the job.
 
+## Error handling
+
+Guzzle is an implementation detail: no `GuzzleHttp\Exception\*` type escapes this package.
+Everything it throws lives in `Seatplus\EsiClient\Exceptions` and implements the
+`EsiClientException` marker interface, so `catch (EsiClientException $e)` catches any
+failure originating here.
+
+| Exception | Meaning |
+| --- | --- |
+| `EsiRateLimitedException` | `429` — token bucket exhausted; `$e->retryAfter` seconds |
+| `EsiErrorLimitedException` | `420` — error limit hit; `$e->retryAfter` seconds |
+| `RequestFailedException` | Any other error response; `$e->getEsiResponse()` has body and headers |
+| `EsiTransportException` | No response at all — DNS, refused connection, TLS, timeout, redirect loop. The underlying client exception is kept as `getPrevious()` |
+| `ExpiredRefreshTokenException` | The supplied `access_token` is expired or expires within the minute — refresh it via `UpdateRefreshTokenService` |
+| `UriDataMissingException` | A path placeholder had no matching value |
+
+One exception is deliberately **not** covered: `assertScope()` throws
+`Seatplus\EsiSchema\Contracts\ScopeAccessDeniedException`, which belongs to `esi-schema`.
+Catch it separately if you need it.
+
+```php
+try {
+    $sdk->withToken($accessToken)->characters()->getCharactersDetail(95725047);
+} catch (EsiRateLimitedException $e) {
+    // back off for $e->retryAfter seconds
+} catch (EsiTransportException $e) {
+    // the ESI was unreachable — retry later
+} catch (EsiClientException $e) {
+    // anything else this package throws
+}
+```
+
 ## Testing
 
 ```bash

@@ -6,6 +6,8 @@ namespace Seatplus\EsiClient\Services;
 
 use Firebase\JWT\ExpiredException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use UnexpectedValueException;
 
 class VerifyAccessToken
@@ -16,9 +18,22 @@ class VerifyAccessToken
 
     public function __construct(private readonly Client $client = new Client, private readonly JwtService $jwtService = new JwtService) {}
 
+    /**
+     * @throws EsiTransportException
+     * @throws UnexpectedValueException
+     * @throws ExpiredException
+     */
     public function verify(string $accessToken): void
     {
-        $response = $this->client->get(self::JWKS_URL);
+        try {
+            $response = $this->client->get(self::JWKS_URL);
+        } catch (GuzzleException $exception) {
+            throw new EsiTransportException(
+                'Request to '.self::JWKS_URL." failed: {$exception->getMessage()}",
+                previous: $exception
+            );
+        }
+
         $decodedJson = json_decode((string) $response->getBody(), true);
         $parsedKeySet = $this->jwtService->parseJWKS($decodedJson);
 
