@@ -174,7 +174,7 @@ it('sends X-Compatibility-Date header when configured', function () {
     });
 
     EsiConfiguration::resetInstance();
-    $config = EsiConfiguration::getInstance(compatibility_date: '2025-10-01');
+    $config = EsiConfiguration::getInstance(compatibilityDate: '2025-10-01');
 
     $client = new Client(['handler' => $handlerStack]);
     $fetcher = new GuzzleFetcher(client: $client);
@@ -186,11 +186,11 @@ it('sends X-Compatibility-Date header when configured', function () {
     EsiConfiguration::resetInstance();
 });
 
-it('does not send X-Compatibility-Date header when compatibility_date is null', function () {
+it('does not send X-Compatibility-Date header when compatibilityDate is null', function () {
     $sentHeaders = [];
 
     EsiConfiguration::resetInstance();
-    EsiConfiguration::getInstance(compatibility_date: null);
+    EsiConfiguration::getInstance(compatibilityDate: null);
 
     $mock = new MockHandler([
         new Response(200, [], json_encode(['foo' => 'bar'])),

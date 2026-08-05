@@ -86,10 +86,10 @@ class GuzzleFetcher
         $requestHeaders = array_merge($headers, [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'User-Agent' => EsiConfiguration::getInstance()->http_user_agent,
+            'User-Agent' => EsiConfiguration::getInstance()->httpUserAgent,
         ]);
 
-        $compatibilityDate = EsiConfiguration::getInstance()->compatibility_date;
+        $compatibilityDate = EsiConfiguration::getInstance()->compatibilityDate;
 
         if ($compatibilityDate !== null) {
             $requestHeaders[GeneratedSpec::COMPATIBILITY_DATE_HEADER] = $compatibilityDate;

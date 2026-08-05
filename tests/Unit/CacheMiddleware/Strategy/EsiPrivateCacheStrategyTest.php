@@ -142,7 +142,7 @@ it('serves a cold cache after the compatibility date changes', function () {
     $stack->push(new CacheMiddleware(new EsiPrivateCacheStrategy(new VolatileRuntimeStorage)), 'cache');
 
     EsiConfiguration::resetInstance();
-    EsiConfiguration::getInstance(compatibility_date: '2026-07-21');
+    EsiConfiguration::getInstance(compatibilityDate: '2026-07-21');
 
     $fetcher = new GuzzleFetcher(logger: new NullLogger, client: new Client(['handler' => $stack]));
 
@@ -154,10 +154,10 @@ it('serves a cold cache after the compatibility date changes', function () {
         ->and($second->data->name)->toBe('old-date');
 
     // Production shape: EsiConfiguration memoises getCacheMiddleware() per instance while
-    // compatibility_date stays publicly mutable, so a strategy that captured the date at
+    // compatibilityDate stays publicly mutable, so a strategy that captured the date at
     // construction would reuse the stale key. The tests above also catch that; this one
     // additionally proves GuzzleFetcher puts the header where the strategy reads it.
-    EsiConfiguration::getInstance()->compatibility_date = '2025-12-16';
+    EsiConfiguration::getInstance()->compatibilityDate = '2025-12-16';
 
     $third = $fetcher->call('get', 'https://esi.evetech.net/characters/95725047/');
 

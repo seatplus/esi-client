@@ -17,8 +17,8 @@ it('writes error log', function () {
     $root = vfsStream::setup('logs');
 
     EsiConfiguration::getInstance(
-        logfile_location: $root->url(),
-        logger_level: Level::Debug->value
+        logfileLocation: $root->url(),
+        loggerLevel: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 
@@ -34,8 +34,8 @@ it('writes warning log', function () {
     $root = vfsStream::setup('logs');
 
     EsiConfiguration::getInstance(
-        logfile_location: $root->url(),
-        logger_level: Level::Debug->value
+        logfileLocation: $root->url(),
+        loggerLevel: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 
@@ -51,8 +51,8 @@ it('writes info log', function () {
     $root = vfsStream::setup('logs');
 
     EsiConfiguration::getInstance(
-        logfile_location: $root->url(),
-        logger_level: Level::Debug->value
+        logfileLocation: $root->url(),
+        loggerLevel: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 
@@ -68,8 +68,8 @@ it('writes debug log', function () {
     $root = vfsStream::setup('logs');
 
     EsiConfiguration::getInstance(
-        logfile_location: $root->url(),
-        logger_level: Level::Debug->value
+        logfileLocation: $root->url(),
+        loggerLevel: Level::Debug->value
     );
     $logger = new RotatingFileLogger;
 

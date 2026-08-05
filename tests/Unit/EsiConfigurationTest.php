@@ -11,20 +11,20 @@ use Seatplus\EsiSchema\GeneratedSpec;
 it('initializes with default values', function () {
     $config = new EsiConfiguration;
 
-    expect($config->http_user_agent)->toContain('seatplus/esi-client/')
+    expect($config->httpUserAgent)->toContain('seatplus/esi-client/')
         ->toContain('+https://github.com/seatplus/esi-client')
         ->and($config->datasource)->toBe('tranquility')
-        ->and($config->esi_scheme)->toBe('https')
-        ->and($config->esi_host)->toBe('esi.evetech.net')
-        ->and($config->esi_port)->toBe(443)
-        ->and($config->sso_scheme)->toBe('https')
-        ->and($config->sso_host)->toBe('login.eveonline.com')
-        ->and($config->sso_port)->toBe(443)
-        ->and($config->logfile_location)->toBe('logs/')
-        ->and($config->log_max_files)->toBe(10)
-        ->and($config->cache_middleware)->toBe(NullCacheMiddleware::class)
+        ->and($config->esiScheme)->toBe('https')
+        ->and($config->esiHost)->toBe('esi.evetech.net')
+        ->and($config->esiPort)->toBe(443)
+        ->and($config->ssoScheme)->toBe('https')
+        ->and($config->ssoHost)->toBe('login.eveonline.com')
+        ->and($config->ssoPort)->toBe(443)
+        ->and($config->logfileLocation)->toBe('logs/')
+        ->and($config->logMaxFiles)->toBe(10)
+        ->and($config->cacheMiddleware)->toBe(NullCacheMiddleware::class)
         ->and($config->fetcher)->toBe(GuzzleFetcher::class)
-        ->and($config->compatibility_date)->toBe(GeneratedSpec::COMPATIBILITY_DATE);
+        ->and($config->compatibilityDate)->toBe(GeneratedSpec::COMPATIBILITY_DATE);
 });
 
 it('singleton instance is consistent', function () {
@@ -58,17 +58,17 @@ it('get NullLogger through instance', function () {
     expect($logger)->toBeInstanceOf(LogInterface::class);
 });
 
-it('compatibility_date can be set via constructor', function () {
-    $config = new EsiConfiguration(compatibility_date: '2025-10-01');
+it('compatibilityDate can be set via constructor', function () {
+    $config = new EsiConfiguration(compatibilityDate: '2025-10-01');
 
-    expect($config->compatibility_date)->toBe('2025-10-01');
+    expect($config->compatibilityDate)->toBe('2025-10-01');
 });
 
-it('compatibility_date defaults to the date esi-schema was generated for', function () {
+it('compatibilityDate defaults to the date esi-schema was generated for', function () {
     EsiConfiguration::resetInstance();
     $config = EsiConfiguration::getInstance();
 
-    expect($config->compatibility_date)->toBe(GeneratedSpec::COMPATIBILITY_DATE);
+    expect($config->compatibilityDate)->toBe(GeneratedSpec::COMPATIBILITY_DATE);
 
     EsiConfiguration::resetInstance();
 });

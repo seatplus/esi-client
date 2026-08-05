@@ -344,9 +344,9 @@ class EsiClient implements EsiTransportInterface
         $path = "/{$trimmed}/";
 
         return Uri::fromParts([
-            'scheme' => $this->getConfiguration('esi_scheme'),
-            'host' => $this->getConfiguration('esi_host'),
-            'port' => $this->getConfiguration('esi_port'),
+            'scheme' => $this->getConfiguration('esiScheme'),
+            'host' => $this->getConfiguration('esiHost'),
+            'port' => $this->getConfiguration('esiPort'),
             'path' => $path,
             'query' => http_build_query($queryParams),
         ]);

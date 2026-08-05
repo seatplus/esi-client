@@ -41,11 +41,11 @@ class RotatingFileLogger implements LogInterface
         $configuration = EsiConfiguration::getInstance();
 
         $formatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n");
-        $logDir = rtrim($configuration->logfile_location, '/');
+        $logDir = rtrim($configuration->logfileLocation, '/');
         $stream = new RotatingFileHandler(
             "{$logDir}/esi-client.log",
-            $configuration->log_max_files,
-            (int) $configuration->logger_level
+            $configuration->logMaxFiles,
+            (int) $configuration->loggerLevel
         );
         $stream->setFormatter($formatter);
 
