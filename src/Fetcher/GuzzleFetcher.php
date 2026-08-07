@@ -60,11 +60,11 @@ class GuzzleFetcher
      */
     private function getToken(): string
     {
-        $expires = $this->carbon($this->authentication->token_expires);
+        $expires = $this->carbon($this->authentication->tokenExpires);
 
         throw_if($expires->lte($this->carbon('now')->addMinute()), new ExpiredRefreshTokenException);
 
-        return $this->authentication->access_token;
+        return $this->authentication->accessToken;
     }
 
     /**
@@ -88,13 +88,13 @@ class GuzzleFetcher
         $requestHeaders = array_merge($headers, [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'User-Agent' => EsiConfiguration::getInstance()->http_user_agent,
+            'User-Agent' => EsiConfiguration::getInstance()->httpUserAgent,
         ]);
 
-        $compatibility_date = EsiConfiguration::getInstance()->compatibility_date;
+        $compatibilityDate = EsiConfiguration::getInstance()->compatibilityDate;
 
-        if ($compatibility_date !== null) {
-            $requestHeaders[GeneratedSpec::COMPATIBILITY_DATE_HEADER] = $compatibility_date;
+        if ($compatibilityDate !== null) {
+            $requestHeaders[GeneratedSpec::COMPATIBILITY_DATE_HEADER] = $compatibilityDate;
         }
 
         try {

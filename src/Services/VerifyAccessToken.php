@@ -23,7 +23,7 @@ class VerifyAccessToken
      * @throws UnexpectedValueException
      * @throws ExpiredException
      */
-    public function verify(string $access_token): void
+    public function verify(string $accessToken): void
     {
         try {
             $response = $this->client->get(self::JWKS_URL);
@@ -37,7 +37,7 @@ class VerifyAccessToken
         $decodedJson = json_decode((string) $response->getBody(), true);
         $parsedKeySet = $this->jwtService->parseJWKS($decodedJson);
 
-        $decodedArray = (array) $this->jwtService->decodeJWT($access_token, $parsedKeySet);
+        $decodedArray = (array) $this->jwtService->decodeJWT($accessToken, $parsedKeySet);
 
         if ($decodedArray['iss'] !== 'login.eveonline.com' && $decodedArray['iss'] !== self::TRANQUILITY_ENDPOINT) {
             throw new UnexpectedValueException('Access token issuer mismatch');

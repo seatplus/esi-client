@@ -50,12 +50,12 @@ test('guzzle calling with authorization', function () {
 
     $authentication = new EsiAuthentication(
         // ESI client_id and secret specific
-        access_token: '_',
-        refresh_token: 'baz',
+        accessToken: '_',
+        refreshToken: 'baz',
         // refresh_token specific
-        client_id: 1234,
+        clientId: 1234,
         secret: 'bar',
-        token_expires: Carbon::now()->addHour(),
+        tokenExpires: Carbon::now()->addHour(),
     );
 
     $fetcher = new GuzzleFetcher(authentication: $authentication, client: $client);
@@ -65,15 +65,15 @@ test('guzzle calling with authorization', function () {
     expect($response)->toBeInstanceOf(EsiResponse::class);
 });
 
-it('throws outdated refresh_token exception if expires_in is expired or to close in the future', function (string $token_expires) {
+it('throws outdated refresh_token exception if expires_in is expired or to close in the future', function (string $tokenExpires) {
     $authentication = new EsiAuthentication(
         // ESI client_id and secret specific
-        access_token: '_',
-        refresh_token: 'baz',
+        accessToken: '_',
+        refreshToken: 'baz',
         // refresh_token specific
-        client_id: 1234,
+        clientId: 1234,
         secret: 'bar',
-        token_expires: $token_expires,
+        tokenExpires: $tokenExpires,
     );
 
     $fetcher = new GuzzleFetcher(authentication: $authentication);
@@ -244,7 +244,7 @@ it('sends X-Compatibility-Date header when configured', function () {
     });
 
     EsiConfiguration::resetInstance();
-    $config = EsiConfiguration::getInstance(compatibility_date: '2025-10-01');
+    $config = EsiConfiguration::getInstance(compatibilityDate: '2025-10-01');
 
     $client = new Client(['handler' => $handlerStack]);
     $fetcher = new GuzzleFetcher(client: $client);
@@ -256,11 +256,11 @@ it('sends X-Compatibility-Date header when configured', function () {
     EsiConfiguration::resetInstance();
 });
 
-it('does not send X-Compatibility-Date header when compatibility_date is null', function () {
+it('does not send X-Compatibility-Date header when compatibilityDate is null', function () {
     $sentHeaders = [];
 
     EsiConfiguration::resetInstance();
-    EsiConfiguration::getInstance(compatibility_date: null);
+    EsiConfiguration::getInstance(compatibilityDate: null);
 
     $mock = new MockHandler([
         new Response(200, [], json_encode(['foo' => 'bar'])),
@@ -284,7 +284,7 @@ it('does not send X-Compatibility-Date header when compatibility_date is null', 
     EsiConfiguration::resetInstance();
 });
 
-it('logs fetcher activity with cache hit', function (string $log_level) {
+it('logs fetcher activity with cache hit', function (string $logLevel) {
     // Create a mock ResponseInterface
     $response = mock(ResponseInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('getHeader')
@@ -297,13 +297,13 @@ it('logs fetcher activity with cache hit', function (string $log_level) {
     });
 
     // Create a mock LoggerInterface
-    $logger = mock(LogInterface::class, function (MockInterface $logger) use ($log_level) {
+    $logger = mock(LogInterface::class, function (MockInterface $logger) use ($logLevel) {
 
-        if ($log_level === 'info') {
-            $log_level = 'log';
+        if ($logLevel === 'info') {
+            $logLevel = 'log';
         }
 
-        $logger->shouldReceive($log_level)
+        $logger->shouldReceive($logLevel)
             ->once()
             ->with(Mockery::type('string'));
     });
@@ -316,7 +316,7 @@ it('logs fetcher activity with cache hit', function (string $log_level) {
     $method = $reflection->getMethod('logFetcherActivity');
 
     // Invoke the method
-    $method->invokeArgs($fetcher, [$log_level, $response, 'GET', '/test/uri', microtime(true)]);
+    $method->invokeArgs($fetcher, [$logLevel, $response, 'GET', '/test/uri', microtime(true)]);
 })->with(['error', 'info', 'debug', 'warning']);
 
 it('logs rate-limit metrics only when ESI returns those headers', function () {

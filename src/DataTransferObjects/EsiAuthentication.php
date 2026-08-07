@@ -9,11 +9,11 @@ use Firebase\JWT\JWT;
 class EsiAuthentication
 {
     public function __construct(
-        public string $access_token,
-        public string $refresh_token,
-        public ?string $client_id = null,
+        public string $accessToken,
+        public string $refreshToken,
+        public ?string $clientId = null,
         public ?string $secret = null,
-        public string $token_expires = '1970-01-01 00:00:00',
+        public string $tokenExpires = '1970-01-01 00:00:00',
     ) {}
 
     /**
@@ -39,11 +39,11 @@ class EsiAuthentication
 
     public function getScopes(): array
     {
-        $jwt_payload_base64_encoded = explode('.', $this->access_token)[1];
+        $jwtPayloadBase64Encoded = explode('.', $this->accessToken)[1];
 
-        $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
+        $jwtPayload = JWT::urlsafeB64Decode($jwtPayloadBase64Encoded);
 
-        $scopes = data_get(json_decode($jwt_payload), 'scp', []);
+        $scopes = data_get(json_decode($jwtPayload), 'scp', []);
 
         return is_array($scopes) ? $scopes : [$scopes];
     }

@@ -16,7 +16,7 @@ A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-ca
 > The value is not configured here — it is read from
 > [`seatplus/esi-schema`](https://github.com/seatplus/esi-schema)'s `GeneratedSpec::COMPATIBILITY_DATE`
 > and sent as `X-Compatibility-Date` on every request, so the generated response DTOs and the shape the
-> server returns cannot disagree. Override it with `new EsiConfiguration(compatibility_date: '…')`, or
+> server returns cannot disagree. Override it with `new EsiConfiguration(compatibilityDate: '…')`, or
 > pass `null` to omit the header and let ESI apply its own default. ESI validates the header and
 > answers `400` for a malformed or out-of-range date, so a typo fails every request.
 > If CCP publishes a new breaking compatibility date, a new major version of both packages will be released.
@@ -85,7 +85,7 @@ $response = $esi->invoke('get', '/characters/{character_id}/', [
 
 ## Caching
 
-**There is no response cache by default.** `EsiConfiguration::$cache_middleware` defaults to
+**There is no response cache by default.** `EsiConfiguration::$cacheMiddleware` defaults to
 `NullCacheMiddleware`, which stores nothing; you opt in by setting it to `LaravelFileCacheMiddleware`
 (or your own `CacheMiddlewareInterface` implementation).
 

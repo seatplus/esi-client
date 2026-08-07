@@ -17,34 +17,28 @@ class EsiConfiguration
 {
     private static ?EsiConfiguration $instance = null;
 
-    private ?LogInterface $logger_implementation = null;
+    private ?LogInterface $loggerImplementation = null;
 
-    private ?CacheMiddleware $cache_implementation = null;
+    private ?CacheMiddleware $cacheImplementation = null;
 
     public function __construct(
-        public string $http_user_agent = '',
+        public string $httpUserAgent = '',
 
         // Esi
-        public string $datasource = 'tranquility',
-        public string $esi_scheme = 'https',
-        public string $esi_host = 'esi.evetech.net',
-        public int $esi_port = 443,
-
-        // Eve SSO v2
-        public string $sso_scheme = 'https',
-        public string $sso_host = 'login.eveonline.com',
-        public int $sso_port = 443,
+        public string $esiScheme = 'https',
+        public string $esiHost = 'esi.evetech.net',
+        public int $esiPort = 443,
 
         // Logging
         public string $logger = RotatingFileLogger::class,
-        public int $logger_level = Level::Info->value,
-        public string $logfile_location = 'logs/',
+        public int $loggerLevel = Level::Info->value,
+        public string $logfileLocation = 'logs/',
 
         // Rotating Logger Details
-        public int $log_max_files = 10,
+        public int $logMaxFiles = 10,
 
         // cache stack
-        public string $cache_middleware = NullCacheMiddleware::class,
+        public string $cacheMiddleware = NullCacheMiddleware::class,
 
         // Fetching
         public string $fetcher = GuzzleFetcher::class,
@@ -53,11 +47,11 @@ class EsiConfiguration
         // Sent on every request. Sourced from seatplus/esi-schema, which is generated
         // against exactly this spec date, so the DTOs and the wire contract cannot drift
         // apart. Pass null to omit the header and let ESI apply its own default.
-        public ?string $compatibility_date = GeneratedSpec::COMPATIBILITY_DATE,
+        public ?string $compatibilityDate = GeneratedSpec::COMPATIBILITY_DATE,
     ) {
-        if ($this->http_user_agent === '') {
+        if ($this->httpUserAgent === '') {
             $version = InstalledVersions::getPrettyVersion('seatplus/esi-client') ?? 'dev';
-            $this->http_user_agent = "seatplus/esi-client/{$version} +https://github.com/seatplus/esi-client";
+            $this->httpUserAgent = "seatplus/esi-client/{$version} +https://github.com/seatplus/esi-client";
         }
     }
 
@@ -73,11 +67,11 @@ class EsiConfiguration
 
     public function getLogger(): LogInterface
     {
-        return $this->logger_implementation ??= new $this->logger;
+        return $this->loggerImplementation ??= new $this->logger;
     }
 
     public function getCacheMiddleware(): CacheMiddleware
     {
-        return $this->cache_implementation ??= (new $this->cache_middleware)->getCacheMiddleware();
+        return $this->cacheImplementation ??= (new $this->cacheMiddleware)->getCacheMiddleware();
     }
 }

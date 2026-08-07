@@ -34,16 +34,16 @@ it('updates access token with refresh token', function () {
     ];
 
     // encode the jwt token
-    $jwt_token = JWT::encode($payload, $privKey, 'RS256');
+    $jwtToken = JWT::encode($payload, $privKey, 'RS256');
 
     // build the authentication container
     $authentication = buildEsiAuthentication([
-        'access_token' => $jwt_token,
+        'accessToken' => $jwtToken,
     ]);
 
     // create the client mock and responses from said client
     $mock = new MockHandler([
-        new Response(200, [], json_encode(['access_token' => $jwt_token, 'foo' => 'bar'])),
+        new Response(200, [], json_encode(['access_token' => $jwtToken, 'foo' => 'bar'])),
         new Response(200, [], json_encode(['jwks' => ['one', 'two', 'three']])),
     ]);
 
@@ -52,8 +52,8 @@ it('updates access token with refresh token', function () {
     ]);
 
     // mock the verifyAccessToken service
-    $verifyAccessToken = mock(VerifyAccessToken::class, function ($mock) use ($jwt_token) {
-        $mock->shouldReceive('verify')->once()->with($jwt_token);
+    $verifyAccessToken = mock(VerifyAccessToken::class, function ($mock) use ($jwtToken) {
+        $mock->shouldReceive('verify')->once()->with($jwtToken);
     });
 
     // construct the service
@@ -65,7 +65,7 @@ it('updates access token with refresh token', function () {
     // assert the expected result. See the mocked response as reference
     expect($response)
         ->toBeArray()
-        ->toHaveKey('access_token', $jwt_token)
+        ->toHaveKey('access_token', $jwtToken)
         ->toHaveKey('foo', 'bar');
 });
 
