@@ -12,19 +12,27 @@ A standalone ESI (Eve Swagger Interface) Client Library using kevinrob/guzzle-ca
 
 > **Requires PHP 8.5.**
 >
-> **ESI compatibility date:** this branch targets ESI compatibility date **`2026-07-21`**.
-> The value is not configured here — it is read from
+> **ESI compatibility date:** not configured here. It is read from
 > [`seatplus/esi-schema`](https://github.com/seatplus/esi-schema)'s `GeneratedSpec::COMPATIBILITY_DATE`
 > and sent as `X-Compatibility-Date` on every request, so the generated response DTOs and the shape the
 > server returns cannot disagree. Override it with `new EsiConfiguration(compatibilityDate: '…')`, or
 > pass `null` to omit the header and let ESI apply its own default. ESI validates the header and
 > answers `400` for a malformed or out-of-range date, so a typo fails every request.
-> If CCP publishes a new breaking compatibility date, a new major version of both packages will be released.
+>
+> esi-schema tags a new major for each breaking ESI spec sync, and this branch accepts that range
+> (`^4.1 || ^5.0`), so **`composer update` can move the compatibility date without an esi-client
+> release**. To see the date you are actually sending:
+>
+> ```bash
+> php -r 'require "vendor/autoload.php"; echo Seatplus\EsiSchema\GeneratedSpec::COMPATIBILITY_DATE, PHP_EOL;'
+> ```
+>
+> Pin esi-schema in your own `composer.json` if you need it frozen.
 
 | esi-client | PHP (declared) | PHP (tested) | esi-schema | ESI compatibility date | status |
 |---|---|---|---|---|---|
-| `5.x` | `^8.5` | 8.5 | `^3.0` | `2026-07-21` (ESI bucket `2026-06-09`) | active |
-| `4.x` | `^8.3` | 8.5 only | `^1.3` | `2025-12-16` (bucket `2020-01-01`) | bug fixes only |
+| `5.x` | `^8.5` | 8.5 | `^4.1 \|\| ^5.0` | from esi-schema — `2026-07-21` on `4.1.0`, `2026-08-04` on `5.0.0` | active |
+| `4.x` | `^8.3` | 8.5 only | `^1.3` | `2025-12-16` (hardcoded) | bug fixes only |
 
 `4.x` declares `php: ^8.3`, but its `require-dev` pins `pestphp/pest ^5.0`, which needs `php ^8.4` —
 `composer install` of `4.x` fails on 8.3 and CI never tests below 8.5. Consumers are unaffected, since
